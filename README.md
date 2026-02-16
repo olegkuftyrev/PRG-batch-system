@@ -2,7 +2,7 @@
 
 > A place to discuss the **purpose**, **who it serves**, **what problem it solves**, and **where it could go**. No tech—just the “why” and “who.”
 
-**Technical stack & implementation:** see [TECH.md](./TECH.md).
+**Technical stack & implementation:** see [TECH.md](./TECH.md). **MVP build stages and pipeline:** see [MVP.md](./MVP.md).
 
 **Context:** Panda Express (or similar quick-service) — replacing verbal order calling between front of house (FOH) and back of house (BOH) with a screen-based ticket system for batches.
 
