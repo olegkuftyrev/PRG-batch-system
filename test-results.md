@@ -39,3 +39,24 @@
 - Frontend: improved error handling (HTTP status + hint when the API fails).
 
 **Result:** Stage 0 passes with `cd api && node ace serve` (or `npm run dev`): health returns 200 and `{ "ok": true }` from the browser.
+
+---
+
+## Stage 1 complete (2026-02-16)
+
+- **Migrations:** menu_items, menu_versions, tickets (via `npx tsx scripts/run-migrations.ts`).
+- **Models:** MenuItem, Ticket, MenuVersion.
+- **API:** GET/POST/PATCH/DELETE /api/menu; GET/POST /api/tickets, POST /api/tickets/:id/start, POST /api/tickets/:id/complete.
+- **Seed:** 16 menu items with stations, cook times, recommended batches (`npx tsx scripts/run-seed.ts`).
+- **Daypart helper:** breakfast, lunch, snack, dinner, late_snack (Downtime = snack + late_snack).
+
+---
+
+## Stage 2 complete (2026-02-16)
+
+- **Socket.IO:** Same process as HTTP; Ws service in `app/services/ws.ts`.
+- **Rooms:** stirfry, fryer, sides, grill. Client emits `join` with `['stirfry']` etc.
+- **Events:** ticket_created, timer_started, timer_ended, ticket_completed, menu_updated.
+- **Snapshot on connect:** { tickets, menuVersion, serverNowMs } for joined stations.
+- **Timer on server:** schedule() on ticket start; rescheduleOnBoot() for tickets in state=started.
+- **Vite proxy:** /socket.io → API for frontend WebSocket.
