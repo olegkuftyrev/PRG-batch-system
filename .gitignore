@@ -1,0 +1,12 @@
+# Env and secrets
+.env
+.env.local
+!.env.example
+
+# Dependencies
+node_modules/
+api/node_modules/
+web/node_modules/
+
+# Test logs (can be large)
+test-logs.txt

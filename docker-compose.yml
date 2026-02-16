@@ -1,0 +1,52 @@
+# PRG Batch System — Docker Compose
+# Covers: Postgres (DB) + API (Adonis). Run web (Vite) on host in dev for HMR.
+# Usage:
+#   docker compose up -d              # postgres + api (after api/ is scaffolded)
+#   docker compose up -d postgres      # DB only; run api + web on host
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: prg-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-prg}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-prg_secret}
+      POSTGRES_DB: ${POSTGRES_DB:-prg_batch}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-prg} -d ${POSTGRES_DB:-prg_batch}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: prg-api
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      HOST: 0.0.0.0
+      PORT: 3333
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: ${POSTGRES_USER:-prg}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-prg_secret}
+      DB_DATABASE: ${POSTGRES_DB:-prg_batch}
+    ports:
+      - "${API_PORT:-3333}:3333"
+    # Keep container running for dev (watch mode); for prod use command: node server.js
+    # volumes for live reload (optional): mount api/ so ace serve --watch works
+    # volumes:
+    #   - ./api:/app
+
+volumes:
+  postgres_data:

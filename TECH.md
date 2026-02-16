@@ -311,16 +311,48 @@ Use React Router (or similar): define these paths and render the corresponding s
 - **While developing:** Fine to run everything on your host locally (Adonis + Postgres + frontend). Tablets can point at your machine for testing.
 - **Production:** No local machine in production. Internet is always available for tablets and does not go down. Tablets connect **over the internet** to a **hosted server** (e.g. VPS, cloud, or your own server with a public or VPN reachable URL). Deploy the stack (Adonis + Postgres + static frontend) there with Docker Compose or PM2. Tablets run the PWA in kiosk mode and talk to that server.
 
+**Docker (what it covers):**
+
+- **`docker compose up`** runs **Postgres** and **API** (Adonis). The repo root has `docker-compose.yml`; `api/Dockerfile` builds the API image. The **web** (Vite) app is not in Docker in dev so you get fast HMR on the host; in production you build the web app and serve it from the API or a static server.
+- **Postgres:** image `postgres:16-alpine`, persistent volume `postgres_data`, healthcheck. Env: `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`, `POSTGRES_PORT` (see `.env.example`).
+- **API:** build from `api/`, depends on Postgres healthy, env for `DB_*` and `HOST`/`PORT`. Exposes `3333`; Socket.IO runs on the same process.
+- **Optional:** `docker compose up -d postgres` runs only Postgres so you can run the API and web on the host (same env; set `DB_HOST=127.0.0.1` for the API).
+
 ---
 
 ## Setup & run
 
-*(Add once stack is chosen: install deps, env vars, how to run dev and prod.)*
+- **Prerequisites:** Node 20+, pnpm or npm, Docker and Docker Compose.
+- **Env:** Copy `.env.example` to `.env` in the repo root; set `POSTGRES_*` and `DB_*` (and `API_PORT` if you change it). When API runs on host, use `DB_HOST=127.0.0.1`.
+- **Run (dev):**  
+  - Start DB (and optionally API) with Docker: `docker compose up -d` or `docker compose up -d postgres`.  
+  - From repo root: `cd api && npm install && node ace serve --watch`; in another terminal `cd web && npm install && npm run dev`.  
+  - Open the web app (e.g. http://localhost:5173); it proxies API to http://localhost:3333. Hit `GET /health` or `GET /api/health` to confirm the API.
+- **Run (prod):** On the server, `docker compose up -d` (Postgres + API). Build the web app and serve it (e.g. from API or nginx). Tablets point at the server URL.
 
-- **Prerequisites:** *TBD*
-- **Install:** *TBD*
-- **Run (dev):** *TBD* (e.g. run on host locally)
-- **Run (prod):** *TBD* (hosted server; tablets over internet)
+**How to test:**
+
+1. **Postgres only (works now, before Stage 0.1)**  
+   From repo root:
+   ```bash
+   cp .env.example .env
+   docker compose up -d postgres
+   docker compose exec postgres pg_isready -U prg -d prg_batch
+   ```
+   You should see `prg_batch:5432 - accepting connections`. Optional: `docker compose exec postgres psql -U prg -d prg_batch -c '\dt'` (empty list of tables is fine).
+
+2. **Postgres + API (after Adonis is in `api/`)**  
+   ```bash
+   docker compose up -d
+   curl -s http://localhost:3333/health
+   ```
+   Expect a 200 and a body like `{"ok":true}` or similar. Then `curl -s http://localhost:3333/api/health` if your health route lives under `/api`.
+
+3. **Full dev stack (after Stage 0)**  
+   Terminal 1: `docker compose up -d postgres` (or `docker compose up -d` to run API in Docker).  
+   Terminal 2: `cd api && node ace serve --watch`.  
+   Terminal 3: `cd web && npm run dev`.  
+   Open http://localhost:5173 and in another tab http://localhost:3333/health (or the URL your Vite proxy uses for the API). You should see the app and a successful health response.
 
 ---
 
