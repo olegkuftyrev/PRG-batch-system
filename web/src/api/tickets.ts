@@ -1,0 +1,75 @@
+const API = ''
+
+export type CreateTicketPayload = {
+  menuItemId: number
+  batchSize: string
+  source: 'foh' | 'drive_thru'
+}
+
+export type Ticket = {
+  id: number
+  station: string
+  stationSeq: number
+  state: string
+  source: string
+  itemTitleSnapshot: string
+  batchSizeSnapshot: string
+  menuVersionAtCall: number
+  startedAt?: number
+  durationSeconds?: number
+  durationSnapshot?: number
+}
+
+/** Normalize API/socket payload (snake_case or camelCase) to Ticket shape. */
+function normalizeTicket(raw: Record<string, unknown>): Ticket {
+  const startedAt = raw.startedAt ?? raw.started_at
+  const startedMs =
+    typeof startedAt === 'number' ? startedAt : typeof startedAt === 'string' ? new Date(startedAt).getTime() : undefined
+  return {
+    id: (raw.id as number) ?? 0,
+    station: (raw.station as string) ?? '',
+    stationSeq: (raw.stationSeq ?? raw.station_seq) as number,
+    state: (raw.state as string) ?? 'created',
+    source: (raw.source as string) ?? '',
+    itemTitleSnapshot: (raw.itemTitleSnapshot ?? raw.item_title_snapshot) as string,
+    batchSizeSnapshot: (raw.batchSizeSnapshot ?? raw.batch_size_snapshot) as string,
+    menuVersionAtCall: (raw.menuVersionAtCall ?? raw.menu_version_at_call) as number,
+    startedAt: startedMs,
+    durationSeconds: (raw.durationSeconds ?? raw.duration_seconds) as number | undefined,
+    durationSnapshot: (raw.durationSnapshot ?? raw.duration_snapshot) as number | undefined,
+  }
+}
+
+export async function createTicket(payload: CreateTicketPayload): Promise<Ticket> {
+  const r = await fetch(`${API}/api/tickets`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  })
+  if (!r.ok) {
+    const err = await r.json().catch(() => ({}))
+    throw new Error(err.error || 'Failed to create ticket')
+  }
+  const data = (await r.json()) as Record<string, unknown>
+  return normalizeTicket(data)
+}
+
+export async function startTicket(id: number): Promise<Ticket> {
+  const r = await fetch(`${API}/api/tickets/${id}/start`, { method: 'POST' })
+  if (!r.ok) {
+    const err = await r.json().catch(() => ({}))
+    throw new Error(err.error || 'Failed to start')
+  }
+  const data = (await r.json()) as Record<string, unknown>
+  return normalizeTicket(data)
+}
+
+export async function completeTicket(id: number): Promise<Ticket> {
+  const r = await fetch(`${API}/api/tickets/${id}/complete`, { method: 'POST' })
+  if (!r.ok) {
+    const err = await r.json().catch(() => ({}))
+    throw new Error(err.error || 'Failed to complete')
+  }
+  const data = (await r.json()) as Record<string, unknown>
+  return normalizeTicket(data)
+}

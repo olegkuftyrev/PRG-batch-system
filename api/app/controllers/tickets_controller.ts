@@ -40,6 +40,7 @@ export default class TicketsController {
       durationSnapshot: durationSeconds,
     })
     Ws.toStation(ticket.station, 'ticket_created', ticket.serialize())
+    Ws.toStation(ticket.source, 'ticket_created', ticket.serialize())
     response.status(201).json(ticket.serialize())
   }
 
@@ -57,11 +58,26 @@ export default class TicketsController {
     response.json(tickets.map((t) => t.serialize()))
   }
 
+  /** Max concurrent timers per station: Fryer=∞, Stir fry=2, Sides=1, Grill=1 */
+  static readonly TIMER_LIMITS: Record<string, number> = {
+    fryer: 999,
+    stirfry: 2,
+    sides: 1,
+    grill: 1,
+  }
+
   /** POST /api/tickets/:id/start — start timer */
   async start({ params, response }: HttpContext) {
     const ticket = await Ticket.findOrFail(params.id)
     if (ticket.state !== 'created') {
       return response.badRequest({ error: 'Ticket already started or completed' })
+    }
+    const limit = TicketsController.TIMER_LIMITS[ticket.station] ?? 999
+    const started = await Ticket.query()
+      .where('station', ticket.station)
+      .where('state', 'started')
+    if (started.length >= limit) {
+      return response.badRequest({ error: `Max ${limit} timer(s) for ${ticket.station}` })
     }
     ticket.state = 'started'
     ticket.startedAt = DateTime.now()
@@ -69,11 +85,9 @@ export default class TicketsController {
     await ticket.save()
     const startedAtMs = ticket.startedAt.toMillis()
     const durationMs = (ticket.durationSeconds ?? ticket.durationSnapshot) * 1000
-    Ws.toStation(ticket.station, 'timer_started', {
-      ticketId: ticket.id,
-      startedAt: startedAtMs,
-      durationSeconds: ticket.durationSeconds,
-    })
+    const timerPayload = { ticketId: ticket.id, startedAt: startedAtMs, durationSeconds: ticket.durationSeconds }
+    Ws.toStation(ticket.station, 'timer_started', timerPayload)
+    Ws.toStation(ticket.source, 'timer_started', timerPayload)
     schedule(ticket.id, startedAtMs, durationMs)
     response.json(ticket.serialize())
   }
@@ -87,6 +101,7 @@ export default class TicketsController {
     ticket.state = 'completed'
     await ticket.save()
     Ws.toStation(ticket.station, 'ticket_completed', ticket.serialize())
+    Ws.toStation(ticket.source, 'ticket_completed', ticket.serialize())
     response.json(ticket.serialize())
   }
 }

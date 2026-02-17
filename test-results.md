@@ -60,3 +60,42 @@
 - **Snapshot on connect:** { tickets, menuVersion, serverNowMs } for joined stations.
 - **Timer on server:** schedule() on ticket start; rescheduleOnBoot() for tickets in state=started.
 - **Vite proxy:** /socket.io → API for frontend WebSocket.
+
+---
+
+## Current known problems (2026-02-16)
+
+### 1. Timer not in sync
+- BOH timers do not stay in sync across screens/tablets.
+- Timers may drift or show different remaining times on different devices.
+- **Likely cause:** Client-side clock offset (`offsetMs`) may be wrong or not applied consistently; or server `serverNowMs` / snapshot timing issues.
+
+### 2. State only valid until refresh or screen switch
+- Many behaviors work only until you **refresh the page** or **move to a different screen/tablet**.
+- After refresh or screen change, state is wrong or out of date.
+- Examples: Call button becomes enabled when it should stay disabled; "My calls" may be empty or stale; timers may reset or disappear.
+- **Likely cause:** Reliance on local React state and socket reconnect/snapshot; snapshot may not arrive in time or room join may not match the current screen.
+
+### 3. FOH/Drive-thru Call button stays enabled after page refresh (2026-02-16)
+
+**Problem:** On FOH or Drive-thru, when you call food (e.g. R1), the item correctly becomes "Unavailable" with "Wait until timer completes". But after you **refresh the page**, the Call button becomes enabled again—you can call that same item even though the ticket is still active (waiting or timer running).
+
+**Root cause:** On refresh, the socket state starts empty (`tickets = []`, `completedTickets = []`, `snapshot = null`). The snapshot arrives asynchronously after the socket connects and emits `join`. There is a window where:
+- The snapshot has not arrived yet
+- `hasActiveCallForItem` returns false (no tickets)
+- The Call button is enabled
+
+**Attempted fixes (may still be present):**
+1. Disable all Call buttons with "Connecting…" until the first snapshot is received (`hasReceivedSnapshot = snapshot !== null`).
+2. Normalize snapshot tickets through `toTicket()` in `useSocket` so `itemTitleSnapshot`, `station`, `state` are always in the expected shape for matching.
+3. `hasActiveCallForItem` checks `tickets` and `completedTickets` from the snapshot; items with active tickets (state !== 'completed') stay disabled.
+
+**If the bug persists, verify:**
+- The snapshot is received before the user can interact (no race window).
+- Snapshot tickets include `itemTitleSnapshot`, `station`, `state` and match the menu item (same title + station).
+- The server snapshot for `foh`/`drive_thru` includes all non-completed tickets for that source (see `api/start/ws.ts` `buildSnapshot`).
+
+**Restarting the project:** The API Docker build currently fails due to TypeScript errors. For dev, use:
+- `docker compose up -d postgres` — DB only
+- `cd api && node ace serve` (or `npm run dev`)
+- `cd web && npm run dev`
