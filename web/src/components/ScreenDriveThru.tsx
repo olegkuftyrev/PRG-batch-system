@@ -11,7 +11,7 @@ import type { MenuItem } from '@/api/menu'
 function hasActiveCallForItem(myCalls: SnapshotTicket[], item: MenuItem): boolean {
   return myCalls.some(
     (t) =>
-      t.itemTitleSnapshot === `${item.title} (${item.code})` &&
+      (t.itemTitleSnapshot === item.title || t.itemTitleSnapshot === `${item.title} (${item.code})`) &&
       t.station === item.station &&
       t.state !== 'completed'
   )
@@ -21,7 +21,7 @@ function hasActiveCallForItem(myCalls: SnapshotTicket[], item: MenuItem): boolea
 function getActiveTicketForItem(myCalls: SnapshotTicket[], item: MenuItem): SnapshotTicket | undefined {
   return myCalls.find(
     (t) =>
-      t.itemTitleSnapshot === `${item.title} (${item.code})` &&
+      (t.itemTitleSnapshot === item.title || t.itemTitleSnapshot === `${item.title} (${item.code})`) &&
       t.station === item.station &&
       t.state !== 'completed'
   )
