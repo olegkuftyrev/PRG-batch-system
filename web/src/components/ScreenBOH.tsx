@@ -63,7 +63,7 @@ function BOHTicket({
       <Card className="border-0">
         <CardHeader className="py-2 px-3">
           <div className="flex items-center justify-between gap-2">
-            <span className="font-medium">#{ticket.seq} {ticket.itemTitleSnapshot} × {ticket.batchSizeSnapshot}</span>
+            <span className="font-medium">Batch {ticket.batchSizeSnapshot} - {ticket.itemTitleSnapshot} _{ticket.seq}</span>
             <Button size="sm" onClick={() => onStart(ticket.id)}>
               Start
             </Button>
@@ -78,7 +78,7 @@ function BOHTicket({
       <Card className={cn('border-0', isQualityCheck && 'ring-2 ring-orange-500')}>
         <CardHeader className="py-2 px-3">
           <div className="flex items-center justify-between gap-2">
-            <span className="font-medium">#{ticket.seq} {ticket.itemTitleSnapshot} × {ticket.batchSizeSnapshot}</span>
+            <span className="font-medium">Batch {ticket.batchSizeSnapshot} - {ticket.itemTitleSnapshot} _{ticket.seq}</span>
             {isQualityCheck ? (
               <span className="text-orange-600 font-semibold">Quality check</span>
             ) : (
@@ -183,7 +183,7 @@ export function ScreenBOH({ screen, socketState }: Props) {
           ) : (
             completedTickets.slice(0, 10).map((t) => (
               <div key={t.id} className="text-sm text-muted-foreground py-1">
-                #{t.seq} {t.itemTitleSnapshot} × {t.batchSizeSnapshot}
+                Batch {t.batchSizeSnapshot} - {t.itemTitleSnapshot} _{t.seq}
               </div>
             ))
           )}

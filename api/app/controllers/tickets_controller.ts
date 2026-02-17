@@ -35,7 +35,7 @@ export default class TicketsController {
       state: 'created',
       source: payload.source,
       menuVersionAtCall: menuVersion,
-      itemTitleSnapshot: menuItem.title,
+      itemTitleSnapshot: `${menuItem.title} (${menuItem.code})`,
       batchSizeSnapshot: payload.batchSize,
       durationSnapshot: durationSeconds,
     })
