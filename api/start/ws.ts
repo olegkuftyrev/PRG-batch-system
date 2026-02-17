@@ -87,11 +87,11 @@ app.ready(async () => {
       const snapshot = await buildSnapshot(valid)
       socket.emit('snapshot', snapshot)
     })
-  })
-
-  await rescheduleOnBoot()
-})
 
     socket.on('ping', () => {
       socket.emit('pong', { serverNowMs: Date.now() })
     })
+  })
+
+  await rescheduleOnBoot()
+})
