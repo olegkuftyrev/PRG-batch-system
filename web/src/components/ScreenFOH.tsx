@@ -11,7 +11,17 @@ import type { MenuItem } from '@/api/menu'
 function hasActiveCallForItem(myCalls: SnapshotTicket[], item: MenuItem): boolean {
   return myCalls.some(
     (t) =>
-      t.itemTitleSnapshot === item.title &&
+      t.itemTitleSnapshot === `${item.title} (${item.code})` &&
+      t.station === item.station &&
+      t.state !== 'completed'
+  )
+}
+
+/** Get the active ticket for this item (if any) */
+function getActiveTicketForItem(myCalls: SnapshotTicket[], item: MenuItem): SnapshotTicket | undefined {
+  return myCalls.find(
+    (t) =>
+      t.itemTitleSnapshot === `${item.title} (${item.code})` &&
       t.station === item.station &&
       t.state !== 'completed'
   )
@@ -97,32 +107,53 @@ export function ScreenFOH({ socketState }: Props) {
 
   const { section1, section2, section3 } = groupMenuByFohSections(menu.items)
 
+  function CallFoodItemWithTimer({ item }: { item: MenuItem }) {
+    const activeTicket = getActiveTicketForItem(myCalls, item)
+    const remaining = useRemainingSeconds(
+      activeTicket?.startedAt,
+      activeTicket?.durationSeconds ?? activeTicket?.durationSnapshot,
+      offsetMs
+    )
+    
+    const activeForItem = hasActiveCallForItem(myCalls, item)
+    const disabled = isInitializing || !hasReceivedSnapshot || activeForItem
+    
+    let disabledReason: string | undefined
+    if (isInitializing) {
+      disabledReason = "Loading…"
+    } else if (!hasReceivedSnapshot) {
+      disabledReason = 'Connecting…'
+    } else if (activeForItem && activeTicket) {
+      if (activeTicket.state === 'created') {
+        disabledReason = 'Waiting to start'
+      } else if (remaining !== null && remaining > 0) {
+        const mins = Math.floor(remaining / 60)
+        const secs = remaining % 60
+        disabledReason = `${mins}:${String(secs).padStart(2, '0')} remaining`
+      } else {
+        disabledReason = 'Quality check in progress'
+      }
+    }
+    
+    return (
+      <CallFoodItem
+        item={item}
+        onCall={handleCall}
+        disabled={disabled}
+        disabledReason={disabledReason}
+      />
+    )
+  }
+
   function Section({ title, items }: { title: string; items: typeof section1 }) {
     if (items.length === 0) return null
     return (
       <section>
         <h2 className="text-lg font-semibold mb-2">{title}</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
-          {items.map((item) => {
-            const activeForItem = hasActiveCallForItem(myCalls, item)
-            const disabled = isInitializing || !hasReceivedSnapshot || activeForItem
-            const disabledReason = isInitializing
-              ? "Loading…"
-              : !hasReceivedSnapshot
-              ? 'Connecting…'
-              : activeForItem
-                ? 'Wait until timer completes'
-                : undefined
-            return (
-              <CallFoodItem
-                key={item.id}
-                item={item}
-                onCall={handleCall}
-                disabled={disabled}
-                disabledReason={disabledReason}
-              />
-            )
-          })}
+          {items.map((item) => (
+            <CallFoodItemWithTimer key={item.id} item={item} />
+          ))}
         </div>
       </section>
     )
