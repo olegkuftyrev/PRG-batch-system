@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { CallFoodItem } from '@/components/CallFoodItem'
-import { useMenu, groupMenuByFohSections } from '@/hooks/useMenu'
+import { useMenu, groupMenuByDriveThruSections } from '@/hooks/useMenu'
 import { createTicket, type Ticket } from '@/api/tickets'
 import { useRemainingSeconds } from '@/hooks/useRemainingSeconds'
 import type { SocketState, SnapshotTicket } from '@/hooks/useSocket'
@@ -47,7 +47,7 @@ function MyCallRow({ ticket, offsetMs }: { ticket: SnapshotTicket; offsetMs: num
     variant = 'outline'
   } else if (ticket.state === 'started') {
     status = isQualityCheck ? 'Quality check' : `${Math.floor((remaining ?? 0) / 60)}:${String((remaining ?? 0) % 60).padStart(2, '0')}`
-    variant = isQualityCheck ? 'default' : 'default'
+    variant = 'default'
   }
 
   return (
@@ -64,11 +64,11 @@ function MyCallRow({ ticket, offsetMs }: { ticket: SnapshotTicket; offsetMs: num
 
 type Props = { socketState: SocketState }
 
-export function ScreenFOH({ socketState }: Props) {
+export function ScreenDriveThru({ socketState }: Props) {
   const { menu, loading, error } = useMenu(socketState.menuVersion)
   const [lastError, setLastError] = useState<string | null>(null)
   const [optimisticTickets, setOptimisticTickets] = useState<SnapshotTicket[]>([])
-  const { tickets, completedTickets, offsetMs, snapshot, isInitializing } = socketState
+  const { tickets, completedTickets, offsetMs, snapshot } = socketState
   const hasReceivedSnapshot = snapshot !== null
 
   const byId = new Map<number, SnapshotTicket>()
@@ -83,7 +83,7 @@ export function ScreenFOH({ socketState }: Props) {
       const ticket = await createTicket({
         menuItemId,
         batchSize,
-        source: 'foh',
+        source: 'drive_thru',
       })
       setOptimisticTickets((prev) => [toSnapshotTicket(ticket), ...prev].slice(0, 20))
     } catch (e) {
@@ -95,9 +95,9 @@ export function ScreenFOH({ socketState }: Props) {
   if (error) return <div className="p-6 text-destructive">{error}</div>
   if (!menu) return null
 
-  const { section1, section2, section3 } = groupMenuByFohSections(menu.items)
+  const { section1, section2, section3 } = groupMenuByDriveThruSections(menu.items)
 
-  function Section({ title, items }: { title: string; items: typeof section1 }) {
+  function Section({ title, items }: { title: string; items: MenuItem[] }) {
     if (items.length === 0) return null
     return (
       <section>
@@ -105,10 +105,8 @@ export function ScreenFOH({ socketState }: Props) {
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
           {items.map((item) => {
             const activeForItem = hasActiveCallForItem(myCalls, item)
-            const disabled = isInitializing || !hasReceivedSnapshot || activeForItem
-            const disabledReason = isInitializing
-              ? "Loading…"
-              : !hasReceivedSnapshot
+            const disabled = !hasReceivedSnapshot || activeForItem
+            const disabledReason = !hasReceivedSnapshot
               ? 'Connecting…'
               : activeForItem
                 ? 'Wait until timer completes'

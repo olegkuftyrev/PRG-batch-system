@@ -68,7 +68,7 @@ export function ScreenFOH({ socketState }: Props) {
   const { menu, loading, error } = useMenu(socketState.menuVersion)
   const [lastError, setLastError] = useState<string | null>(null)
   const [optimisticTickets, setOptimisticTickets] = useState<SnapshotTicket[]>([])
-  const { tickets, completedTickets, offsetMs, snapshot, isInitializing } = socketState
+  const { tickets, completedTickets, offsetMs, snapshot } = socketState
   const hasReceivedSnapshot = snapshot !== null
 
   const byId = new Map<number, SnapshotTicket>()
@@ -105,10 +105,8 @@ export function ScreenFOH({ socketState }: Props) {
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
           {items.map((item) => {
             const activeForItem = hasActiveCallForItem(myCalls, item)
-            const disabled = isInitializing || !hasReceivedSnapshot || activeForItem
-            const disabledReason = isInitializing
-              ? "Loading…"
-              : !hasReceivedSnapshot
+            const disabled = !hasReceivedSnapshot || activeForItem
+            const disabledReason = !hasReceivedSnapshot
               ? 'Connecting…'
               : activeForItem
                 ? 'Wait until timer completes'

@@ -43,7 +43,7 @@ app.ready(async () => {
         .whereNot('state', 'completed')
         .orderBy('station_day', 'desc')
         .orderBy('station_seq', 'desc')
-      tickets = byStation.map(ticketToSnapshot)
+      tickets = [...tickets, ...byStation.map(ticketToSnapshot)]
     }
 
     if (sourceRooms.length > 0) {
@@ -52,7 +52,12 @@ app.ready(async () => {
         .whereNot('state', 'completed')
         .orderBy('station_day', 'desc')
         .orderBy('station_seq', 'desc')
-      tickets = bySource.map(ticketToSnapshot)
+      
+      const ticketMap = new Map<number, ReturnType<typeof ticketToSnapshot>>()
+      for (const t of tickets) ticketMap.set(t.id, t)
+      for (const t of bySource.map(ticketToSnapshot)) ticketMap.set(t.id, t)
+      tickets = Array.from(ticketMap.values())
+      
       const completed = await Ticket.query()
         .whereIn('source', sourceRooms)
         .where('state', 'completed')
@@ -86,3 +91,7 @@ app.ready(async () => {
 
   await rescheduleOnBoot()
 })
+
+    socket.on('ping', () => {
+      socket.emit('pong', { serverNowMs: Date.now() })
+    })

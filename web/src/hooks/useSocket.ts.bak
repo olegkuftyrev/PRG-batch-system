@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
 import { io } from 'socket.io-client'
-import { useServerTime } from './useServerTime'
 import type { ScreenId } from '@/types/screen'
 
 const ROOMS_BY_SCREEN: Record<ScreenId, string[]> = {
@@ -36,13 +35,13 @@ export type Snapshot = {
 export type SocketState = {
   connected: boolean
   offsetMs: number
-  isInitializing: boolean
   snapshot: Snapshot | null
   tickets: SnapshotTicket[]
   completedTickets: SnapshotTicket[]
   menuVersion: number
 }
 
+/** Normalize socket/API payload (snake_case or camelCase) to SnapshotTicket. */
 function toTicket(t: unknown): SnapshotTicket {
   const o = t as Record<string, unknown>
   const startedAt = o.startedAt ?? o.started_at
@@ -69,19 +68,12 @@ export function useSocket(screen: ScreenId) {
   const [state, setState] = useState<SocketState>({
     connected: false,
     offsetMs: 0,
-    isInitializing: true,
     snapshot: null,
     tickets: [],
     completedTickets: [],
     menuVersion: 0,
   })
   const socketRef = useRef<ReturnType<typeof io> | null>(null)
-  
-  const calibratedOffset = useServerTime(socketRef.current, state.connected)
-
-  useEffect(() => {
-    setState((s) => ({ ...s, offsetMs: calibratedOffset }))
-  }, [calibratedOffset])
 
   useEffect(() => {
     const socket = io({ path: '/socket.io' })
@@ -96,13 +88,14 @@ export function useSocket(screen: ScreenId) {
     })
 
     socket.on('snapshot', (data: Snapshot) => {
+      const offsetMs = data.serverNowMs - Date.now()
       const rawTickets = data.tickets ?? []
       const rawCompleted = data.completedTickets ?? []
       const tickets = rawTickets.map((t) => toTicket(t))
       const completedTickets = rawCompleted.map((t) => toTicket(t))
       setState((s) => ({
         ...s,
-        isInitializing: false,
+        offsetMs,
         snapshot: { ...data, tickets, completedTickets },
         tickets,
         completedTickets,
@@ -160,15 +153,6 @@ export function useSocket(screen: ScreenId) {
   useEffect(() => {
     const socket = socketRef.current
     if (!socket?.connected) return
-    
-    setState((s) => ({
-      ...s,
-      isInitializing: true,
-      snapshot: null,
-      tickets: [],
-      completedTickets: [],
-    }))
-    
     socket.emit('join', roomsRef.current)
   }, [screen, state.connected])
 
