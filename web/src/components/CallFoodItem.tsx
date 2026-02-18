@@ -37,45 +37,49 @@ export function CallFoodItem({ item, onCall, disabled = false, disabledReason }:
   }
 
   return (
-    <Card className="flex flex-col border-0">
-      <CardHeader className="pb-2">
-        <div className="flex items-center gap-2">
-          <Badge variant="secondary">{item.code}</Badge>
-          <CardTitle className="text-base font-medium leading-tight">
+    <Card className="flex flex-col">
+      <CardHeader className="pb-3">
+        <div className="flex items-center gap-3">
+          <div className="bg-green-500 text-white font-bold text-sm px-3 py-1 rounded">
+            {item.code}
+          </div>
+          <CardTitle className="text-base font-semibold uppercase tracking-wide">
             {item.title}
           </CardTitle>
         </div>
       </CardHeader>
-      <CardContent className="flex-1 pb-2">
-        <div className="flex flex-col gap-1">
+      <CardContent className="flex-1 pb-3 pt-0">
+        <div className="flex flex-col">
           {item.batchSizes.map((size) => (
-            <div key={size} className="relative">
-              <Button
-                variant={batchSize === size ? 'default' : 'outline'}
-                size="sm"
-                className="w-full justify-start"
-                onClick={() => setBatchSize(size)}
-                disabled={disabled}
-              >
-                Batch {size}
-              </Button>
+            <button
+              key={size}
+              className={`
+                relative flex items-center justify-between py-3 px-4 border-b border-border last:border-0
+                transition-colors
+                ${batchSize === size ? 'bg-black text-white' : 'bg-white hover:bg-gray-50'}
+                ${disabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'}
+              `}
+              onClick={() => !disabled && setBatchSize(size)}
+              disabled={disabled}
+            >
+              <span className="font-semibold text-sm">BATCH {size}</span>
               {size === recommendedBatch && (
                 <Badge
-                  className="absolute -top-1 -right-1 shrink-0 text-[10px] font-normal px-1.5 py-0 border-0 bg-orange-100 text-orange-800 dark:bg-orange-900/50 dark:text-orange-200"
+                  className="shrink-0 text-[10px] font-normal px-2 py-0.5 border-0 bg-orange-100 text-orange-800"
                 >
                   Recommended
                 </Badge>
               )}
-            </div>
+            </button>
           ))}
         </div>
       </CardContent>
-      <CardFooter className="pt-0 flex flex-col gap-1">
+      <CardFooter className="pt-0 pb-4 px-4 flex flex-col gap-2">
         {disabledReason && (
-          <p className="text-xs text-muted-foreground">{disabledReason}</p>
+          <p className="text-xs text-muted-foreground text-center">{disabledReason}</p>
         )}
         <Button
-          className="w-full"
+          className="w-full h-12 text-base font-semibold"
           onClick={handleCall}
           disabled={loading || disabled}
         >
