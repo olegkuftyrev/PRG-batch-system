@@ -1,0 +1,48 @@
+name: prg-batch-system
+region: sfo
+
+services:
+  - name: api
+    github:
+      repo: olegkuftyrev/PRG-batch-system
+      branch: main
+      deploy_on_push: true
+    source_dir: api
+    dockerfile_path: api/Dockerfile
+    http_port: 3333
+    instance_count: 1
+    instance_size_slug: basic-xxs
+    routes:
+      - path: /api
+      - path: /health
+      - path: /socket.io
+    envs:
+      - key: NODE_ENV
+        value: production
+      - key: HOST
+        value: 0.0.0.0
+      - key: PORT
+        value: "3333"
+      - key: DB_HOST
+        value: db-postgresql-sfo2-61933-do-user-25007663-0.j.db.ondigitalocean.com
+      - key: DB_PORT
+        value: "25060"
+      - key: DB_USER
+        value: doadmin
+      - key: DB_DATABASE
+        value: defaultdb
+      - key: DB_SSL
+        value: "true"
+      # DB_PASSWORD will be set as encrypted secret in App Platform UI
+
+static_sites:
+  - name: web
+    github:
+      repo: olegkuftyrev/PRG-batch-system
+      branch: main
+      deploy_on_push: true
+    source_dir: web
+    build_command: npm run build
+    output_dir: dist
+    routes:
+      - path: /

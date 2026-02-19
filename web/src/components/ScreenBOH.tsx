@@ -1,0 +1,276 @@
+import { useRef, useEffect } from 'react'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { startTicket, completeTicket } from '@/api/tickets'
+import type { SnapshotTicket, SocketState } from '@/hooks/useSocket'
+import { useRemainingSeconds } from '@/hooks/useRemainingSeconds'
+import type { ScreenId } from '@/types/screen'
+import { cn } from '@/lib/utils'
+
+const TITLE_BY_SCREEN: Record<ScreenId, string> = {
+  1: '',
+  2: '',
+  3: 'Stir fry',
+  4: 'Fryer',
+  5: 'Sides + Grill',
+  menu: '',
+}
+
+/** Simple beep via Web Audio */
+function playQualityCheckSound() {
+  try {
+    const ctx = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)()
+    const osc = ctx.createOscillator()
+    const gain = ctx.createGain()
+    osc.connect(gain)
+    gain.connect(ctx.destination)
+    osc.frequency.value = 880
+    osc.type = 'sine'
+    gain.gain.setValueAtTime(0.3, ctx.currentTime)
+    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3)
+    osc.start(ctx.currentTime)
+    osc.stop(ctx.currentTime + 0.3)
+  } catch {
+    // Ignore audio errors
+  }
+}
+
+/** Parse code and title from itemTitleSnapshot like "Super Greens (V1)" */
+function parseItemSnapshot(snapshot: string): { code: string; title: string } {
+  const match = snapshot.match(/^(.+?)\s*\(([^)]+)\)$/)
+  if (match) {
+    return { title: match[1].trim(), code: match[2].trim() }
+  }
+  return { title: snapshot, code: '' }
+}
+
+function BatchRow({
+  ticket,
+  offsetMs,
+  onStart,
+  onComplete,
+  playedSoundRef,
+}: {
+  ticket: SnapshotTicket
+  offsetMs: number
+  onStart: (id: number) => void
+  onComplete: (id: number) => void
+  playedSoundRef: React.MutableRefObject<Set<number>>
+}) {
+  const remaining = useRemainingSeconds(ticket.startedAt, ticket.durationSeconds ?? ticket.durationSnapshot, offsetMs)
+  const isQualityCheck = remaining !== null && remaining <= 0
+
+  useEffect(() => {
+    if (isQualityCheck && !playedSoundRef.current.has(ticket.id)) {
+      playedSoundRef.current.add(ticket.id)
+      playQualityCheckSound()
+    }
+  }, [isQualityCheck, ticket.id, playedSoundRef])
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60)
+    const secs = seconds % 60
+    return `${mins} MIN ${secs} SEC`
+  }
+
+  if (ticket.state === 'created') {
+    return (
+      <div className="flex items-center justify-between py-3 px-4 border-b border-border last:border-0">
+        <span className="font-semibold text-sm">BATCH {ticket.batchSizeSnapshot}</span>
+        <Button size="sm" onClick={() => onStart(ticket.id)}>
+          Start
+        </Button>
+      </div>
+    )
+  }
+
+  if (ticket.state === 'started') {
+    return (
+      <div className={cn(
+        "flex items-center justify-between py-3 px-4 border-b border-border last:border-0",
+        isQualityCheck && "bg-orange-50"
+      )}>
+        <div className="flex items-center gap-3">
+          <span className="font-semibold text-sm">BATCH {ticket.batchSizeSnapshot}</span>
+          {isQualityCheck ? (
+            <span className="text-orange-600 font-semibold text-xs">QUALITY CHECK</span>
+          ) : (
+            <span className="text-muted-foreground text-xs tabular-nums">{formatTime(remaining ?? 0)}</span>
+          )}
+        </div>
+        <Button size="sm" variant={isQualityCheck ? "default" : "outline"} onClick={() => onComplete(ticket.id)}>
+          Complete
+        </Button>
+      </div>
+    )
+  }
+
+  return null
+}
+
+function ItemCard({
+  code,
+  title,
+  tickets,
+  offsetMs,
+  onStart,
+  onComplete,
+  playedSoundRef,
+}: {
+  code: string
+  title: string
+  tickets: SnapshotTicket[]
+  offsetMs: number
+  onStart: (id: number) => void
+  onComplete: (id: number) => void
+  playedSoundRef: React.MutableRefObject<Set<number>>
+}) {
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <div className="flex items-center gap-3">
+          <div className="bg-green-500 text-white font-bold text-sm px-3 py-1 rounded">
+            {code}
+          </div>
+          <h3 className="font-semibold text-lg uppercase tracking-wide">{title}</h3>
+        </div>
+      </CardHeader>
+      <CardContent className="p-0">
+        {tickets.map((ticket) => (
+          <BatchRow
+            key={ticket.id}
+            ticket={ticket}
+            offsetMs={offsetMs}
+            onStart={onStart}
+            onComplete={onComplete}
+            playedSoundRef={playedSoundRef}
+          />
+        ))}
+      </CardContent>
+    </Card>
+  )
+}
+
+type Props = {
+  screen: ScreenId
+  socketState: SocketState
+}
+
+export function ScreenBOH({ screen, socketState }: Props) {
+  const { tickets, completedTickets, offsetMs } = socketState
+  const playedSoundRef = useRef<Set<number>>(new Set())
+
+  const handleStart = async (id: number) => {
+    try {
+      await startTicket(id)
+    } catch (e) {
+      console.error(e)
+      alert(e instanceof Error ? e.message : 'Failed to start')
+    }
+  }
+
+  const handleComplete = async (id: number) => {
+    try {
+      await completeTicket(id)
+    } catch (e) {
+      console.error(e)
+      alert(e instanceof Error ? e.message : 'Failed to complete')
+    }
+  }
+
+  // Group tickets by item (code + title)
+  const groupByItem = (ticketList: SnapshotTicket[]) => {
+    const groups = new Map<string, { code: string; title: string; tickets: SnapshotTicket[] }>()
+    
+    for (const ticket of ticketList) {
+      const { code, title } = parseItemSnapshot(ticket.itemTitleSnapshot ?? '')
+      const key = `${code}|${title}`
+      
+      if (!groups.has(key)) {
+        groups.set(key, { code, title, tickets: [] })
+      }
+      groups.get(key)!.tickets.push(ticket)
+    }
+    
+    // Sort tickets within each group by seq desc
+    for (const group of groups.values()) {
+      group.tickets.sort((a, b) => b.seq - a.seq)
+    }
+    
+    return Array.from(groups.values())
+  }
+
+  const waiting = tickets.filter((t) => t.state === 'created')
+  const inProgress = tickets.filter((t) => t.state === 'started')
+  
+  const waitingGroups = groupByItem(waiting)
+  const inProgressGroups = groupByItem(inProgress)
+
+  const title = TITLE_BY_SCREEN[screen]
+
+  return (
+    <div className="flex-1 overflow-auto p-4 flex flex-col gap-4">
+      {title && (
+        <h1 className="text-xl font-semibold">{title}</h1>
+      )}
+      <section>
+        <h2 className="text-lg font-semibold mb-2">Waiting</h2>
+        <div className="flex flex-col gap-3">
+          {waitingGroups.length === 0 ? (
+            <p className="text-muted-foreground text-sm">No tickets waiting</p>
+          ) : (
+            waitingGroups.map((group) => (
+              <ItemCard
+                key={`${group.code}-${group.title}`}
+                code={group.code}
+                title={group.title}
+                tickets={group.tickets}
+                offsetMs={offsetMs}
+                onStart={handleStart}
+                onComplete={handleComplete}
+                playedSoundRef={playedSoundRef}
+              />
+            ))
+          )}
+        </div>
+      </section>
+
+      <section>
+        <h2 className="text-lg font-semibold mb-2">In progress</h2>
+        <div className="flex flex-col gap-3">
+          {inProgressGroups.length === 0 ? (
+            <p className="text-muted-foreground text-sm">No timers running</p>
+          ) : (
+            inProgressGroups.map((group) => (
+              <ItemCard
+                key={`${group.code}-${group.title}`}
+                code={group.code}
+                title={group.title}
+                tickets={group.tickets}
+                offsetMs={offsetMs}
+                onStart={handleStart}
+                onComplete={handleComplete}
+                playedSoundRef={playedSoundRef}
+              />
+            ))
+          )}
+        </div>
+      </section>
+
+      <section className="mt-auto pt-4 border-t">
+        <h2 className="text-lg font-semibold mb-2">Completed</h2>
+        <div className="flex flex-col gap-1">
+          {completedTickets.length === 0 ? (
+            <p className="text-muted-foreground text-sm">No completed tickets</p>
+          ) : (
+            completedTickets.slice(0, 10).map((t) => (
+              <div key={t.id} className="text-sm text-muted-foreground py-1">
+                Batch {t.batchSizeSnapshot} - {t.itemTitleSnapshot} _{t.seq}
+              </div>
+            ))
+          )}
+        </div>
+      </section>
+    </div>
+  )
+}

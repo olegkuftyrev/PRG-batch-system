@@ -1,0 +1,45 @@
+import { DateTime } from 'luxon'
+import { BaseModel, column } from '@adonisjs/lucid/orm'
+
+export default class MenuItem extends BaseModel {
+  static table = 'menu_items'
+
+  @column({ isPrimary: true })
+  declare id: number
+
+  @column()
+  declare code: string
+
+  @column()
+  declare title: string
+
+  @column()
+  declare station: 'stirfry' | 'fryer' | 'sides' | 'grill'
+
+  @column({
+    prepare: (v: Record<string, number>) => JSON.stringify(v),
+    consume: (v: string) => (typeof v === 'string' ? JSON.parse(v) : v) as Record<string, number>,
+  })
+  declare cookTimes: Record<string, number>
+
+  @column({
+    prepare: (v: string[]) => JSON.stringify(v),
+    consume: (v: string) => (typeof v === 'string' ? JSON.parse(v) : v) as string[],
+  })
+  declare batchSizes: string[]
+
+  @column()
+  declare enabled: boolean
+
+  @column({
+    prepare: (v: Record<string, string>) => JSON.stringify(v),
+    consume: (v: string) => (typeof v === 'string' ? JSON.parse(v) : v) as Record<string, string>,
+  })
+  declare recommendedBatch: Record<string, string>
+
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime
+}
