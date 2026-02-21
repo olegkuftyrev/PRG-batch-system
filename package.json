@@ -1,0 +1,12 @@
+{
+  "name": "prg-batch-system",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "api",
+    "web"
+  ],
+  "scripts": {
+    "build:web": "cd web && npm ci && npm run build"
+  }
+}
