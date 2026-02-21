@@ -84,7 +84,8 @@ export function useSocket(screen: ScreenId) {
   }, [calibratedOffset])
 
   useEffect(() => {
-    const socket = io({ path: '/socket.io' })
+    const apiUrl = import.meta.env.VITE_API_URL || ''
+    const socket = io(apiUrl, { path: '/socket.io' })
     socketRef.current = socket
 
     socket.on('connect', () => {
