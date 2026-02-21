@@ -1,5 +1,9 @@
 # Droplet Deployment Guide
 
+> **✅ DEPLOYED**: This application is currently running on DigitalOcean Droplet at http://134.199.223.99:8080
+> 
+> See [DEPLOYMENT.md](./DEPLOYMENT.md) for full production deployment details.
+
 ## Prerequisites
 
 1. **Create a DigitalOcean Droplet**:
