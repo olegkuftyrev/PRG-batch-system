@@ -22,5 +22,5 @@ const loggerConfig = defineConfig({
 export default loggerConfig
 
 declare module '@adonisjs/core/types' {
-  export interface LoggersList extends InferLoggers {}
+  export interface LoggersList extends InferLoggers<typeof loggerConfig> {}
 }

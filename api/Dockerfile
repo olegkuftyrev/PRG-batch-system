@@ -16,7 +16,11 @@ COPY . .
 # Build for production (output in build/)
 RUN npm run build
 
+# Copy and prepare startup script
+COPY scripts/start.sh ./scripts/
+RUN chmod +x ./scripts/start.sh
+
 EXPOSE 3333
 
-# Run built server
-CMD ["node", "build/bin/server.js"]
+# Run startup script (migrations + server)
+CMD ["./scripts/start.sh"]

@@ -12,6 +12,7 @@ const defaults: Record<string, string | number> = {
   DB_USER: 'prg',
   DB_PASSWORD: 'prg_secret',
   DB_DATABASE: 'prg_batch',
+  DB_SSL: 'false',
 }
 
 function get(key: string, defaultValue?: string | number): string | number {
