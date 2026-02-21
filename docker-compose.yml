@@ -1,8 +1,8 @@
 # PRG Batch System — Docker Compose
-# Covers: Postgres (DB) + API (Adonis). Run web (Vite) on host in dev for HMR.
+# Production deployment with Postgres, API, and Web frontend
 # Usage:
-#   docker compose up -d              # postgres + api (after api/ is scaffolded)
-#   docker compose up -d postgres      # DB only; run api + web on host
+#   docker compose up -d              # Run all services in production
+#   docker compose up -d postgres      # DB only; run api + web on host for dev
 
 services:
   postgres:
@@ -33,7 +33,8 @@ services:
       postgres:
         condition: service_healthy
     environment:
-      NODE_ENV: ${NODE_ENV:-development}
+      APP_KEY: ${APP_KEY:-prg-batch-secret-change-in-production}
+      NODE_ENV: ${NODE_ENV:-production}
       HOST: 0.0.0.0
       PORT: 3333
       DB_HOST: postgres
@@ -41,12 +42,20 @@ services:
       DB_USER: ${POSTGRES_USER:-prg}
       DB_PASSWORD: ${POSTGRES_PASSWORD:-prg_secret}
       DB_DATABASE: ${POSTGRES_DB:-prg_batch}
+      DB_SSL: "false"
     ports:
       - "${API_PORT:-3333}:3333"
-    # Keep container running for dev (watch mode); for prod use command: node server.js
-    # volumes for live reload (optional): mount api/ so ace serve --watch works
-    # volumes:
-    #   - ./api:/app
+
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    container_name: prg-web
+    restart: unless-stopped
+    ports:
+      - "${WEB_PORT:-8080}:8080"
+    depends_on:
+      - api
 
 volumes:
   postgres_data:
