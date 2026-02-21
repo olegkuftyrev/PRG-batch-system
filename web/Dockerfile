@@ -1,6 +1,9 @@
 # Build stage
 FROM node:22-alpine AS builder
 
+# Build argument for API URL
+ARG VITE_API_URL=http://localhost:3333
+
 WORKDIR /app
 
 # Copy package files
@@ -10,7 +13,8 @@ RUN npm ci
 # Copy source
 COPY . .
 
-# Build static files
+# Build static files with environment variable
+ENV VITE_API_URL=${VITE_API_URL}
 RUN npm run build
 
 # Production stage - serve with nginx
