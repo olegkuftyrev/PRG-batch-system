@@ -259,21 +259,43 @@ Picture: [📷 Upload Image]
 
 ---
 
-### 2.3.2 Timer Display on Buttons
+### 2.3.2 Progress Bar Timer in Call Button
 **Priority**: High
 
 **Requirements:**
 - [ ] Replace "Unavailable" text with remaining timer countdown
 - [ ] Show format: "5:30" or "2:15" (minutes:seconds)
 - [ ] Update countdown in real-time every second
-- [ ] Button remains disabled but shows time remaining
-- [ ] Visual styling to indicate cooking in progress
-- [ ] When timer reaches 0:00, change to "Call" state
+- [ ] **Animated progress bar inside button**
+- [ ] Color gradient based on cooking progress:
+  - **0-33% (Red)**: Just started cooking
+  - **34-66% (Orange/Yellow)**: Halfway through
+  - **67-99% (Yellow-Green)**: Almost ready
+  - **100% (Green)**: Ready / Quality check
+- [ ] Progress bar fills from left to right as time counts down
+- [ ] Button remains disabled until timer reaches 100%
 
-**Example:**
+**Visual Example:**
 ```
-Before: [Unavailable] (grayed out)
-After:  [3:45] (shows remaining time)
+Just started (5:00 remaining, 0%):
+┌─────────────────────────┐
+│ ░░░░░░░░░░░░░░░░░ 5:00  │ ← Empty, Red background
+└─────────────────────────┘
+
+Halfway (2:30 remaining, 50%):
+┌─────────────────────────┐
+│ ████████░░░░░░░░ 2:30   │ ← Orange progress
+└─────────────────────────┘
+
+Almost done (0:30 remaining, 90%):
+┌─────────────────────────┐
+│ ██████████████░ 0:30    │ ← Yellow-green progress
+└─────────────────────────┘
+
+Ready (100%):
+┌─────────────────────────┐
+│ █████████████████ Call  │ ← Full green, enabled
+└─────────────────────────┘
 ```
 
 ---
