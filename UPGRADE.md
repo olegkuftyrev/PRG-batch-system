@@ -126,18 +126,20 @@ Optimize all screens for **iPad displays** in landscape orientation (1194x834 re
 
 **Requirements:**
 - [ ] Each batch size can have its own cooking time
+- [ ] Batch sizes are numeric: 0.5, 1, 2, 3, 4, etc. (user-configurable)
 - [ ] Edit interface: list of batch sizes with individual time inputs
-- [ ] Example: Small (5 min), Medium (8 min), Large (12 min)
 - [ ] Validate times are positive numbers
+- [ ] Support decimal batch sizes (e.g., 0.5 = half batch)
 - [ ] Display batch-specific times in UI
 - [ ] Default to shared time if not specified per batch
 
 **Example UI:**
 ```
 Batch Sizes & Cook Times:
-- Small:  [ 5 ] minutes
-- Medium: [ 8 ] minutes  
-- Large:  [ 12 ] minutes
+- 0.5: [ 3 ] minutes
+- 1:   [ 5 ] minutes
+- 2:   [ 8 ] minutes  
+- 3:   [ 12 ] minutes
 ```
 
 ---
@@ -193,7 +195,8 @@ After:  [3:45] (shows remaining time)
 
 **Requirements:**
 - [ ] Replace batch size buttons with 3-position toggle switch
-- [ ] Three positions: Small / Medium / Large (or Half / Full / Double)
+- [ ] Display numeric batch sizes (e.g., 1, 2, 3 or 0.5, 1, 2)
+- [ ] Three positions based on menu item's configured batch sizes
 - [ ] Visual indicator for selected batch size
 - [ ] Touch-friendly toggle control
 - [ ] Smooth transition animation between positions
@@ -201,8 +204,13 @@ After:  [3:45] (shows remaining time)
 
 **Example UI:**
 ```
-Batch Size: [ S ] [ M ] [ L ]
+Batch Size: [ 1 ] [ 2 ] [ 3 ]
             ◄─────●─────►
+            
+or
+
+Batch Size: [ 0.5 ] [ 1 ] [ 2 ]
+            ◄───────●───────►
 ```
 
 ---
