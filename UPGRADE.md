@@ -76,9 +76,45 @@ Optimize all screens for **iPad displays** in landscape orientation (1194x834 re
 
 ---
 
-## 2.2 Menu Items
+## 2.2 Menu Management
 
-### 2.2.1 Optional Pictures
+### 2.2.1 Category Grouping by Station
+**Priority**: High
+
+**Requirements:**
+- [ ] Group menu items by Station category
+- [ ] Display sections: Stirfry, Fryer, Sides/Grill, etc.
+- [ ] Collapsable/expandable station sections
+- [ ] Visual separation between stations
+- [ ] Sort items within each station
+
+**Example UI:**
+```
+▼ Stirfry Station (6 items)
+  [Menu items for Stirfry]
+
+▼ Fryer Station (4 items)
+  [Menu items for Fryer]
+
+▼ Sides/Grill Station (3 items)
+  [Menu items for Sides/Grill]
+```
+
+---
+
+### 2.2.2 Toggle for Enabled/Disabled
+**Priority**: High
+
+**Requirements:**
+- [ ] Replace checkbox/text with toggle switch
+- [ ] Visual states: ON (enabled) / OFF (disabled)
+- [ ] Instant toggle without form submission
+- [ ] Color-coded: green for ON, gray for OFF
+- [ ] Touch-friendly toggle size (min 44x44px)
+
+---
+
+### 2.2.3 Optional Pictures
 **Priority**: Medium
 
 **Requirements:**
