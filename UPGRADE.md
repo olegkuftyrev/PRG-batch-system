@@ -447,6 +447,195 @@ Expired (10+ min):
 
 ---
 
+## Implementation Plan
+
+### Phase 1: Database & Backend (Foundation)
+**Order**: Must be completed first
+
+1. **Database Schema Updates**
+   - Add `color` field to `menu_items` table (enum: blue, red, green, orange)
+   - Add `image_url` field to `menu_items` table (nullable string)
+   - Add `hold_time` field to `menu_items` table (integer, default 10 minutes)
+   - Migration script for existing data
+
+2. **Backend API Updates**
+   - Image upload endpoint (`POST /api/menu-items/:id/image`)
+   - Image storage setup (local filesystem or cloud)
+   - Image optimization/resize on upload
+   - Update menu item CRUD to include color and image_url
+   - Update ticket creation to support batch-specific cook times
+
+3. **Batch Size Cook Times**
+   - Update database schema to store cook times per batch size
+   - Modify `cook_times` field structure (currently flat, needs nested)
+   - API endpoint updates for batch-specific times
+
+---
+
+### Phase 2: Shared Components & Layout
+**Order**: Build reusable components before screen-specific features
+
+4. **Global Layout & Navigation**
+   - Implement hidden slide-down navigation
+   - Create thin "menu" toggle button
+   - Add slide animation
+   - Apply to all screens
+   - Set viewport meta tag for iPad (1194x834)
+
+5. **Reusable Components**
+   - **Toggle Switch Component**: For enabled/disabled and batch sizes
+   - **Progress Bar Component**: For timer visualization
+   - **Image Placeholder Component**: "Please upload picture" fallback
+   - **Color Badge Component**: Display color indicators
+   - **Collapsable Section Component**: For hourly calls and completed items
+   - **shadcn Alert Dialog**: For cancel confirmations
+
+---
+
+### Phase 3: Menu Management Screen
+**Order**: Admin features that enable other screens
+
+6. **Menu Screen - Station Grouping** (2.2.1)
+   - Group items by station (Stirfry, Fryer, Sides/Grill)
+   - Collapsable sections per station
+   - Sort items within stations
+
+7. **Menu Screen - Batch-Specific Cook Times** (2.2.2)
+   - UI for entering multiple batch sizes (0.5, 1, 2, 3, 4)
+   - Input fields for cook time per batch size
+   - Validation (positive numbers only)
+
+8. **Menu Screen - Toggle Switch** (2.2.3)
+   - Replace enabled checkbox with toggle
+   - Green (ON) / Gray (OFF)
+   - Instant update without form submission
+
+9. **Menu Screen - Color Assignment** (2.2.4)
+   - Color dropdown (Blue/Red/Green/Orange)
+   - Pre-select default color
+   - Save to database
+
+10. **Menu Screen - Picture Upload** (2.2.5)
+    - Upload button + drag-and-drop
+    - Image preview
+    - Remove/replace functionality
+    - File validation (JPEG/PNG/WebP, max 5MB)
+    - Test upload to backend
+
+---
+
+### Phase 4: FOH & Drive-Thru Screens
+**Order**: Most complex UI changes
+
+11. **FOH Card Redesign** (2.3.1)
+    - New layout: Code-Title, Picture, Toggle, Button
+    - 4 cards per row grid
+    - Image display or placeholder
+    - Color indicator under code
+    - iPad responsive (1194x834)
+
+12. **3-Position Batch Toggle** (2.3.3)
+    - Replace buttons with toggle switch
+    - Display numeric batch sizes (from menu data)
+    - Touch-friendly, animated transitions
+    - Integrate with existing batch selection logic
+
+13. **Progress Bar Timer** (2.3.2)
+    - Animated progress bar inside Call button
+    - Red → Orange → Green gradient
+    - Real-time countdown display (MM:SS)
+    - Calculate progress percentage from cook time
+    - Update every second
+
+14. **Quality Hold Timer** (2.3.5)
+    - Start 10-minute countdown after 100%
+    - Pulsing red border (5-10 min warning)
+    - Solid red + "DISCARD" at expiration
+    - CSS animations for pulse effect
+
+15. **Cancel Button** (2.3.6)
+    - Show Cancel button below Call when cooking
+    - Open shadcn Alert Dialog on click
+    - API call to cancel ticket
+    - Remove from active tickets
+
+16. **Collapsable Hourly Calls** (2.3.4)
+    - Group calls by hour (10-11 AM, 11-12 PM, etc.)
+    - Collapsable sections
+    - Default: current hour expanded
+    - Smooth expand/collapse animation
+
+---
+
+### Phase 5: BOH Kitchen Screens
+**Order**: After FOH screens are stable
+
+17. **BOH - Collapsed Completed Items** (2.4.1)
+    - Separate completed tickets from active
+    - Collapsable "Completed (12)" section
+    - Default collapsed state
+    - Show count of completed items
+
+18. **BOH - Apply Color System**
+    - Display color indicators on BOH cards
+    - Match FOH color representation
+
+19. **BOH - Apply Navigation**
+    - Hidden slide-down menu
+    - Consistent with FOH/Drive-Thru
+
+---
+
+### Phase 6: Testing & Polish
+
+20. **iPad Testing**
+    - Test on actual iPad (1194x834 landscape)
+    - Verify 4 cards per row fit properly
+    - Touch target sizes (44x44px minimum)
+    - Remove hover states
+
+21. **Cross-Screen Consistency**
+    - Verify colors display same across FOH/Drive-Thru/BOH
+    - Test navigation on all screens
+    - Verify images display consistently
+
+22. **Real-Time Updates**
+    - Test WebSocket updates for:
+      - Timer countdowns
+      - Progress bars
+      - Quality hold alerts
+      - Completed item moves
+
+23. **Performance Testing**
+    - Test with 50+ menu items
+    - Test with 20+ active tickets
+    - Verify animations don't lag
+    - Image loading performance
+
+---
+
+## Implementation Order Summary
+
+**Week 1-2: Foundation**
+- Steps 1-3: Database, Backend, API
+
+**Week 3: Shared Components**
+- Steps 4-5: Layout, Navigation, Reusable Components
+
+**Week 4-5: Menu Management**
+- Steps 6-10: Complete menu screen features
+
+**Week 6-8: FOH/Drive-Thru**
+- Steps 11-16: Card redesign, timers, toggles, hourly grouping
+
+**Week 9: BOH Screens**
+- Steps 17-19: Completed items, colors, navigation
+
+**Week 10: Testing & Launch**
+- Steps 20-23: iPad testing, cross-screen validation, performance
+
+---
+
 **Document Status**: Draft  
 **Last Updated**: 2026-02-21  
 **Next Review**: TBD  
