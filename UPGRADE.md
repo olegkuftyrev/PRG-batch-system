@@ -163,18 +163,23 @@ Batch Sizes & Cook Times:
 - [ ] Add color field to menu items
 - [ ] Color dropdown/picker in menu item edit form
 - [ ] Pre-selected default color for each item
-- [ ] BLUE color designated for LTO (Limited Time Offer) items
 - [ ] Display color on menu item cards (border, badge, or background)
 - [ ] Database: add color field to menu_items table
-- [ ] Color options: Blue (LTO), and others as needed
 - [ ] Visual distinction on all screens (FOH, Drive-Thru, BOH)
+
+**Color Options:**
+- **Blue**: LTO (Limited Time Offer)
+- **Red**: Slow items
+- **Green**: Busy items
+- **Orange**: Medium popular items
 
 **Example UI:**
 ```
 Menu Item: Orange Chicken
-Color: [🔵 Blue (LTO)] ▼
-       □ Default
-       □ Other colors...
+Color: [🔵 Blue - LTO] ▼
+       [🔴 Red - Slow]
+       [🟢 Green - Busy]
+       [🟠 Orange - Medium]
 ```
 
 ---
