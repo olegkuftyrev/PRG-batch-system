@@ -214,7 +214,7 @@ Color: [🔵 Blue - LTO] ▼
 - [ ] Backend: store images on server or cloud storage
 - [ ] Database: add image_url field to menu_items table
 - [ ] Display images on FOH/Drive-Thru cards when available
-- [ ] Fallback to text-only when no image
+- [ ] **Placeholder when no image**: Show placeholder with text "Please upload picture for this item"
 - [ ] Image optimization/resize on upload (e.g., max 800x800px)
 - [ ] Validate file size (e.g., max 5MB)
 
@@ -246,6 +246,7 @@ Picture: [📷 Upload Image]
 
 **Card Layout:**
 ```
+With picture:
 ┌─────────────────────────┐
 │ CH-101 - Orange Chicken │ ← Code - Title
 │                         │
@@ -254,6 +255,19 @@ Picture: [📷 Upload Image]
 │  Batch: [1][2][3]       │ ← 3-position toggle
 │                         │
 │     [   Call   ]        │ ← Call button
+└─────────────────────────┘
+
+Without picture (placeholder):
+┌─────────────────────────┐
+│ CH-101 - Orange Chicken │
+│                         │
+│  ┌──────────────────┐   │
+│  │  📷 Please upload│   │ ← Placeholder
+│  │  picture for this│   │
+│  │  item            │   │
+│  └──────────────────┘   │
+│  Batch: [1][2][3]       │
+│     [   Call   ]        │
 └─────────────────────────┘
 ```
 
