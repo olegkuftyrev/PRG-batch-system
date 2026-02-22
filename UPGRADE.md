@@ -129,7 +129,26 @@ Optimize all screens for **iPad displays** in landscape orientation (1194x834 re
 
 ## 2.3 FOH & Drive-Thru Screens
 
-### 2.3.1 Batch Size Toggle (3 Positions)
+### 2.3.1 Timer Display on Buttons
+**Priority**: High
+
+**Requirements:**
+- [ ] Replace "Unavailable" text with remaining timer countdown
+- [ ] Show format: "5:30" or "2:15" (minutes:seconds)
+- [ ] Update countdown in real-time every second
+- [ ] Button remains disabled but shows time remaining
+- [ ] Visual styling to indicate cooking in progress
+- [ ] When timer reaches 0:00, change to "Call" state
+
+**Example:**
+```
+Before: [Unavailable] (grayed out)
+After:  [3:45] (shows remaining time)
+```
+
+---
+
+### 2.3.2 Batch Size Toggle (3 Positions)
 **Priority**: High
 
 **Requirements:**
@@ -148,7 +167,7 @@ Batch Size: [ S ] [ M ] [ L ]
 
 ---
 
-### 2.3.2 Collapsable Calls by Hour
+### 2.3.3 Collapsable Calls by Hour
 **Priority**: High
 
 **Requirements:**
