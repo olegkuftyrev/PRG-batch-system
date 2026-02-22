@@ -156,16 +156,32 @@ Batch Sizes & Cook Times:
 
 ---
 
-### 2.2.4 Optional Pictures
-**Priority**: Medium
+### 2.2.4 Picture Upload for Menu Items
+**Priority**: High
 
 **Requirements:**
-- [ ] Add optional image field to menu items
-- [ ] Support image upload in Menu Management
-- [ ] Display images on cards when available
+- [ ] Add image upload button in menu item edit form
+- [ ] Support drag-and-drop image upload
+- [ ] Accept formats: JPEG, PNG, WebP
+- [ ] Image preview before saving
+- [ ] Ability to remove/replace existing image
+- [ ] Backend: store images on server or cloud storage
+- [ ] Database: add image_url field to menu_items table
+- [ ] Display images on FOH/Drive-Thru cards when available
 - [ ] Fallback to text-only when no image
-- [ ] Image optimization for performance
-- [ ] Recommended image size/format (e.g., 300x300px, WebP/JPEG)
+- [ ] Image optimization/resize on upload (e.g., max 800x800px)
+- [ ] Validate file size (e.g., max 5MB)
+
+**Example UI:**
+```
+Menu Item: Orange Chicken
+
+Picture: [📷 Upload Image]
+         or drag & drop here
+         
+         [Preview of uploaded image]
+         [Remove]
+```
 
 ---
 
