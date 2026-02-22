@@ -121,7 +121,28 @@ Optimize all screens for **iPad displays** in landscape orientation (1194x834 re
 
 ---
 
-### 2.2.2 Toggle for Enabled/Disabled
+### 2.2.2 Batch-Specific Cooking Times
+**Priority**: High
+
+**Requirements:**
+- [ ] Each batch size can have its own cooking time
+- [ ] Edit interface: list of batch sizes with individual time inputs
+- [ ] Example: Small (5 min), Medium (8 min), Large (12 min)
+- [ ] Validate times are positive numbers
+- [ ] Display batch-specific times in UI
+- [ ] Default to shared time if not specified per batch
+
+**Example UI:**
+```
+Batch Sizes & Cook Times:
+- Small:  [ 5 ] minutes
+- Medium: [ 8 ] minutes  
+- Large:  [ 12 ] minutes
+```
+
+---
+
+### 2.2.3 Toggle for Enabled/Disabled
 **Priority**: High
 
 **Requirements:**
@@ -133,7 +154,7 @@ Optimize all screens for **iPad displays** in landscape orientation (1194x834 re
 
 ---
 
-### 2.2.3 Optional Pictures
+### 2.2.4 Optional Pictures
 **Priority**: Medium
 
 **Requirements:**
