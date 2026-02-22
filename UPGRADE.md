@@ -76,9 +76,44 @@ Optimize all screens for **iPad displays** in landscape orientation (1194x834 re
 
 ---
 
-## Additional Requirements
+## 2.2 Menu Items
 
-_To be specified..._
+### 2.2.1 Optional Pictures
+**Priority**: Medium
+
+**Requirements:**
+- [ ] Add optional image field to menu items
+- [ ] Support image upload in Menu Management
+- [ ] Display images on cards when available
+- [ ] Fallback to text-only when no image
+- [ ] Image optimization for performance
+- [ ] Recommended image size/format (e.g., 300x300px, WebP/JPEG)
+
+---
+
+## 2.3 FOH & Drive-Thru Screens
+
+### 2.3.1 Collapsable Calls by Hour
+**Priority**: High
+
+**Requirements:**
+- [ ] Group calls by hour (e.g., "10:00 AM - 11:00 AM")
+- [ ] Collapsable/expandable sections for each hour
+- [ ] Default state: current hour expanded, others collapsed
+- [ ] Visual indicator for collapsed/expanded state
+- [ ] Smooth expand/collapse animation
+- [ ] Persist collapse state (optional)
+
+**Example UI:**
+```
+▼ 10:00 AM - 11:00 AM (5 calls)
+  [Call cards displayed here]
+  
+▶ 11:00 AM - 12:00 PM (8 calls)
+  
+▼ 12:00 PM - 1:00 PM (12 calls)
+  [Call cards displayed here]
+```
 
 ---
 
