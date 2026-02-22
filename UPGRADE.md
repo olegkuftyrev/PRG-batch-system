@@ -173,7 +173,12 @@ Batch Sizes & Cook Times:
 - **Green**: Busy items
 - **Orange**: Medium popular items
 
-**Example UI:**
+**Display Requirements:**
+- [ ] Color indicator displayed under item code on FOH/Drive-Thru cards
+- [ ] Color bar, badge, or background tint on cards
+- [ ] Consistent color representation across all screens
+
+**Example UI (Menu Edit):**
 ```
 Menu Item: Orange Chicken
 Color: [🔵 Blue - LTO] ▼
@@ -181,6 +186,19 @@ Color: [🔵 Blue - LTO] ▼
        [🟢 Green - Busy]
        [🟠 Orange - Medium]
 ```
+
+**Example UI (FOH Card):**
+```
+┌─────────────────────┐
+│  Orange Chicken     │
+│  Code: CH-101       │
+│  [🔵 Blue - LTO]    │ ← Color displayed here
+│                     │
+│  [Call] [1][2][3]   │
+└─────────────────────┘
+```
+
+**Note**: Color system implementation will require database schema update and UI changes across multiple screens (FOH, Drive-Thru, BOH, Menu Management).
 
 ---
 
