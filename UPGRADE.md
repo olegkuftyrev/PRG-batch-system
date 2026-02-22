@@ -129,7 +129,26 @@ Optimize all screens for **iPad displays** in landscape orientation (1194x834 re
 
 ## 2.3 FOH & Drive-Thru Screens
 
-### 2.3.1 Collapsable Calls by Hour
+### 2.3.1 Batch Size Toggle (3 Positions)
+**Priority**: High
+
+**Requirements:**
+- [ ] Replace batch size buttons with 3-position toggle switch
+- [ ] Three positions: Small / Medium / Large (or Half / Full / Double)
+- [ ] Visual indicator for selected batch size
+- [ ] Touch-friendly toggle control
+- [ ] Smooth transition animation between positions
+- [ ] Color-coded states for quick identification
+
+**Example UI:**
+```
+Batch Size: [ S ] [ M ] [ L ]
+            ◄─────●─────►
+```
+
+---
+
+### 2.3.2 Collapsable Calls by Hour
 **Priority**: High
 
 **Requirements:**
