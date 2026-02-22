@@ -1,6 +1,6 @@
-# PRG Batch System - Stage 2 Upgrades
+# PRG Batch System - Stage 2: UI Optimization
 
-> **Planning Document**: This file defines planned enhancements and features for Stage 2 of the PRG Batch System.
+> **Planning Document**: Stage 2 focuses on UI/UX improvements and iPad optimization.
 
 ## Stage 1 Status: ✅ Complete
 
@@ -20,17 +20,14 @@
 
 ---
 
-## Stage 2: Planned Enhancements
+## Stage 2: UI/UX Requirements
 
-### Goals
-1. **Production Hardening** - Security, performance, and reliability improvements
-2. **User Experience** - Enhanced UI/UX features
-3. **Operations** - Better monitoring and management tools
-4. **Scalability** - Prepare for multi-location support
+### Primary Goal
+Optimize all screens for **iPad displays** (834x1194 resolution)
 
 ---
 
-## 2.1 Infrastructure & DevOps
+## 2.1 iPad Screen Optimization (834x1194)
 
 ### 2.1.1 Reverse Proxy & SSL
 **Priority**: High  
