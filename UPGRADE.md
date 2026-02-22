@@ -363,6 +363,67 @@ Batch Size: [ 0.5 ] [ 1 ] [ 2 ]
 
 ---
 
+### 2.3.5 Quality Hold Timer & Alert
+**Priority**: High
+
+**Requirements:**
+- [ ] After timer reaches 100% (ready), start quality hold countdown
+- [ ] Default hold time: 10 minutes (configurable per item)
+- [ ] Visual alert: red border pulsing/fading on card
+- [ ] Border intensity increases as hold time expires
+- [ ] Card background tints red when approaching expiration
+- [ ] Clear indication when food needs to be discarded
+
+**Visual States:**
+```
+Fresh (0-5 min hold):
+┌─────────────────────────┐
+│ █████████████████ Call  │ ← Green, no alert
+└─────────────────────────┘
+
+Warning (5-10 min hold):
+┌━━━━━━━━━━━━━━━━━━━━━━━━━┐  ← Red border pulsing
+┃ █████████████████ Call  ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+Expired (10+ min):
+┏━━━━━━━━━━━━━━━━━━━━━━━━━┓  ← Solid red border + red bg
+┃ ⚠️  DISCARD - EXPIRED   ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━┛
+```
+
+---
+
+### 2.3.6 Cancel Button (Undo)
+**Priority**: High
+
+**Requirements:**
+- [ ] Cancel button appears below Call button after item is called
+- [ ] Only visible for active cooking tickets
+- [ ] Opens confirmation dialog (shadcn alert component)
+- [ ] Confirmation: "Cancel this order? This action cannot be undone."
+- [ ] On confirm: removes ticket and resets timer
+- [ ] Button style: subtle/secondary, smaller than Call button
+
+**UI Layout:**
+```
+┌─────────────────────────┐
+│ CH-101 - Orange Chicken │
+│   [   Picture   ]       │
+│  Batch: [1][2][3]       │
+│  ████████░░░░░░ 3:00    │ ← Cooking in progress
+│     [  Cancel  ]        │ ← Cancel button below
+└─────────────────────────┘
+```
+
+**Confirmation Dialog:**
+- Use shadcn Alert Dialog component: https://ui.shadcn.com/docs/components/radix/alert
+- Title: "Cancel Order?"
+- Description: "This will cancel the cooking ticket. This action cannot be undone."
+- Actions: "Go Back" (secondary) | "Cancel Order" (destructive)
+
+---
+
 ## 2.4 BOH Kitchen Screens
 
 ### 2.4.1 Collapsed Completed Items
