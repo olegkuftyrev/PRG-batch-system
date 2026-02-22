@@ -233,7 +233,33 @@ Picture: [📷 Upload Image]
 
 ## 2.3 FOH & Drive-Thru Screens
 
-### 2.3.1 Timer Display on Buttons
+### 2.3.1 FOH Card Layout
+**Priority**: High
+
+**Requirements:**
+- [ ] Redesign card layout with specific structure
+- [ ] Top: Code - Title (e.g., "CH-101 - Orange Chicken")
+- [ ] Middle: Picture (if available)
+- [ ] Below picture: 3-position toggle for batch size
+- [ ] Bottom: Call button
+- [ ] Compact design fitting 4 cards per row
+
+**Card Layout:**
+```
+┌─────────────────────────┐
+│ CH-101 - Orange Chicken │ ← Code - Title
+│                         │
+│   [   Picture   ]       │ ← Menu item image
+│                         │
+│  Batch: [1][2][3]       │ ← 3-position toggle
+│                         │
+│     [   Call   ]        │ ← Call button
+└─────────────────────────┘
+```
+
+---
+
+### 2.3.2 Timer Display on Buttons
 **Priority**: High
 
 **Requirements:**
@@ -252,7 +278,7 @@ After:  [3:45] (shows remaining time)
 
 ---
 
-### 2.3.2 Batch Size Toggle (3 Positions)
+### 2.3.3 Batch Size Toggle (3 Positions)
 **Priority**: High
 
 **Requirements:**
@@ -277,7 +303,7 @@ Batch Size: [ 0.5 ] [ 1 ] [ 2 ]
 
 ---
 
-### 2.3.3 Collapsable Calls by Hour
+### 2.3.4 Collapsable Calls by Hour
 **Priority**: High
 
 **Requirements:**
