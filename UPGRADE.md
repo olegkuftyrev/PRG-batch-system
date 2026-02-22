@@ -45,6 +45,25 @@ Optimize all screens for **iPad displays** in landscape orientation (1194x834 re
 
 ---
 
+### 2.1.3 Hidden Slide-Down Navigation
+**Priority**: High
+
+**Requirements:**
+- [ ] Navigation hidden by default (maximizes screen space)
+- [ ] Toggle button at top of screen
+- [ ] Button design: thin horizontal line with "menu" text in center
+- [ ] Click/tap to slide navigation down from top
+- [ ] Smooth slide animation
+- [ ] Click outside or button again to hide navigation
+- [ ] Persistent across all screens
+
+**Button Design:**
+```
+────────────── menu ──────────────
+```
+
+---
+
 ### 2.1.2 Layout Requirements
 **Priority**: High
 
@@ -187,6 +206,29 @@ Batch Size: [ S ] [ M ] [ L ]
   
 ▼ 12:00 PM - 1:00 PM (12 calls)
   [Call cards displayed here]
+```
+
+---
+
+## 2.4 BOH Kitchen Screens
+
+### 2.4.1 Collapsed Completed Items
+**Priority**: High
+
+**Requirements:**
+- [ ] Group completed tickets into collapsable section
+- [ ] Default state: collapsed
+- [ ] Show count of completed items (e.g., "Completed (12)")
+- [ ] Expandable to view completed tickets
+- [ ] Visual separation from active tickets
+- [ ] Auto-collapse after expansion timeout (optional)
+
+**Example UI:**
+```
+[Active Tickets - 5 items displayed]
+
+▶ Completed (12)
+  [Click to expand and view completed tickets]
 ```
 
 ---
