@@ -9,6 +9,9 @@ export const createMenuItemValidator = vine.compile(
     cookTimes: vine.object({}).allowUnknownProperties(),
     enabled: vine.boolean().optional(),
     recommendedBatch: vine.object({}).allowUnknownProperties(),
+    color: vine.enum(['blue', 'red', 'green', 'orange']).nullable().optional(),
+    imageUrl: vine.string().trim().maxLength(500).nullable().optional(),
+    holdTime: vine.number().min(0).optional(),
   })
 )
 
@@ -21,5 +24,8 @@ export const updateMenuItemValidator = vine.compile(
     cookTimes: vine.object({}).allowUnknownProperties().optional(),
     enabled: vine.boolean().optional(),
     recommendedBatch: vine.object({}).allowUnknownProperties().optional(),
+    color: vine.enum(['blue', 'red', 'green', 'orange']).nullable().optional(),
+    imageUrl: vine.string().trim().maxLength(500).nullable().optional(),
+    holdTime: vine.number().min(0).optional(),
   })
 )

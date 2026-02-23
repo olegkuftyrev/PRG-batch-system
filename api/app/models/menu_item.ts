@@ -37,6 +37,15 @@ export default class MenuItem extends BaseModel {
   })
   declare recommendedBatch: Record<string, string>
 
+  @column()
+  declare color: 'blue' | 'red' | 'green' | 'orange' | null
+
+  @column()
+  declare imageUrl: string | null
+
+  @column()
+  declare holdTime: number
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 

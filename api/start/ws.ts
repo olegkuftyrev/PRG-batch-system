@@ -26,7 +26,11 @@ function ticketToSnapshot(t: Ticket) {
 
 app.ready(async () => {
   Ws.boot()
-  const io = Ws.io!
+  if (!Ws.io) {
+    console.warn('WebSocket server not initialized, skipping')
+    return
+  }
+  const io = Ws.io
 
   async function buildSnapshot(rooms: string[]) {
     const versionRow = await MenuVersion.query().first()

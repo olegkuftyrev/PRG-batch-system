@@ -7,6 +7,10 @@ import {
   createMenuItemValidator,
   updateMenuItemValidator,
 } from '#validators/menu_item'
+import app from '@adonisjs/core/services/app'
+import { cuid } from '@adonisjs/core/helpers'
+import fs from 'node:fs/promises'
+import path from 'node:path'
 
 export default class MenuItemsController {
   /** GET /api/menu — list items + menu_version */
@@ -27,9 +31,16 @@ export default class MenuItemsController {
     try {
       const item = await MenuItem.create(
         {
-          ...payload,
+          code: payload.code,
+          title: payload.title,
+          station: payload.station,
+          batchSizes: payload.batchSizes,
+          cookTimes: payload.cookTimes as Record<string, number>,
           enabled: payload.enabled ?? true,
-          recommendedBatch: payload.recommendedBatch ?? {},
+          recommendedBatch: (payload.recommendedBatch as Record<string, string>) ?? {},
+          color: payload.color ?? null,
+          imageUrl: payload.imageUrl ?? null,
+          holdTime: payload.holdTime ?? 600,
         },
         { client: trx }
       )
@@ -49,7 +60,21 @@ export default class MenuItemsController {
     const payload = await request.validateUsing(updateMenuItemValidator)
     const trx = await db.transaction()
     try {
-      item.merge(payload)
+      const updateData: Partial<typeof item> = {}
+      if (payload.code !== undefined) updateData.code = payload.code
+      if (payload.title !== undefined) updateData.title = payload.title
+      if (payload.station !== undefined) updateData.station = payload.station
+      if (payload.batchSizes !== undefined) updateData.batchSizes = payload.batchSizes
+      if (payload.cookTimes !== undefined)
+        updateData.cookTimes = payload.cookTimes as Record<string, number>
+      if (payload.enabled !== undefined) updateData.enabled = payload.enabled
+      if (payload.recommendedBatch !== undefined)
+        updateData.recommendedBatch = payload.recommendedBatch as Record<string, string>
+      if (payload.color !== undefined) updateData.color = payload.color
+      if (payload.imageUrl !== undefined) updateData.imageUrl = payload.imageUrl
+      if (payload.holdTime !== undefined) updateData.holdTime = payload.holdTime
+
+      item.merge(updateData)
       await item.useTransaction(trx).save()
       const version = await this.bumpVersion(trx)
       await trx.commit()
@@ -75,6 +100,77 @@ export default class MenuItemsController {
       await trx.rollback()
       throw e
     }
+  }
+
+  /** POST /api/menu/:id/image — upload menu item image */
+  async uploadImage({ params, request, response }: HttpContext) {
+    const item = await MenuItem.findOrFail(params.id)
+    const image = request.file('image', {
+      size: '5mb',
+      extnames: ['jpg', 'jpeg', 'png', 'webp'],
+    })
+
+    if (!image) {
+      return response.badRequest({ error: 'Image file is required' })
+    }
+
+    if (!image.isValid) {
+      return response.badRequest({ errors: image.errors })
+    }
+
+    const uploadsDir = app.makePath('public/uploads')
+    await fs.mkdir(uploadsDir, { recursive: true })
+
+    const fileName = `${cuid()}.${image.extname}`
+    await image.move(uploadsDir, { name: fileName })
+
+    if (item.imageUrl) {
+      const oldPath = app.makePath('public', item.imageUrl)
+      await fs.unlink(oldPath).catch(() => {})
+    }
+
+    const imageUrl = `/uploads/${fileName}`
+    item.imageUrl = imageUrl
+    await item.save()
+
+    const trx = await db.transaction()
+    try {
+      const version = await this.bumpVersion(trx)
+      await trx.commit()
+      Ws.broadcast('menu_updated', { version })
+    } catch (e) {
+      await trx.rollback()
+      throw e
+    }
+
+    return response.json({ imageUrl })
+  }
+
+  /** DELETE /api/menu/:id/image — remove menu item image */
+  async deleteImage({ params, response }: HttpContext) {
+    const item = await MenuItem.findOrFail(params.id)
+
+    if (!item.imageUrl) {
+      return response.notFound({ error: 'No image to delete' })
+    }
+
+    const imagePath = app.makePath('public', item.imageUrl)
+    await fs.unlink(imagePath).catch(() => {})
+
+    item.imageUrl = null
+    await item.save()
+
+    const trx = await db.transaction()
+    try {
+      const version = await this.bumpVersion(trx)
+      await trx.commit()
+      Ws.broadcast('menu_updated', { version })
+    } catch (e) {
+      await trx.rollback()
+      throw e
+    }
+
+    return response.noContent()
   }
 
   private async bumpVersion(trx: any): Promise<number> {

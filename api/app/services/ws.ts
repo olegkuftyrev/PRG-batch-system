@@ -13,7 +13,10 @@ class WsService {
     if (this.#booted) return
     this.#booted = true
     const nodeServer = server.getNodeServer()
-    if (!nodeServer) throw new Error('HTTP server not ready')
+    if (!nodeServer) {
+      console.warn('HTTP server not ready, skipping WebSocket initialization')
+      return
+    }
     this.io = new Server(nodeServer, {
       cors: { origin: '*' },
       path: '/socket.io',

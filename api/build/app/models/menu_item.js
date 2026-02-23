@@ -54,6 +54,18 @@ __decorate([
     __metadata("design:type", Object)
 ], MenuItem.prototype, "recommendedBatch", void 0);
 __decorate([
+    column(),
+    __metadata("design:type", Object)
+], MenuItem.prototype, "color", void 0);
+__decorate([
+    column(),
+    __metadata("design:type", Object)
+], MenuItem.prototype, "imageUrl", void 0);
+__decorate([
+    column(),
+    __metadata("design:type", Number)
+], MenuItem.prototype, "holdTime", void 0);
+__decorate([
     column.dateTime({ autoCreate: true }),
     __metadata("design:type", DateTime)
 ], MenuItem.prototype, "createdAt", void 0);
