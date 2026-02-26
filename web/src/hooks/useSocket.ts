@@ -18,6 +18,7 @@ export type SnapshotTicket = {
   seq: number
   state: string
   source?: string
+  createdAt?: number
   startedAt?: number
   durationSeconds?: number
   menuVersionAtCall?: number
@@ -45,15 +46,22 @@ export type SocketState = {
 
 function toTicket(t: unknown): SnapshotTicket {
   const o = t as Record<string, unknown>
+  
+  const createdAt = o.createdAt ?? o.created_at
+  const createdMs =
+    typeof createdAt === 'number' ? createdAt : typeof createdAt === 'string' ? new Date(createdAt).getTime() : undefined
+  
   const startedAt = o.startedAt ?? o.started_at
   const startedMs =
     typeof startedAt === 'number' ? startedAt : typeof startedAt === 'string' ? new Date(startedAt).getTime() : undefined
+  
   return {
     id: (o.id as number) ?? 0,
     station: (o.station as string) ?? '',
     seq: (o.stationSeq ?? o.station_seq ?? o.seq) as number,
     state: (o.state as string) ?? 'created',
     source: (o.source as string) ?? undefined,
+    createdAt: createdMs,
     startedAt: startedMs,
     durationSeconds: (o.durationSeconds ?? o.duration_seconds) as number | undefined,
     menuVersionAtCall: (o.menuVersionAtCall ?? o.menu_version_at_call) as number | undefined,

@@ -75,10 +75,31 @@ function BatchRow({
     return `${mins} MIN ${secs} SEC`
   }
 
+  const getWaitingTime = () => {
+    if (!ticket.createdAt) return null
+    const now = Date.now() - offsetMs
+    const elapsedMs = now - ticket.createdAt
+    const elapsedSec = Math.floor(elapsedMs / 1000)
+    return elapsedSec > 0 ? elapsedSec : 0
+  }
+
+  const getResponseTime = () => {
+    if (!ticket.createdAt || !ticket.startedAt) return null
+    const responseMs = ticket.startedAt - ticket.createdAt
+    const responseSec = Math.floor(responseMs / 1000)
+    return responseSec > 0 ? responseSec : 0
+  }
+
   if (ticket.state === 'created') {
+    const waitingSec = getWaitingTime()
     return (
       <div className="flex items-center justify-between py-3 px-4 border-b border-border last:border-0">
-        <span className="font-semibold text-sm">BATCH {ticket.batchSizeSnapshot}</span>
+        <div className="flex flex-col gap-1">
+          <span className="font-semibold text-sm">BATCH {ticket.batchSizeSnapshot}</span>
+          {waitingSec !== null && (
+            <span className="text-xs text-amber-600">Waiting: {formatTime(waitingSec)}</span>
+          )}
+        </div>
         <Button size="sm" onClick={() => onStart(ticket.id)}>
           Start
         </Button>
@@ -87,17 +108,23 @@ function BatchRow({
   }
 
   if (ticket.state === 'started') {
+    const responseSec = getResponseTime()
     return (
       <div className={cn(
         "flex items-center justify-between py-3 px-4 border-b border-border last:border-0",
         isQualityCheck && "bg-orange-50"
       )}>
-        <div className="flex items-center gap-3">
-          <span className="font-semibold text-sm">BATCH {ticket.batchSizeSnapshot}</span>
-          {isQualityCheck ? (
-            <span className="text-orange-600 font-semibold text-xs">QUALITY CHECK</span>
-          ) : (
-            <span className="text-muted-foreground text-xs tabular-nums">{formatTime(remaining ?? 0)}</span>
+        <div className="flex flex-col gap-1">
+          <div className="flex items-center gap-3">
+            <span className="font-semibold text-sm">BATCH {ticket.batchSizeSnapshot}</span>
+            {isQualityCheck ? (
+              <span className="text-orange-600 font-semibold text-xs">QUALITY CHECK</span>
+            ) : (
+              <span className="text-muted-foreground text-xs tabular-nums">{formatTime(remaining ?? 0)}</span>
+            )}
+          </div>
+          {responseSec !== null && (
+            <span className="text-xs text-muted-foreground">Response: {formatTime(responseSec)}</span>
           )}
         </div>
         <Button size="sm" variant={isQualityCheck ? "default" : "outline"} onClick={() => onComplete(ticket.id)}>

@@ -591,6 +591,8 @@ Expired (10+ min):
 - Animated pulse effect on "Call Now" badge
 - Last called timestamp display with relative time formatting
 - BOH tickets sorted by age (oldest first, newest last)
+- BOH waiting time display: Shows "Waiting: X MIN Y SEC" for tickets waiting to be started
+- BOH response time tracking: Shows "Response: X MIN Y SEC" (time between ticket creation and start) on started tickets
 
 **Technical Improvements:**
 - Replaced custom Collapsable with shadcn Collapsible component
