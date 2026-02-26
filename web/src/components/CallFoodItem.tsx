@@ -7,6 +7,7 @@ import {
   CardFooter,
   CardHeader,
 } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
 import { BatchToggle } from '@/components/ui/batch-toggle'
 import { ProgressBar } from '@/components/ui/progress-bar'
 import { ImagePlaceholder } from '@/components/ui/image-placeholder'
@@ -85,25 +86,30 @@ export function CallFoodItem({
 
   const imageUrl = item.imageUrl ? `${import.meta.env.VITE_API_URL || ''}${item.imageUrl}` : null
 
-  const formatLastCalled = (date: Date | null | undefined) => {
+  const getTimeSinceLastCall = (date: Date | null | undefined) => {
     if (!date) return null
     const now = new Date()
     const diffMs = now.getTime() - date.getTime()
     const diffMins = Math.floor(diffMs / 60000)
     
-    if (diffMins < 1) return 'Just now'
-    if (diffMins < 60) return `${diffMins}m ago`
-    const diffHours = Math.floor(diffMins / 60)
-    if (diffHours < 24) return `${diffHours}h ago`
-    return `${Math.floor(diffHours / 24)}d ago`
+    return {
+      diffMins,
+      formatted: diffMins < 1 ? 'Just now' :
+                 diffMins < 60 ? `${diffMins}m ago` :
+                 diffMins < 24 * 60 ? `${Math.floor(diffMins / 60)}h ago` :
+                 `${Math.floor(diffMins / (24 * 60))}d ago`
+    }
   }
+
+  const timeSinceLastCall = getTimeSinceLastCall(lastCalledAt)
+  const shouldCallNow = timeSinceLastCall && timeSinceLastCall.diffMins > 15
 
   // Debug: log lastCalledAt
   React.useEffect(() => {
-    if (lastCalledAt) {
-      console.log(`${item.code}: Last called at`, lastCalledAt, formatLastCalled(lastCalledAt))
+    if (lastCalledAt && timeSinceLastCall) {
+      console.log(`${item.code}: Last called at`, lastCalledAt, timeSinceLastCall.formatted, 'shouldCallNow:', shouldCallNow)
     }
-  }, [lastCalledAt, item.code])
+  }, [lastCalledAt, item.code, timeSinceLastCall, shouldCallNow])
 
   let buttonText = 'Call'
   if (loading) buttonText = 'Calling…'
@@ -142,9 +148,13 @@ export function CallFoodItem({
           >
             {item.code}
           </div>
-          {lastCalledAt && (
+          {shouldCallNow ? (
+            <Badge variant="destructive" className="text-xs font-semibold">
+              Call Now
+            </Badge>
+          ) : timeSinceLastCall && (
             <span className="text-xs text-muted-foreground">
-              {formatLastCalled(lastCalledAt)}
+              {timeSinceLastCall.formatted}
             </span>
           )}
         </div>
