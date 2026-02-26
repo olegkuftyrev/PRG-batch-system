@@ -108,13 +108,14 @@ Create a detailed implementation plan based on `{@artifacts_path}/spec.md`.
 
 **Verification**: All API endpoints validated and gaps documented
 
-### [ ] Step: Validate WebSocket events against implementation
+### [x] Step: Validate WebSocket events against implementation
+<!-- chat-id: 881f39c3-255d-4724-b3e2-4fa6e647ed53 -->
 
-- [ ] Compare documented events in README.md vs implementation in `api/start/ws.ts` and `api/app/services/ws.ts`
-- [ ] Identify undocumented events (ticket_cancelled, ping, pong)
-- [ ] Verify event payloads match documentation
-- [ ] Update compliance matrix
-- [ ] Record findings
+- [x] Compare documented events in README.md vs implementation in `api/start/ws.ts` and `api/app/services/ws.ts`
+- [x] Identify undocumented events (ticket_cancelled, ping, pong)
+- [x] Verify event payloads match documentation
+- [x] Update compliance matrix
+- [x] Record findings
 
 **Verification**: All WebSocket events validated and gaps documented
 
