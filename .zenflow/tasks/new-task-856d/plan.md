@@ -133,7 +133,8 @@ Create a detailed implementation plan based on `{@artifacts_path}/spec.md`.
 
 ### Phase 2: Low-Hanging Fruit (Safe Changes)
 
-### [ ] Step: Fix .gitignore
+### [x] Step: Fix .gitignore
+<!-- chat-id: 01e3bbc0-18e3-4461-bf1a-bd07b44e3da9 -->
 
 - [ ] Review current `.gitignore` file
 - [ ] Add missing entries: `build/`, `dist/`, `public/uploads/`, `.cache/`, `*.log`
