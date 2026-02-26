@@ -15,6 +15,7 @@ function ticketToSnapshot(t: Ticket) {
     seq: t.stationSeq,
     state: t.state,
     source: t.source,
+    createdAt: t.createdAt?.toMillis(),
     startedAt: t.startedAt?.toMillis(),
     durationSeconds: t.durationSeconds,
     menuVersionAtCall: t.menuVersionAtCall,

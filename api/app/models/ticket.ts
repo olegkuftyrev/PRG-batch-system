@@ -53,4 +53,24 @@ export default class Ticket extends BaseModel {
 
   @belongsTo(() => MenuItem)
   declare menuItem: BelongsTo<typeof MenuItem>
+
+  serialize() {
+    return {
+      id: this.id,
+      menu_item_id: this.menuItemId,
+      station: this.station,
+      station_seq: this.stationSeq,
+      station_day: this.stationDay.toISO(),
+      state: this.state,
+      source: this.source,
+      created_at: this.createdAt?.toISO(),
+      started_at: this.startedAt?.toISO(),
+      duration_seconds: this.durationSeconds,
+      menu_version_at_call: this.menuVersionAtCall,
+      item_title_snapshot: this.itemTitleSnapshot,
+      batch_size_snapshot: this.batchSizeSnapshot,
+      duration_snapshot: this.durationSnapshot,
+      updated_at: this.updatedAt.toISO(),
+    }
+  }
 }

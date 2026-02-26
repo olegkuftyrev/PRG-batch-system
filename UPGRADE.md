@@ -598,6 +598,8 @@ Expired (10+ min):
 - Replaced custom Collapsable with shadcn Collapsible component
 - Removed debug console.logs from production code
 - Fixed import paths and component references
+- Added serialize() methods to Ticket and MenuItem models for proper data serialization
+- Fixed createdAt field serialization in API responses and WebSocket events
 
 ---
 
