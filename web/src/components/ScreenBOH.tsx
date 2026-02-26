@@ -210,9 +210,9 @@ export function ScreenBOH({ screen, socketState }: Props) {
       groups.get(key)!.tickets.push(ticket)
     }
     
-    // Sort tickets within each group by seq desc
+    // Sort tickets within each group by seq asc (oldest first)
     for (const group of groups.values()) {
-      group.tickets.sort((a, b) => b.seq - a.seq)
+      group.tickets.sort((a, b) => a.seq - b.seq)
     }
     
     return Array.from(groups.values())
