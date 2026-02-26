@@ -521,8 +521,66 @@ if (import.meta.env.DEV) {
 ---
 
 ### 10.2 TypeScript Suppressions
-**Status:** UNKNOWN (needs search)  
-**Action:** Search for `@ts-ignore`, `@ts-expect-error`, `@ts-nocheck`, `any` types
+**Status:** CATALOGUED (search complete)  
+**Search Completed:** 2026-02-26
+
+#### Error Suppressions (NONE FOUND ✅)
+**Count:** 0 instances  
+**Verdict:** No TypeScript error suppressions found
+
+**Searches Performed:**
+- `@ts-ignore` - No results ✅
+- `@ts-expect-error` - No results ✅
+- `@ts-nocheck` - No results ✅
+
+**Conclusion:** Codebase does not suppress TypeScript errors. Excellent type safety hygiene.
+
+---
+
+#### `any` Type Usage
+**Total:** 5 instances (1 in production code)
+
+##### Production Code (NEEDS ATTENTION)
+**Count:** 1 instance  
+**Action Required:** Replace with proper type
+
+| File | Line | Usage | Context | Severity |
+|------|------|-------|---------|----------|
+| `/api/app/controllers/menu_items_controller.ts` | 176 | `private async bumpVersion(trx: any)` | Transaction parameter | MEDIUM |
+
+**Recommended Fix:**
+```typescript
+import type { TransactionClientContract } from '@adonisjs/lucid/types/database'
+private async bumpVersion(trx: TransactionClientContract): Promise<number>
+```
+
+---
+
+##### Scripts (ACCEPTABLE - NO ACTION)
+**Count:** 4 instances  
+**Verdict:** Scripts are allowed to use `any` type for quick prototyping
+
+**Locations:**
+- `/api/scripts/verify-stage1-2.ts:61` - `j.map((t: any) => t.stationSeq)`
+- `/api/scripts/verify-stage1-2.ts:87` - `s.on('snapshot', (d: any) => ...)`
+- `/api/scripts/verify-stage1-2.ts:107` - `s.on('ticket_created', (d: any) => ...)`
+- `/api/scripts/verify-stage1-2.ts:154` - `s.on('menu_updated', (d: any) => ...)`
+
+**Note:** Event handler payloads could be typed for better script reliability, but not required.
+
+---
+
+##### Other Searches (NONE FOUND ✅)
+- `any[]` - No results ✅
+- `Array<any>` - No results ✅
+
+---
+
+#### Summary
+- **TypeScript Suppressions:** 0 found ✅
+- **Production `any` Types:** 1 instance (MEDIUM severity)
+- **Script `any` Types:** 4 instances (ACCEPTABLE)
+- **Total Action Required:** Fix 1 type in `menu_items_controller.ts`
 
 ---
 
@@ -595,7 +653,7 @@ if (import.meta.env.DEV) {
 ### Immediate (Critical/High)
 1. ✅ Scan documentation complete
 2. ✅ Search codebase for console statements complete (5 production issues found)
-3. ⏳ Search for TypeScript suppressions (next step)
+3. ✅ Search for TypeScript suppressions complete (1 production issue found)
 4. ✅ Search for code markers complete (0 issues found)
 5. ⏳ Fix TypeScript errors in `menu_items_controller.ts`
 6. ⏳ Remove console statements (backend & frontend)
@@ -632,7 +690,7 @@ if (import.meta.env.DEV) {
 **Next Steps:**
 - ✅ Step 2: Search codebase for console statements
 - ✅ Step 3: Search codebase for code markers
-- Step 4: Search for TypeScript error suppressions
+- ✅ Step 4: Search for TypeScript error suppressions
 - Step 5: Validate API contracts against implementation
 - Step 6: Validate WebSocket events against implementation
 - Step 7: Create comprehensive audit report skeleton

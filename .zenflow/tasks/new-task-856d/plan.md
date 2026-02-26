@@ -87,12 +87,13 @@ Create a detailed implementation plan based on `{@artifacts_path}/spec.md`.
 
 **Verification**: Code markers catalogued and categorized
 
-### [ ] Step: Search for TypeScript error suppressions
+### [x] Step: Search for TypeScript error suppressions
+<!-- chat-id: 37d2b3fa-dd88-4d04-9a6e-cfe3865a1d57 -->
 
-- [ ] Search for `@ts-ignore`, `@ts-expect-error`, `@ts-nocheck` comments
-- [ ] Search for `any` types used inappropriately
-- [ ] Catalogue locations and reasons
-- [ ] Record findings in bug inventory
+- [x] Search for `@ts-ignore`, `@ts-expect-error`, `@ts-nocheck` comments
+- [x] Search for `any` types used inappropriately
+- [x] Catalogue locations and reasons
+- [x] Record findings in bug inventory
 
 **Verification**: TypeScript suppression catalogue created
 
