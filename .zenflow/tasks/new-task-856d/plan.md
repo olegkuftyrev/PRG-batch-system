@@ -155,12 +155,13 @@ Create a detailed implementation plan based on `{@artifacts_path}/spec.md`.
 
 **Verification**: Run `grep -rn "console\." api/app/ api/start/` - should return 0 results
 
-### [ ] Step: Remove console statements from frontend
+### [x] Step: Remove console statements from frontend
+<!-- chat-id: ffd62faf-2f80-4edc-8e8a-081fe1bf4829 -->
 
-- [ ] Remove or make dev-only console statements in `/web/src/components/ScreenBOH.tsx`
-- [ ] Remove or make dev-only console statements in `/web/src/components/ui/batch-toggle.tsx`
-- [ ] Search for any other console statements in `web/src/**`
-- [ ] Use `if (import.meta.env.DEV)` wrapper if logging needed for development
+- [x] Remove or make dev-only console statements in `/web/src/components/ScreenBOH.tsx`
+- [x] Remove or make dev-only console statements in `/web/src/components/ui/batch-toggle.tsx`
+- [x] Search for any other console statements in `web/src/**`
+- [x] Use `if (import.meta.env.DEV)` wrapper if logging needed for development
 
 **Verification**: Run `grep -rn "console\." web/src/` - should return 0 results (or only dev-wrapped)
 
