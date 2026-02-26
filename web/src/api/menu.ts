@@ -9,6 +9,9 @@ export type MenuItem = {
   cookTimes: Record<string, number>
   enabled: boolean
   recommendedBatch: Record<string, string>
+  color?: 'blue' | 'red' | 'green' | 'orange' | null
+  imageUrl?: string | null
+  holdTime?: number
 }
 
 export type MenuResponse = {
@@ -24,6 +27,9 @@ export type CreateMenuItemPayload = {
   cookTimes: Record<string, number>
   enabled?: boolean
   recommendedBatch?: Record<string, string>
+  color?: 'blue' | 'red' | 'green' | 'orange' | null
+  imageUrl?: string | null
+  holdTime?: number
 }
 
 export type UpdateMenuItemPayload = Partial<CreateMenuItemPayload>
@@ -65,5 +71,28 @@ export async function deleteMenuItem(id: number): Promise<void> {
   if (!r.ok) {
     const err = await r.json().catch(() => ({}))
     throw new Error(err.error || err.message || 'Failed to delete')
+  }
+}
+
+export async function uploadMenuItemImage(id: number, file: File): Promise<{ imageUrl: string }> {
+  const formData = new FormData()
+  formData.append('image', file)
+  
+  const r = await fetch(`${API}/api/menu/${id}/image`, {
+    method: 'POST',
+    body: formData,
+  })
+  if (!r.ok) {
+    const err = await r.json().catch(() => ({}))
+    throw new Error(err.error || err.message || 'Failed to upload image')
+  }
+  return r.json()
+}
+
+export async function deleteMenuItemImage(id: number): Promise<void> {
+  const r = await fetch(`${API}/api/menu/${id}/image`, { method: 'DELETE' })
+  if (!r.ok) {
+    const err = await r.json().catch(() => ({}))
+    throw new Error(err.error || err.message || 'Failed to delete image')
   }
 }
