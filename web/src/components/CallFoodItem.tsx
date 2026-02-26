@@ -102,14 +102,25 @@ export function CallFoodItem({
   }
 
   const timeSinceLastCall = getTimeSinceLastCall(lastCalledAt)
-  const shouldCallNow = timeSinceLastCall && timeSinceLastCall.diffMins > 15
+  
+  const getQualityBadge = () => {
+    if (!timeSinceLastCall) return null
+    const mins = timeSinceLastCall.diffMins
+    
+    if (mins > 15) return { text: 'Call Now', variant: 'destructive' as const }
+    if (mins >= 10) return { text: 'B quality', variant: 'warning' as const }
+    if (mins < 5) return { text: 'A quality', variant: 'success' as const }
+    return null
+  }
+  
+  const qualityBadge = getQualityBadge()
 
   // Debug: log lastCalledAt
   React.useEffect(() => {
     if (lastCalledAt && timeSinceLastCall) {
-      console.log(`${item.code}: Last called at`, lastCalledAt, timeSinceLastCall.formatted, 'shouldCallNow:', shouldCallNow)
+      console.log(`${item.code}: Last called at`, lastCalledAt, timeSinceLastCall.formatted, 'badge:', qualityBadge)
     }
-  }, [lastCalledAt, item.code, timeSinceLastCall, shouldCallNow])
+  }, [lastCalledAt, item.code, timeSinceLastCall, qualityBadge])
 
   let buttonText = 'Call'
   if (loading) buttonText = 'Calling…'
@@ -148,9 +159,16 @@ export function CallFoodItem({
           >
             {item.code}
           </div>
-          {shouldCallNow ? (
-            <Badge variant="destructive" className="text-xs font-semibold">
-              Call Now
+          {qualityBadge ? (
+            <Badge 
+              variant={qualityBadge.variant} 
+              className={`text-xs font-semibold ${
+                qualityBadge.variant === 'warning' ? 'bg-yellow-500 text-white border-yellow-500' :
+                qualityBadge.variant === 'success' ? 'bg-green-500 text-white border-green-500' :
+                ''
+              }`}
+            >
+              {qualityBadge.text}
             </Badge>
           ) : timeSinceLastCall && (
             <span className="text-xs text-muted-foreground">
