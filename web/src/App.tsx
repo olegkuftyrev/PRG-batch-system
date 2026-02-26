@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ScreenNav } from '@/components/ScreenNav'
+import { HiddenNav } from '@/components/HiddenNav'
 import { ScreenContent } from '@/components/ScreenContent'
 import { useSocket } from '@/hooks/useSocket'
 import type { ScreenId } from '@/types/screen'
@@ -11,9 +11,9 @@ function App() {
 
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground">
-      <ScreenNav current={screen} onSelect={setScreen} />
+      <HiddenNav current={screen} onSelect={setScreen} />
 
-      <main className="flex-1 overflow-hidden flex flex-col">
+      <main className="flex-1 overflow-hidden flex flex-col pt-8">
         <ScreenContent screen={screen} socketState={socketState} />
       </main>
     </div>
