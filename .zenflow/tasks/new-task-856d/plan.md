@@ -97,13 +97,14 @@ Create a detailed implementation plan based on `{@artifacts_path}/spec.md`.
 
 **Verification**: TypeScript suppression catalogue created
 
-### [ ] Step: Validate API contracts against implementation
+### [x] Step: Validate API contracts against implementation
+<!-- chat-id: a9bd63a9-272b-4828-9b44-42712088b8b9 -->
 
-- [ ] Compare documented endpoints in README.md vs actual routes in `api/start/routes.ts`
-- [ ] Identify undocumented endpoints (image upload/delete, ticket cancel)
-- [ ] Verify request/response formats match documentation
-- [ ] Create requirements compliance matrix
-- [ ] Record findings in `.zenflow/tasks/new-task-856d/compliance-matrix.md`
+- [x] Compare documented endpoints in README.md vs actual routes in `api/start/routes.ts`
+- [x] Identify undocumented endpoints (image upload/delete, ticket cancel)
+- [x] Verify request/response formats match documentation
+- [x] Create requirements compliance matrix
+- [x] Record findings in `.zenflow/tasks/new-task-856d/compliance-matrix.md`
 
 **Verification**: All API endpoints validated and gaps documented
 
