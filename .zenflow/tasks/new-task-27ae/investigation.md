@@ -225,11 +225,32 @@ function groupTicketsByHour(tickets: SnapshotTicket[]): Record<string, SnapshotT
 }
 ```
 
+## Phase 6 Implementation: Quality Hold Timer
+
+### Changes Completed
+
+#### CallFoodItem Component
+- ✅ Added quality hold timer calculation after cooking reaches 100%
+- ✅ Uses `item.holdTime` field (default 600 seconds / 10 minutes)
+- ✅ Tracks elapsed time since quality check started
+- ✅ Displays remaining hold time in button: "Quality Hold MM:SS"
+- ✅ Three visual states:
+  - **Fresh** (>50% hold time remaining): Normal appearance
+  - **Expiring** (≤50% hold time remaining): Red pulsing border (`animate-pulse`)
+  - **Expired** (≤0 hold time): Thick red border + red background + "⚠️ EXPIRED - DISCARD"
+
+#### Implementation Logic
+```tsx
+const holdTimeSeconds = item.holdTime ?? 600
+const qualityCheckElapsed = Math.abs(remainingSeconds)
+const holdTimeRemaining = holdTimeSeconds - qualityCheckElapsed
+const isHoldExpiring = holdTimeRemaining <= holdTimeSeconds / 2
+const isHoldExpired = holdTimeRemaining <= 0
+```
+
 ## Next Steps
 
-Phase 5 complete. Ready to proceed to **Phase 6** which includes:
-- Quality hold timer (10-min countdown after 100%)
-- Red pulsing border animation for quality alerts
+Phase 6 complete. Ready to proceed to **Phase 7** which includes:
 - BOH screen updates with collapsable completed items
 - Cancel confirmation dialog with shadcn Alert
 

@@ -67,20 +67,40 @@ export function CallFoodItem({
     ? Math.min(((totalSeconds - remainingSeconds) / totalSeconds) * 100, 100)
     : 0
 
+  const holdTimeSeconds = item.holdTime ?? 600
+  const qualityCheckElapsed = isQualityCheck && remainingSeconds !== null && remainingSeconds !== undefined
+    ? Math.abs(remainingSeconds)
+    : 0
+  const holdTimeRemaining = holdTimeSeconds - qualityCheckElapsed
+  const isHoldExpiring = isQualityCheck && holdTimeRemaining <= holdTimeSeconds / 2
+  const isHoldExpired = isQualityCheck && holdTimeRemaining <= 0
+
   const imageUrl = item.imageUrl ? `${import.meta.env.VITE_API_URL || ''}${item.imageUrl}` : null
 
   let buttonText = 'Call'
   if (loading) buttonText = 'Calling…'
   else if (disabled && disabledReason) buttonText = disabledReason
-  else if (isQualityCheck) buttonText = 'Quality Check'
+  else if (isHoldExpired) buttonText = '⚠️ EXPIRED - DISCARD'
+  else if (isQualityCheck) {
+    const mins = Math.floor(holdTimeRemaining / 60)
+    const secs = holdTimeRemaining % 60
+    buttonText = `Quality Hold ${mins}:${String(secs).padStart(2, '0')}`
+  }
   else if (isCooking) {
     const mins = Math.floor(remainingSeconds / 60)
     const secs = remainingSeconds % 60
     buttonText = `${mins}:${String(secs).padStart(2, '0')}`
   }
 
+  let cardClassName = "flex flex-col"
+  if (isHoldExpired) {
+    cardClassName += " border-4 border-red-600 bg-red-50"
+  } else if (isHoldExpiring) {
+    cardClassName += " border-2 border-red-500 animate-pulse"
+  }
+
   return (
-    <Card className="flex flex-col">
+    <Card className={cardClassName}>
       <CardHeader className="pb-2">
         <div className="flex flex-col gap-1">
           <div className="font-bold text-lg">{item.code}</div>
