@@ -13,6 +13,11 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 
 export default class MenuItemsController {
+  /**
+   * Default hold time in seconds for menu items (time food can safely stay warm)
+   */
+  static readonly DEFAULT_HOLD_TIME_SECONDS = 600
+
   /** GET /api/menu — list items + menu_version */
   async index({ response }: HttpContext) {
     const items = await MenuItem.query().orderBy('code', 'asc')
@@ -40,7 +45,7 @@ export default class MenuItemsController {
           recommendedBatch: (payload.recommendedBatch as Record<string, string>) ?? {},
           color: payload.color ?? null,
           imageUrl: payload.imageUrl ?? null,
-          holdTime: payload.holdTime ?? 600,
+          holdTime: payload.holdTime ?? MenuItemsController.DEFAULT_HOLD_TIME_SECONDS,
         },
         { client: trx }
       )

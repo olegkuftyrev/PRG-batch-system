@@ -8,6 +8,11 @@ import { createTicketValidator } from '#validators/ticket'
 import { DateTime } from 'luxon'
 
 export default class TicketsController {
+  /**
+   * Default cook time in seconds when no batch-specific time is configured
+   */
+  static readonly DEFAULT_COOK_TIME_SECONDS = 420
+
   /** POST /api/tickets — create ticket */
   async store({ request, response }: HttpContext) {
     const payload = await request.validateUsing(createTicketValidator)
@@ -16,7 +21,7 @@ export default class TicketsController {
       return response.badRequest({ error: 'Menu item is disabled' })
     }
     const cookTimes = menuItem.cookTimes as Record<string, number>
-    const durationSeconds = cookTimes[payload.batchSize] ?? 420
+    const durationSeconds = cookTimes[payload.batchSize] ?? TicketsController.DEFAULT_COOK_TIME_SECONDS
     const versionRow = await MenuVersion.query().first()
     const menuVersion = versionRow?.version ?? 1
     const today = DateTime.now().toISODate()!

@@ -179,14 +179,15 @@ Create a detailed implementation plan based on `{@artifacts_path}/spec.md`.
 
 **Verification**: Run `grep -r "collapsable\|collapsible" web/src/` to verify consistent imports
 
-### [ ] Step: Extract constants for magic numbers
+### [x] Step: Extract constants for magic numbers
+<!-- chat-id: 52cef898-2ce4-4d0c-8dea-2565305bbdf2 -->
 
-- [ ] Identify hardcoded values: 420 (default cook time), 600 (hold time), 5000000 (5MB upload limit)
-- [ ] Extract to constants in appropriate files:
+- [x] Identify hardcoded values: 420 (default cook time), 600 (hold time), 5000000 (5MB upload limit)
+- [x] Extract to constants in appropriate files:
   - `api/app/controllers/tickets_controller.ts`: `DEFAULT_COOK_TIME_SECONDS = 420`
   - `api/app/controllers/menu_items_controller.ts`: `DEFAULT_HOLD_TIME_SECONDS = 600`, `MAX_IMAGE_SIZE_BYTES = 5000000`
-- [ ] Replace all hardcoded occurrences with named constants
-- [ ] Add JSDoc comments explaining constants
+- [x] Replace all hardcoded occurrences with named constants
+- [x] Add JSDoc comments explaining constants
 
 **Verification**: Run `grep -rn "420\|600\|5000000" api/app/` - only constant definitions should remain
 
