@@ -17,7 +17,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { ToggleSwitch } from '@/components/ui/toggle-switch'
-import { Collapsable } from '@/components/ui/collapsable'
+import { Collapsable } from '@/components/ui/collapsible'
 import { ColorBadge, type ColorType } from '@/components/ui/color-badge'
 import { ImagePlaceholder } from '@/components/ui/image-placeholder'
 import { useMenu } from '@/hooks/useMenu'

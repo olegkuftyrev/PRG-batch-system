@@ -1,7 +1,7 @@
 import { useRef, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
-import { Collapsable } from '@/components/ui/collapsable'
+import { Collapsable } from '@/components/ui/collapsible'
 import { startTicket, completeTicket } from '@/api/tickets'
 import type { SnapshotTicket, SocketState } from '@/hooks/useSocket'
 import { useRemainingSeconds } from '@/hooks/useRemainingSeconds'

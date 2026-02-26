@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { CallFoodItem } from '@/components/CallFoodItem'
-import { Collapsable } from '@/components/ui/collapsable'
+import { Collapsable } from '@/components/ui/collapsible'
 import { useMenu, groupMenuByDriveThruSections } from '@/hooks/useMenu'
 import { createTicket, cancelTicket, type Ticket } from '@/api/tickets'
 import { useRemainingSeconds } from '@/hooks/useRemainingSeconds'

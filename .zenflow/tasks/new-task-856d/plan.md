@@ -165,14 +165,15 @@ Create a detailed implementation plan based on `{@artifacts_path}/spec.md`.
 
 **Verification**: Run `grep -rn "console\." web/src/` - should return 0 results (or only dev-wrapped)
 
-### [ ] Step: Resolve duplicate collapsible components
+### [x] Step: Resolve duplicate collapsible components
+<!-- chat-id: 0fa33d39-e339-472c-8fd1-6a4185224f30 -->
 
-- [ ] Check imports: Which file is used - `collapsable.tsx` or `collapsible.tsx`?
-- [ ] Compare implementations: 1.28KB (active) vs 315B (stub)
-- [ ] Rename active file to correct spelling: `collapsible.tsx`
-- [ ] Update all imports to use canonical file
-- [ ] Delete unused file
-- [ ] Verify no import errors
+- [x] Check imports: Which file is used - `collapsable.tsx` or `collapsible.tsx`?
+- [x] Compare implementations: 1.28KB (active) vs 315B (stub)
+- [x] Rename active file to correct spelling: `collapsible.tsx`
+- [x] Update all imports to use canonical file
+- [x] Delete unused file
+- [x] Verify no import errors
 
 **Files**: `/web/src/components/ui/collapsable.tsx`, `/web/src/components/ui/collapsible.tsx`
 
