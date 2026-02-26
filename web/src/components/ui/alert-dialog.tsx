@@ -42,7 +42,7 @@ export function AlertDialog({
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+          <Button variant="secondary" onClick={() => onOpenChange(false)}>
             {cancelLabel}
           </Button>
           <Button variant={variant} onClick={handleAction}>

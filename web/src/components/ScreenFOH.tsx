@@ -126,10 +126,13 @@ export function ScreenFOH({ socketState }: Props) {
 
   const handleCancel = async (ticketId: number) => {
     setLastError(null)
+    console.log('Canceling ticket:', ticketId)
     try {
       await cancelTicket(ticketId)
       setOptimisticTickets((prev) => prev.filter((t) => t.id !== ticketId))
+      console.log('Cancel successful')
     } catch (e) {
+      console.error('Cancel failed:', e)
       setLastError(e instanceof Error ? e.message : 'Failed to cancel')
     }
   }
