@@ -19,7 +19,7 @@ export function BatchToggle({ options, value, onChange, disabled, className, rec
   return (
     <div className={cn('flex flex-col items-center gap-2', className)}>
       {recommended && (
-        <div className="w-full flex justify-end">
+        <div className="w-full flex justify-center">
           <span className="text-xs text-muted-foreground">
             Recommended: <span className="font-semibold">{recommended}</span>
           </span>
