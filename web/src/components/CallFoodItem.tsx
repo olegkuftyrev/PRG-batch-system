@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import * as React from 'react'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -84,7 +85,7 @@ export function CallFoodItem({
 
   const imageUrl = item.imageUrl ? `${import.meta.env.VITE_API_URL || ''}${item.imageUrl}` : null
 
-  const formatLastCalled = (date: Date | null) => {
+  const formatLastCalled = (date: Date | null | undefined) => {
     if (!date) return null
     const now = new Date()
     const diffMs = now.getTime() - date.getTime()
@@ -96,6 +97,13 @@ export function CallFoodItem({
     if (diffHours < 24) return `${diffHours}h ago`
     return `${Math.floor(diffHours / 24)}d ago`
   }
+
+  // Debug: log lastCalledAt
+  React.useEffect(() => {
+    if (lastCalledAt) {
+      console.log(`${item.code}: Last called at`, lastCalledAt, formatLastCalled(lastCalledAt))
+    }
+  }, [lastCalledAt, item.code])
 
   let buttonText = 'Call'
   if (loading) buttonText = 'Calling…'

@@ -30,13 +30,15 @@ function getActiveTicketForItem(myCalls: SnapshotTicket[], item: MenuItem): Snap
 
 /** Get the last completed ticket time for this item */
 function getLastCompletedTime(completedTickets: SnapshotTicket[], item: MenuItem): Date | null {
+  const targetTitle = `${item.title} (${item.code})`
   const completed = completedTickets
-    .filter((t) =>
-      t.itemTitleSnapshot === `${item.title} (${item.code})` &&
-      t.station === item.station &&
-      t.state === 'completed' &&
-      t.startedAt
-    )
+    .filter((t) => {
+      const match = t.itemTitleSnapshot === targetTitle &&
+        t.station === item.station &&
+        t.state === 'completed' &&
+        t.startedAt
+      return match
+    })
     .sort((a, b) => {
       const aTime = a.startedAt ? new Date(a.startedAt).getTime() : 0
       const bTime = b.startedAt ? new Date(b.startedAt).getTime() : 0
