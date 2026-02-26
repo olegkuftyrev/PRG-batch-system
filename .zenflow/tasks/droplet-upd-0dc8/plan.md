@@ -140,21 +140,22 @@ Deploy the updated containers.
 - prg-web: Up (port 8080)
 - No restart loops detected
 
-### [ ] Step: Post-deployment Verification
+### [x] Step: Post-deployment Verification
+<!-- chat-id: e4d1138e-506d-4bcc-8ec4-9db1431b42f8 -->
 
 Verify all services are functioning correctly after the update.
 
 **Tasks:**
-- [ ] Check container status: `docker compose ps` (all should show "Up (healthy)")
-- [ ] Test API health: `curl http://134.199.223.99:3333/health` → expect `{"ok":true,"database":"connected"}`
-- [ ] Test frontend: `curl -I http://134.199.223.99:8080` → expect HTTP 200
-- [ ] Check database tables: `docker compose exec postgres psql -U prg -d prg_batch -c '\dt'`
-- [ ] Review API logs: `docker compose logs api --tail 50` (no critical errors)
-- [ ] Review web logs: `docker compose logs web --tail 20` (nginx started)
-- [ ] Review postgres logs: `docker compose logs postgres --tail 20` (ready to accept connections)
-- [ ] Test menu API: `curl http://134.199.223.99:3333/api/menu`
-- [ ] Verify frontend loads in browser: http://134.199.223.99:8080
-- [ ] Check WebSocket connections are functional
+- [x] Check container status: `docker compose ps` (all should show "Up (healthy)")
+- [x] Test API health: `curl http://134.199.223.99:3333/health` → expect `{"ok":true,"database":"connected"}`
+- [x] Test frontend: `curl -I http://134.199.223.99:8080` → expect HTTP 200
+- [x] Check database tables: `docker compose exec postgres psql -U prg -d prg_batch -c '\dt'`
+- [x] Review API logs: `docker compose logs api --tail 50` (no critical errors)
+- [x] Review web logs: `docker compose logs web --tail 20` (nginx started)
+- [x] Review postgres logs: `docker compose logs postgres --tail 20` (ready to accept connections)
+- [x] Test menu API: `curl http://134.199.223.99:3333/api/menu`
+- [x] Verify frontend loads in browser: http://134.199.223.99:8080
+- [x] Check WebSocket connections are functional
 
 **Success Criteria:**
 - ✅ All containers running and healthy
