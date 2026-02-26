@@ -122,10 +122,10 @@ export function CallFoodItem({
           <img 
             src={imageUrl} 
             alt={item.title} 
-            className="w-full h-32 object-cover rounded"
+            className="w-full aspect-[6/4] object-cover rounded"
           />
         ) : (
-          <ImagePlaceholder className="h-32" />
+          <ImagePlaceholder className="aspect-[6/4]" />
         )}
         
         {item.batchSizes.length === 3 ? (
