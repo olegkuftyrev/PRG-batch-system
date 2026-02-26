@@ -104,4 +104,19 @@ export default class TicketsController {
     Ws.toStation(ticket.source, 'ticket_completed', ticket.serialize())
     response.json(ticket.serialize())
   }
+
+  /** DELETE /api/tickets/:id — cancel/delete ticket */
+  async destroy({ params, response }: HttpContext) {
+    const ticket = await Ticket.findOrFail(params.id)
+    if (ticket.state === 'completed') {
+      return response.badRequest({ error: 'Cannot cancel completed ticket' })
+    }
+    const station = ticket.station
+    const source = ticket.source
+    const serialized = ticket.serialize()
+    await ticket.delete()
+    Ws.toStation(station, 'ticket_cancelled', serialized)
+    Ws.toStation(source, 'ticket_cancelled', serialized)
+    response.noContent()
+  }
 }

@@ -162,13 +162,44 @@ holdTime: Math.round(parseFloat(form.holdTime) * 60)
 ✅ Toggle switches replace checkboxes for enabled status
 ✅ Hold time field accepts numeric input in minutes
 
+## Phase 4 Implementation: FOH/Drive-Thru Screens
+
+### Changes Completed
+
+#### CallFoodItem Component ([./web/src/components/CallFoodItem.tsx](./web/src/components/CallFoodItem.tsx))
+- ✅ New card layout: Code at top, ColorBadge underneath, Title, Picture/Placeholder, Batch Toggle, Call button
+- ✅ Integrated BatchToggle component for 3-position batch selection
+- ✅ Added ProgressBar inside Call button showing cooking progress (red → orange → green)
+- ✅ Timer countdown displayed in button text (MM:SS format)
+- ✅ Cancel button appears when item is actively cooking
+- ✅ ImagePlaceholder shown when no image uploaded
+- ✅ Fallback to button grid for non-3-batch items
+- ✅ Quality check state handling
+
+#### API Changes
+- ✅ Added DELETE `/api/tickets/:id` endpoint ([./api/app/controllers/tickets_controller.ts:108-121](./api/app/controllers/tickets_controller.ts:108-121))
+- ✅ Cancel broadcasts `ticket_cancelled` event to station and source
+- ✅ Updated routes ([./api/start/routes.ts:29](./api/start/routes.ts:29))
+- ✅ Added `cancelTicket()` function to frontend API ([./web/src/api/tickets.ts:77-83](./web/src/api/tickets.ts:77-83))
+
+#### Screen Updates
+- ✅ ScreenFOH updated with cancel handler and new props to CallFoodItem
+- ✅ ScreenDriveThru updated with cancel handler and new props to CallFoodItem
+- ✅ Both screens now pass: activeTicketId, remainingSeconds, totalSeconds, onCancel
+
+### Progress Bar Behavior
+- **0-33%**: Red (just started)
+- **34-66%**: Orange (halfway)
+- **67-99%**: Yellow (almost done)
+- **100%**: Green (ready for quality check)
+- Text shows remaining time in MM:SS format overlaid on progress bar
+
 ## Next Steps
 
-Phase 3 (Menu Management) is complete. Ready to proceed to **Phase 4** which includes:
-- FOH/Drive-Thru screen cards with new layout
-- 3-position batch toggle on FOH cards
-- Progress bar integration in call buttons
-- Color badges under item codes on FOH screens
+Phase 4 (FOH/Drive-Thru) is complete. Ready to proceed to **Phase 5** which includes:
+- BOH screen updates with collapsable completed items
+- Hourly collapsable sections for "My Calls"
+- 4-card-per-row grid layout optimization for iPad
 
 ## Technical Notes
 

@@ -73,3 +73,11 @@ export async function completeTicket(id: number): Promise<Ticket> {
   const data = (await r.json()) as Record<string, unknown>
   return normalizeTicket(data)
 }
+
+export async function cancelTicket(id: number): Promise<void> {
+  const r = await fetch(`${API}/api/tickets/${id}`, { method: 'DELETE' })
+  if (!r.ok) {
+    const err = await r.json().catch(() => ({}))
+    throw new Error(err.error || 'Failed to cancel')
+  }
+}

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { CallFoodItem } from '@/components/CallFoodItem'
 import { useMenu, groupMenuByFohSections } from '@/hooks/useMenu'
-import { createTicket, type Ticket } from '@/api/tickets'
+import { createTicket, cancelTicket, type Ticket } from '@/api/tickets'
 import { useRemainingSeconds } from '@/hooks/useRemainingSeconds'
 import type { SocketState, SnapshotTicket } from '@/hooks/useSocket'
 import type { MenuItem } from '@/api/menu'
@@ -101,6 +101,16 @@ export function ScreenFOH({ socketState }: Props) {
     }
   }
 
+  const handleCancel = async (ticketId: number) => {
+    setLastError(null)
+    try {
+      await cancelTicket(ticketId)
+      setOptimisticTickets((prev) => prev.filter((t) => t.id !== ticketId))
+    } catch (e) {
+      setLastError(e instanceof Error ? e.message : 'Failed to cancel')
+    }
+  }
+
   if (loading) return <div className="p-6 text-muted-foreground">Loading menu…</div>
   if (error) return <div className="p-6 text-destructive">{error}</div>
   if (!menu) return null
@@ -126,12 +136,6 @@ export function ScreenFOH({ socketState }: Props) {
     } else if (activeForItem && activeTicket) {
       if (activeTicket.state === 'created') {
         disabledReason = 'Waiting to start'
-      } else if (remaining !== null && remaining > 0) {
-        const mins = Math.floor(remaining / 60)
-        const secs = remaining % 60
-        disabledReason = `${mins}:${String(secs).padStart(2, '0')} remaining`
-      } else {
-        disabledReason = 'Quality check in progress'
       }
     }
     
@@ -139,8 +143,12 @@ export function ScreenFOH({ socketState }: Props) {
       <CallFoodItem
         item={item}
         onCall={handleCall}
+        onCancel={handleCancel}
         disabled={disabled}
         disabledReason={disabledReason}
+        activeTicketId={activeTicket?.id}
+        remainingSeconds={remaining}
+        totalSeconds={activeTicket?.durationSeconds ?? activeTicket?.durationSnapshot}
       />
     )
   }
