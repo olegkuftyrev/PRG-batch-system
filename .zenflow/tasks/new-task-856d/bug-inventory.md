@@ -451,14 +451,72 @@
 ## 10. Code Quality Findings
 
 ### 10.1 Console Statements
-**Status:** OPEN  
-**Locations:**
-- `/api/start/ws.ts:31`
-- `/api/app/services/ws.ts:17`
-- `/web/src/components/ScreenBOH.tsx:212, 222`
-- `/web/src/components/ui/batch-toggle.tsx`
+**Status:** CATALOGUED (search complete)  
+**Search Completed:** 2026-02-26
 
-**Action:** Replace with logger (backend) or remove (frontend)
+#### Production Code (Backend - MUST FIX)
+**Count:** 2 instances  
+**Action Required:** Replace with AdonisJS logger
+
+| File | Line | Type | Context |
+|------|------|------|---------|
+| `/api/start/ws.ts` | 31 | `console.warn` | WebSocket server initialization check |
+| `/api/app/services/ws.ts` | 17 | `console.warn` | HTTP server readiness check |
+
+**Recommended Fix:**
+```typescript
+import logger from '@adonisjs/core/services/logger'
+// Replace console.warn with:
+logger.warn('...')
+```
+
+---
+
+#### Production Code (Frontend - MUST FIX)
+**Count:** 3 instances  
+**Action Required:** Remove or wrap with dev-only guards
+
+| File | Line | Type | Context |
+|------|------|------|---------|
+| `/web/src/components/ScreenBOH.tsx` | 212 | `console.error` | Error handling |
+| `/web/src/components/ScreenBOH.tsx` | 221 | `console.error` | Error handling |
+| `/web/src/components/ui/batch-toggle.tsx` | 14 | `console.warn` | Validation warning |
+
+**Recommended Fix:**
+```typescript
+// Option 1: Remove entirely
+// Option 2: Dev-only
+if (import.meta.env.DEV) {
+  console.error(e)
+}
+```
+
+---
+
+#### Scripts (ACCEPTABLE - NO ACTION)
+**Count:** 17 source files + 15 build artifacts  
+**Verdict:** Scripts are allowed to use console statements
+
+**Source Files:**
+- `/api/scripts/run-seed.ts` (3 instances)
+- `/api/scripts/verify-stage1-2.ts` (6 instances)
+- `/api/scripts/test-socket.ts` (8 instances)
+- `/api/scripts/apply_migration.ts` (5 instances)
+- `/api/scripts/run-migrations.ts` (5 instances)
+
+**Build Artifacts (Generated):**
+- `/api/build/scripts/*.js` (15 instances - compiled from above)
+
+**Note:** Build artifacts should be gitignored (see issue 3.1)
+
+---
+
+#### Summary
+- **Production Backend:** 2 console statements → REPLACE WITH LOGGER
+- **Production Frontend:** 3 console statements → REMOVE OR DEV-WRAP
+- **Scripts:** 32 console statements → ACCEPTABLE
+- **Total Console Statements:** 37
+- **Action Required:** Fix 5 statements in production code
 
 ---
 
@@ -517,7 +575,7 @@
 
 ### Immediate (Critical/High)
 1. ✅ Scan documentation complete
-2. ⏳ Search codebase for console statements (next step)
+2. ✅ Search codebase for console statements complete (5 production issues found)
 3. ⏳ Search for TypeScript suppressions (next step)
 4. ⏳ Search for code markers (next step)
 5. ⏳ Fix TypeScript errors in `menu_items_controller.ts`
