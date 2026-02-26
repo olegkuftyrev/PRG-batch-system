@@ -2,7 +2,6 @@ import { useRef, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Collapsable } from '@/components/ui/collapsable'
-import { HiddenNav } from '@/components/ui/hidden-nav'
 import { startTicket, completeTicket } from '@/api/tickets'
 import type { SnapshotTicket, SocketState } from '@/hooks/useSocket'
 import { useRemainingSeconds } from '@/hooks/useRemainingSeconds'
@@ -228,12 +227,10 @@ export function ScreenBOH({ screen, socketState }: Props) {
   const title = TITLE_BY_SCREEN[screen]
 
   return (
-    <>
-      <HiddenNav screen={screen} />
-      <div className="flex-1 overflow-auto p-4 flex flex-col gap-4">
-        {title && (
-          <h1 className="text-xl font-semibold">{title}</h1>
-        )}
+    <div className="flex-1 overflow-auto p-4 flex flex-col gap-4">
+      {title && (
+        <h1 className="text-xl font-semibold">{title}</h1>
+      )}
       <section>
         <h2 className="text-lg font-semibold mb-2">Waiting</h2>
         <div className="flex flex-col gap-3">
@@ -299,7 +296,6 @@ export function ScreenBOH({ screen, socketState }: Props) {
           </div>
         </Collapsable>
       </section>
-      </div>
-    </>
+    </div>
   )
 }
