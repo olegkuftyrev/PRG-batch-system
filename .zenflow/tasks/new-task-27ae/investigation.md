@@ -222,6 +222,9 @@ Phase 4 (FOH/Drive-Thru) is complete. Ready to proceed to **Phase 5** which incl
 - FormData type separate from payload types for better UX
 - MenuItem type includes optional new fields (color, imageUrl, holdTime)
 
+## Known Issues
+- ⚠️ **Cancel button not working yet** - WebSocket event handler added but needs further debugging
+
 ## Deployment Status
 - ✅ Changes committed and built locally
 - ✅ Web container rebuilt and restarted
