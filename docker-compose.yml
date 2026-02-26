@@ -46,6 +46,8 @@ services:
       DB_SSL: "false"
     ports:
       - "${API_PORT:-3333}:3333"
+    volumes:
+      - uploads_data:/app/public/uploads
 
   web:
     build:
@@ -62,3 +64,4 @@ services:
 
 volumes:
   postgres_data:
+  uploads_data:

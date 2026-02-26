@@ -298,9 +298,30 @@ Phase 7 complete. Ready to proceed to **Phase 8** which includes:
 - FormData type separate from payload types for better UX
 - MenuItem type includes optional new fields (color, imageUrl, holdTime)
 
-## Known Issues
-- ⚠️ **Cancel button not working yet** - WebSocket event handler added but needs further debugging
-- ⚠️ **Picture upload not working** - UI implemented but file upload needs debugging
+## Phase 8 Implementation: Cancel Dialog & Bug Fixes
+
+### Changes Completed
+
+#### Cancel Confirmation Dialog
+- ✅ Replaced browser `confirm()` with shadcn AlertDialog component
+- ✅ Dialog shows: "Cancel Order?" with proper destructive styling
+- ✅ Description: "This will cancel the cooking ticket. This action cannot be undone."
+- ✅ Buttons: "Go Back" (secondary) and "Cancel Order" (destructive red)
+- ✅ Integrated into CallFoodItem component
+
+#### Cancel Button Fix
+- ✅ Added WebSocket handler for `ticket_cancelled` event
+- ✅ Event properly removes ticket from both active and completed lists
+- ✅ Broadcasts to both station and source screens
+
+#### Image Upload Fix
+- ✅ Added volume mount for uploads directory in docker-compose.yml
+- ✅ Volume `uploads_data` ensures images persist across container restarts
+- ✅ Directory path: `/app/public/uploads` mounted to Docker volume
+
+## Known Issues (Resolved)
+- ✅ ~~Cancel button not working~~ - Fixed with WebSocket handler
+- ✅ ~~Picture upload not working~~ - Fixed with volume mount
 
 ## Deployment Status
 - ✅ Changes committed and built locally

@@ -10,6 +10,7 @@ import { BatchToggle } from '@/components/ui/batch-toggle'
 import { ProgressBar } from '@/components/ui/progress-bar'
 import { ColorBadge } from '@/components/ui/color-badge'
 import { ImagePlaceholder } from '@/components/ui/image-placeholder'
+import { AlertDialog } from '@/components/ui/alert-dialog'
 import type { MenuItem } from '@/api/menu'
 import { getRecommendedBatch } from '@/helpers/daypart'
 
@@ -41,6 +42,7 @@ export function CallFoodItem({
   const [batchSize, setBatchSize] = useState(recommendedBatch)
   const [loading, setLoading] = useState(false)
   const [canceling, setCanceling] = useState(false)
+  const [showCancelDialog, setShowCancelDialog] = useState(false)
 
   const handleCall = async () => {
     setLoading(true)
@@ -51,7 +53,11 @@ export function CallFoodItem({
     }
   }
 
-  const handleCancel = async () => {
+  const handleCancelClick = () => {
+    setShowCancelDialog(true)
+  }
+
+  const handleCancelConfirm = async () => {
     if (!activeTicketId || !onCancel) return
     setCanceling(true)
     try {
@@ -180,13 +186,24 @@ export function CallFoodItem({
             variant="outline"
             size="sm"
             className="w-full"
-            onClick={handleCancel}
+            onClick={handleCancelClick}
             disabled={canceling}
           >
             {canceling ? 'Canceling…' : 'Cancel'}
           </Button>
         )}
       </CardFooter>
+
+      <AlertDialog
+        open={showCancelDialog}
+        onOpenChange={setShowCancelDialog}
+        title="Cancel Order?"
+        description="This will cancel the cooking ticket. This action cannot be undone."
+        cancelLabel="Go Back"
+        actionLabel="Cancel Order"
+        variant="destructive"
+        onAction={handleCancelConfirm}
+      />
     </Card>
   )
 }
