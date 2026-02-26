@@ -22,6 +22,7 @@ type Props = {
   activeTicketId?: number
   remainingSeconds?: number | null
   totalSeconds?: number
+  lastCalledAt?: Date | null
 }
 
 export function CallFoodItem({ 
@@ -32,7 +33,8 @@ export function CallFoodItem({
   disabledReason,
   activeTicketId,
   remainingSeconds,
-  totalSeconds
+  totalSeconds,
+  lastCalledAt
 }: Props) {
   const recommendedBatch = getRecommendedBatch(
     item.recommendedBatch ?? {},
@@ -82,6 +84,19 @@ export function CallFoodItem({
 
   const imageUrl = item.imageUrl ? `${import.meta.env.VITE_API_URL || ''}${item.imageUrl}` : null
 
+  const formatLastCalled = (date: Date | null) => {
+    if (!date) return null
+    const now = new Date()
+    const diffMs = now.getTime() - date.getTime()
+    const diffMins = Math.floor(diffMs / 60000)
+    
+    if (diffMins < 1) return 'Just now'
+    if (diffMins < 60) return `${diffMins}m ago`
+    const diffHours = Math.floor(diffMins / 60)
+    if (diffHours < 24) return `${diffHours}h ago`
+    return `${Math.floor(diffHours / 24)}d ago`
+  }
+
   let buttonText = 'Call'
   if (loading) buttonText = 'Calling…'
   else if (disabled && disabledReason) buttonText = disabledReason
@@ -107,9 +122,9 @@ export function CallFoodItem({
   return (
     <Card className={cardClassName}>
       <CardHeader className="pb-2">
-        <div className="flex flex-col gap-1">
+        <div className="flex justify-between items-start gap-2">
           <div 
-            className={`font-bold text-lg inline-block self-start px-2 py-1 rounded ${
+            className={`font-bold text-lg inline-block px-2 py-1 rounded ${
               item.color === 'blue' ? 'bg-blue-500 text-white' :
               item.color === 'red' ? 'bg-red-500 text-white' :
               item.color === 'green' ? 'bg-green-500 text-white' :
@@ -119,6 +134,11 @@ export function CallFoodItem({
           >
             {item.code}
           </div>
+          {lastCalledAt && (
+            <span className="text-xs text-muted-foreground">
+              {formatLastCalled(lastCalledAt)}
+            </span>
+          )}
         </div>
         <h3 className="text-base font-semibold uppercase tracking-wide mt-1">
           {item.title}

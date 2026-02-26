@@ -28,6 +28,26 @@ function getActiveTicketForItem(myCalls: SnapshotTicket[], item: MenuItem): Snap
   )
 }
 
+/** Get the last completed ticket time for this item */
+function getLastCompletedTime(completedTickets: SnapshotTicket[], item: MenuItem): Date | null {
+  const completed = completedTickets
+    .filter((t) =>
+      t.itemTitleSnapshot === `${item.title} (${item.code})` &&
+      t.station === item.station &&
+      t.state === 'completed' &&
+      t.startedAt
+    )
+    .sort((a, b) => {
+      const aTime = a.startedAt ? new Date(a.startedAt).getTime() : 0
+      const bTime = b.startedAt ? new Date(b.startedAt).getTime() : 0
+      return bTime - aTime
+    })
+  
+  return completed.length > 0 && completed[0].startedAt 
+    ? new Date(completed[0].startedAt) 
+    : null
+}
+
 function toSnapshotTicket(t: Ticket): SnapshotTicket {
   return {
     id: t.id,
@@ -145,6 +165,7 @@ export function ScreenFOH({ socketState }: Props) {
 
   function CallFoodItemWithTimer({ item }: { item: MenuItem }) {
     const activeTicket = getActiveTicketForItem(myCalls, item)
+    const lastCompletedTime = getLastCompletedTime(completedTickets, item)
     const remaining = useRemainingSeconds(
       activeTicket?.startedAt,
       activeTicket?.durationSeconds ?? activeTicket?.durationSnapshot,
@@ -175,6 +196,7 @@ export function ScreenFOH({ socketState }: Props) {
         activeTicketId={activeTicket?.id}
         remainingSeconds={remaining}
         totalSeconds={activeTicket?.durationSeconds ?? activeTicket?.durationSnapshot}
+        lastCalledAt={lastCompletedTime}
       />
     )
   }
