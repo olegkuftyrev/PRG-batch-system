@@ -6,9 +6,10 @@ export interface BatchToggleProps {
   onChange: (value: string) => void
   disabled?: boolean
   className?: string
+  recommended?: string
 }
 
-export function BatchToggle({ options, value, onChange, disabled, className }: BatchToggleProps) {
+export function BatchToggle({ options, value, onChange, disabled, className, recommended }: BatchToggleProps) {
   if (options.length !== 3) {
     console.warn('BatchToggle expects exactly 3 options')
   }
@@ -17,6 +18,13 @@ export function BatchToggle({ options, value, onChange, disabled, className }: B
 
   return (
     <div className={cn('flex flex-col items-center gap-2', className)}>
+      {recommended && (
+        <div className="w-full flex justify-end">
+          <span className="text-xs text-muted-foreground">
+            Recommended: <span className="font-semibold">{recommended}</span>
+          </span>
+        </div>
+      )}
       <div className="flex gap-1">
         {options.map((option, index) => (
           <button

@@ -134,6 +134,7 @@ export function CallFoodItem({
             value={batchSize}
             onChange={setBatchSize}
             disabled={disabled}
+            recommended={recommendedBatch}
           />
         ) : (
           <div className="flex gap-1 justify-center">
