@@ -8,7 +8,6 @@ import {
 } from '@/components/ui/card'
 import { BatchToggle } from '@/components/ui/batch-toggle'
 import { ProgressBar } from '@/components/ui/progress-bar'
-import { ColorBadge } from '@/components/ui/color-badge'
 import { ImagePlaceholder } from '@/components/ui/image-placeholder'
 import { AlertDialog } from '@/components/ui/alert-dialog'
 import type { MenuItem } from '@/api/menu'
@@ -109,8 +108,17 @@ export function CallFoodItem({
     <Card className={cardClassName}>
       <CardHeader className="pb-2">
         <div className="flex flex-col gap-1">
-          <div className="font-bold text-lg">{item.code}</div>
-          {item.color && <ColorBadge color={item.color} className="self-start" />}
+          <div 
+            className={`font-bold text-lg inline-block self-start px-2 py-1 rounded ${
+              item.color === 'blue' ? 'bg-blue-500 text-white' :
+              item.color === 'red' ? 'bg-red-500 text-white' :
+              item.color === 'green' ? 'bg-green-500 text-white' :
+              item.color === 'orange' ? 'bg-orange-500 text-white' :
+              ''
+            }`}
+          >
+            {item.code}
+          </div>
         </div>
         <h3 className="text-base font-semibold uppercase tracking-wide mt-1">
           {item.title}
