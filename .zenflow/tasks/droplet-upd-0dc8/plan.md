@@ -117,20 +117,28 @@ Build updated Docker images for all services.
 - Web image: `prg-batch-system_web:latest` (4e2320fa28fe)
 - Both images built successfully
 
-### [ ] Step: Service Restart
+### [x] Step: Service Restart
+<!-- chat-id: 3c99cd6e-7e60-4f96-b3d6-f2f551ef3ce2 -->
 
 Deploy the updated containers.
 
 **Tasks:**
-- [ ] Run `docker compose down` to stop current containers
-- [ ] Run `docker compose up -d` to start updated containers
-- [ ] Wait for containers to reach healthy state (30-60 seconds)
-- [ ] Verify all 3 containers are running (`docker compose ps`)
+- [x] Run `docker compose down` to stop current containers
+- [x] Run `docker compose up -d` to start updated containers
+- [x] Wait for containers to reach healthy state (30-60 seconds)
+- [x] Verify all 3 containers are running (`docker compose ps`)
 
 **Success Criteria:**
 - All containers started successfully
 - No restart loops
 - Container health checks passing
+
+**Result:**
+- All 3 containers restarted successfully
+- prg-api: Up (port 3333)
+- prg-postgres: Up (healthy) (port 5432)
+- prg-web: Up (port 8080)
+- No restart loops detected
 
 ### [ ] Step: Post-deployment Verification
 
