@@ -1,341 +1,240 @@
-# Droplet Deployment Guide
+# Deploy to DigitalOcean Droplet
 
-> **✅ DEPLOYED**: This application is currently running on DigitalOcean Droplet at http://134.199.223.99:8080
-> 
-> See [DEPLOYMENT.md](./DEPLOYMENT.md) for full production deployment details.
+**Status:** Already deployed at http://134.199.223.99:8080
 
-## Prerequisites
+Full production info: [DEPLOYMENT.md](./DEPLOYMENT.md)
 
-1. **Create a DigitalOcean Droplet**:
-   - OS: Ubuntu 24.04 LTS
-   - Size: Basic plan, 2GB RAM minimum
-   - Enable IPv4 and add SSH keys
+## Before You Start
 
-2. **Point your domain** to the Droplet's IP address (optional, for SSL)
+**Create droplet:**
+- OS: Ubuntu 24.04 LTS
+- Plan: Basic, 2GB RAM minimum
+- Enable IPv4, add SSH key
 
-## Initial Server Setup
+**Optional:** Point domain to droplet IP (needed for SSL)
 
-### 1. Connect to Droplet
+## Steps
+
+### 1. Connect
 
 ```bash
 ssh root@your-droplet-ip
 ```
 
-### 2. Install Docker and Docker Compose
+### 2. Install Docker
 
 ```bash
-# Update packages
 apt update && apt upgrade -y
-
-# Install Docker
 curl -fsSL https://get.docker.com -o get-docker.sh
 sh get-docker.sh
-
-# Install Docker Compose
 apt install docker-compose-plugin -y
 
-# Verify installation
+# Verify
 docker --version
 docker compose version
 ```
 
-### 3. Install Git
+### 3. Clone repo
 
 ```bash
 apt install git -y
-```
-
-### 4. Clone Repository
-
-```bash
-# Create app directory
 mkdir -p /opt/prg-batch-system
 cd /opt/prg-batch-system
-
-# Clone repo
 git clone https://github.com/olegkuftyrev/PRG-batch-system.git .
-
-# Or use SSH if you have deploy keys set up
-# git clone git@github.com:olegkuftyrev/PRG-batch-system.git .
 ```
 
-### 5. Configure Environment
+### 4. Configure environment
 
 ```bash
-# Copy production env template
 cp .env.production .env
-
-# Edit with actual values
 nano .env
 ```
 
-Set these values in `.env`:
-- `APP_KEY`: Generate with `openssl rand -base64 32`
-- `POSTGRES_PASSWORD`: Strong password for database
-- `POSTGRES_USER`: Database username (default: `prg`)
-- `POSTGRES_DB`: Database name (default: `prg_batch`)
+Set:
+- `APP_KEY` → generate: `openssl rand -base64 32`
+- `POSTGRES_PASSWORD` → strong random password
+- `POSTGRES_USER` → `prg`
+- `POSTGRES_DB` → `prg_batch`
 
-### 6. Build and Start Services
+### 5. Build and run
 
 ```bash
-# Build all containers
 docker compose build
-
-# Start in detached mode
 docker compose up -d
-
-# Check status
-docker compose ps
-
-# View logs
-docker compose logs -f
+docker compose ps        # Check status
+docker compose logs -f   # Watch logs
 ```
 
-## Verify Deployment
+## Verify
 
-### Check Services
-
+**Check health:**
 ```bash
-# API health check
 curl http://localhost:3333/health
-# Expected: {"ok":true,"database":"connected"}
+# Should return: {"ok":true,"database":"connected"}
 
-# Web frontend
 curl http://localhost:8080
-# Should return HTML
+# Should return: HTML
 
-# View container logs
 docker compose logs api
 docker compose logs web
-docker compose logs postgres
 ```
 
-## Setup Nginx Reverse Proxy (Recommended)
+## Add Nginx Reverse Proxy (Optional)
 
-### Install Nginx
-
+**Install:**
 ```bash
 apt install nginx -y
 ```
 
-### Configure Nginx
-
+**Config file:**
 ```bash
-# Create config
 nano /etc/nginx/sites-available/prg-batch-system
 ```
 
-Add this configuration:
-
+Paste:
 ```nginx
 server {
     listen 80;
-    server_name your-domain.com;  # Replace with your domain or IP
+    server_name your-domain.com;
 
-    # Frontend
     location / {
         proxy_pass http://localhost:8080;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';
         proxy_set_header Host $host;
-        proxy_cache_bypass $http_upgrade;
     }
 
-    # API
     location /api {
         proxy_pass http://localhost:3333;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host $host;
-        proxy_cache_bypass $http_upgrade;
     }
 
-    # Health check
     location /health {
         proxy_pass http://localhost:3333;
     }
 
-    # WebSocket for Socket.io
     location /socket.io {
         proxy_pass http://localhost:3333;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";
-        proxy_set_header Host $host;
     }
 }
 ```
 
-Enable the site:
-
+**Enable:**
 ```bash
-# Create symlink
 ln -s /etc/nginx/sites-available/prg-batch-system /etc/nginx/sites-enabled/
-
-# Test config
 nginx -t
-
-# Reload nginx
 systemctl reload nginx
 ```
 
-## Setup SSL with Let's Encrypt (Optional)
+## Add SSL (Optional, requires domain)
 
 ```bash
-# Install Certbot
 apt install certbot python3-certbot-nginx -y
-
-# Get certificate (replace with your domain)
 certbot --nginx -d your-domain.com
-
-# Auto-renewal is set up automatically
-# Test renewal
-certbot renew --dry-run
+certbot renew --dry-run  # Test auto-renewal
 ```
 
-## Firewall Setup
+## Setup Firewall
 
 ```bash
-# Install UFW
 apt install ufw -y
-
-# Allow SSH (important!)
-ufw allow OpenSSH
-
-# Allow HTTP and HTTPS
+ufw allow OpenSSH        # IMPORTANT: Allow SSH first
 ufw allow 'Nginx Full'
-
-# Enable firewall
 ufw enable
-
-# Check status
 ufw status
 ```
 
-## Updates and Maintenance
-
-### Update Application
+## Update App
 
 ```bash
 cd /opt/prg-batch-system
-
-# Pull latest changes
 git pull
-
-# Rebuild and restart
 docker compose down
 docker compose build
 docker compose up -d
 ```
 
-### View Logs
+## Maintenance
 
+**View logs:**
 ```bash
-# All services
-docker compose logs -f
-
-# Specific service
-docker compose logs -f api
-docker compose logs -f web
-docker compose logs -f postgres
+docker compose logs -f           # All
+docker compose logs -f api       # API only
+docker compose logs -f postgres  # DB only
 ```
 
-### Backup Database
-
+**Backup database:**
 ```bash
-# Create backup
 docker compose exec postgres pg_dump -U prg prg_batch > backup-$(date +%Y%m%d).sql
+```
 
-# Restore from backup
+**Restore database:**
+```bash
 docker compose exec -T postgres psql -U prg prg_batch < backup-20260221.sql
 ```
 
-### Restart Services
-
+**Restart services:**
 ```bash
-# Restart all
-docker compose restart
-
-# Restart specific service
-docker compose restart api
-docker compose restart web
+docker compose restart      # All
+docker compose restart api  # API only
 ```
 
 ## Troubleshooting
 
-### Check if containers are running
-
+**Check containers:**
 ```bash
 docker compose ps
 ```
 
-### View container logs
-
+**View logs:**
 ```bash
 docker compose logs api
 docker compose logs web
-docker compose logs postgres
 ```
 
-### Restart a specific service
-
-```bash
-docker compose restart api
-```
-
-### Rebuild after code changes
-
+**Rebuild from scratch:**
 ```bash
 docker compose down
 docker compose build --no-cache
 docker compose up -d
 ```
 
-### Connect to database
-
+**Connect to DB:**
 ```bash
 docker compose exec postgres psql -U prg -d prg_batch
 ```
 
-### Check disk space
-
+**Check disk:**
 ```bash
 df -h
 docker system df
 ```
 
-### Clean up Docker resources
-
+**Clean Docker:**
 ```bash
-# Remove unused containers, networks, images
 docker system prune -a
 ```
 
-## Monitoring
+## Monitor Resources
 
-### Set up automatic monitoring (optional)
-
+**Install htop:**
 ```bash
-# Install htop for monitoring
 apt install htop -y
-
-# View running processes
 htop
 ```
 
-### Docker stats
-
+**Docker stats:**
 ```bash
-# View container resource usage
 docker stats
 ```
 
-## Cost Estimate
+## Cost
 
-- **Droplet**: $12-24/month (2-4GB RAM)
-- **Domain** (optional): $10-15/year
-- **Total**: ~$15-30/month
+- Droplet (2GB RAM): $12/month
+- Droplet (4GB RAM): $24/month
+- Domain (optional): $10-15/year
 
-Much simpler and cheaper than App Platform for small projects!
+Total: ~$15-30/month

@@ -1,312 +1,246 @@
 # PRG Batch System
 
-Kitchen batch cooking management system for restaurant operations.
+Kitchen display system for tracking batch cooking and prep tickets.
 
-## 🚀 Live Deployment
+## Live URLs
 
-**Production**: http://134.199.223.99:8080
+- **Frontend**: http://134.199.223.99:8080
+- **API**: http://134.199.223.99:3333
+- **Database**: PostgreSQL 16 (port 5432, internal)
 
-- Frontend: Port 8080
-- API: Port 3333
-- Database: PostgreSQL 16
+Full deployment docs: [DEPLOYMENT.md](./DEPLOYMENT.md)
 
-See [DEPLOYMENT.md](./DEPLOYMENT.md) for full deployment documentation.
+## What This Does
 
-## 📋 Overview
+Track cooking batches across multiple kitchen stations. Create tickets, start timers, complete orders. Display real-time status on FOH/Drive-Thru/BOH screens.
 
-The PRG Batch System helps kitchen staff manage batch cooking operations efficiently. It provides:
+**Screens:**
+- FOH (Front of House) - Customer-facing
+- Drive-Thru - Fixed 12-item layout
+- BOH - Station filters: Stirfry, Fryer, Sides, Grill
 
-- **Multiple Display Screens**: FOH, Drive-Thru, and station-specific BOH displays
-- **Real-time Updates**: WebSocket-powered live ticket updates
-- **Timer Management**: Automatic cooking countdown timers
-- **Menu Configuration**: Admin interface for menu management
-- **Batch Size Tracking**: Support for multiple batch sizes per item
+**Core functions:**
+- Create ticket → Auto-start timer → Mark complete
+- WebSocket updates all screens in real-time
+- Configure menu items: batch sizes, cook times per batch, enable/disable
 
-## 🏗️ Architecture
-
-```
-┌─────────────────────────────────────────────┐
-│              Monorepo Structure             │
-├─────────────────────────────────────────────┤
-│                                             │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐ │
-│  │   Web    │  │   API    │  │ Database │ │
-│  │  (React) │◄─┤(AdonisJS)│◄─┤(Postgres)│ │
-│  │  + Vite  │  │+ Socket  │  │   16     │ │
-│  └──────────┘  └──────────┘  └──────────┘ │
-│                                             │
-└─────────────────────────────────────────────┘
-```
-
-### Tech Stack
+## Stack
 
 **Frontend** (`/web`)
 - React 19 + TypeScript
 - Vite 7
-- TailwindCSS 4
-- shadcn/ui
+- TailwindCSS 4 + shadcn/ui
 - Socket.io Client
 
 **Backend** (`/api`)
-- AdonisJS 6
-- TypeScript
+- AdonisJS 6 + TypeScript
 - Lucid ORM
 - Socket.io
 - PostgreSQL driver
 
 **Database**
 - PostgreSQL 16
-- Migrations & Seeders included
+- Migrations in `/api/database/migrations`
+- Seeders in `/api/database/seeders`
 
 **Deployment**
-- Docker & Docker Compose
-- nginx (for static frontend)
-- DigitalOcean Droplet
+- Docker Compose
+- nginx (serves frontend static files)
+- DigitalOcean Droplet (Ubuntu 24.04)
 
-## 🚦 Quick Start
+## Run Locally
 
-### Prerequisites
+**Requirements:** Node.js 22+, Docker Compose
 
-- Node.js 22+
-- Docker & Docker Compose
-- PostgreSQL 16 (or use Docker)
-
-### Local Development
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/olegkuftyrev/PRG-batch-system.git
-   cd PRG-batch-system
-   ```
-
-2. **Start the database**
-   ```bash
-   docker-compose up -d postgres
-   ```
-
-3. **Setup API**
-   ```bash
-   cd api
-   npm install
-   cp .env.example .env
-   # Edit .env with your database credentials
-   node ace migration:run
-   node ace db:seed
-   npm run dev
-   ```
-
-4. **Setup Web**
-   ```bash
-   cd web
-   npm install
-   npm run dev
-   ```
-
-5. **Access the application**
-   - Frontend: http://localhost:5173
-   - API: http://localhost:3333
-   - API Health: http://localhost:3333/health
-
-### Docker Development
-
-Run everything with Docker:
+### Option 1: Docker (simplest)
 
 ```bash
+git clone https://github.com/olegkuftyrev/PRG-batch-system.git
+cd PRG-batch-system
 docker-compose up -d
 ```
 
-Access:
+Check status:
 - Frontend: http://localhost:8080
-- API: http://localhost:3333
+- API: http://localhost:3333/health
 
-## 📚 Documentation
+### Option 2: Manual (for development)
 
-- [DEPLOYMENT.md](./DEPLOYMENT.md) - Production deployment guide
-- [deploy-droplet.md](./deploy-droplet.md) - DigitalOcean droplet setup
-- [web/README.md](./web/README.md) - Frontend documentation
-- [api/.env.example](./api/.env.example) - Environment variables reference
+**1. Start database:**
+```bash
+docker-compose up -d postgres
+```
 
-## 🎯 Features
+**2. Run API:**
+```bash
+cd api
+npm install
+cp .env.example .env
+# Edit .env: set DB_HOST=localhost, DB_PORT=5432, DB_USER=prg, DB_PASSWORD=<from docker-compose.yml>
+node ace migration:run
+node ace db:seed
+npm run dev
+```
 
-### Kitchen Displays
+API runs on http://localhost:3333
 
-**Front of House (FOH)**
-- Customer-facing display showing active orders
-- Organized by menu sections
-- Large, readable interface
+**3. Run frontend:**
+```bash
+cd web
+npm install
+npm run dev
+```
+
+Frontend runs on http://localhost:5173
+
+## Docs
+
+- [DEPLOYMENT.md](./DEPLOYMENT.md) - Production deployment
+- [deploy-droplet.md](./deploy-droplet.md) - DigitalOcean setup
+- [web/README.md](./web/README.md) - Frontend details
+- [api/.env.example](./api/.env.example) - Environment variables
+
+## How It Works
+
+### Screens
+
+**FOH (Front of House)**
+- Shows active orders for customers
+- Groups by menu sections
 
 **Drive-Thru**
-- Fixed layout with 12 common items
-- Quick-call functionality
-- Optimized for drive-through operations
+- 12 fixed menu items
+- One-click call buttons
 
-**Back of House (BOH)**
-- Station-specific displays (Stirfry, Fryer, Sides, Grill)
-- Cooking countdown timers
-- Batch size indicators
-- Completed tickets history
+**BOH (Back of House)**
+- Filter by station: Stirfry, Fryer, Sides, Grill
+- Show timers counting down
+- Show batch size (0.5, 1, 2, 3, etc.)
+- Display completed tickets
 
-### Menu Management
+### Menu Config
 
-- CRUD operations for menu items
-- Configure cooking times per batch size
-- Set recommended batches by daypart (breakfast, lunch, dinner, etc.)
-- Enable/disable items
-- Real-time sync across all displays
+Edit menu items:
+- Set batch sizes (array, e.g., `["1","2","3"]`)
+- Set cook time per batch (JSON, e.g., `{"1":480,"2":480,"3":480}` in seconds)
+- Enable/disable item
+- Changes sync to all screens via WebSocket
 
-### Ticket System
+### Ticket Flow
 
-- Create tickets with batch sizes
-- Automatic timer start
-- WebSocket-powered real-time updates
-- Station-based filtering
-- Source tracking (FOH vs Drive-Thru)
+1. User clicks "Call" on FOH or Drive-Thru
+2. API creates ticket, broadcasts via WebSocket
+3. BOH screen shows ticket, auto-starts timer
+4. Timer counts down
+5. Kitchen staff marks complete → ticket moves to history
 
-## 🗄️ Database
+## Database
 
-### Schema
+**Tables:**
 
-**menu_items**
-- id, code, title, station
-- batch_sizes (array)
-- cook_times (JSON)
-- enabled, recommended_batch (JSON)
+`menu_items` - Menu configuration
+- `id`, `code`, `title`, `station`
+- `batch_sizes` (array, e.g., `["1","2","3"]`)
+- `cook_times` (JSON, e.g., `{"1":480,"2":600}`)
+- `enabled` (boolean), `recommended_batch` (JSON)
 
-**menu_versions**
-- id, version
+`menu_versions` - Track menu changes
+- `id`, `version` (increments on menu update)
 
-**tickets**
-- id, station, seq, state, source
-- menu item snapshot data
-- timestamps
+`tickets` - Cooking tickets
+- `id`, `station`, `seq`, `state`, `source` (foh/driveThru)
+- Snapshot of menu item at creation time
+- `created_at`, `updated_at`
 
-### Seeded Data
+**Seeded data:** 16 items (3 appetizers, 3 beef, 6 chicken, 1 seafood, 2 sides, 1 vegetable)
 
-16 menu items included:
-- 3 Appetizers (Egg Roll, Rangoon, Spring Roll)
-- 3 Beef dishes (Beijing Beef, Black Pepper Steak, Broccoli Beef)
-- 6 Chicken dishes (Orange, Kung Pao, Mushroom, etc.)
-- 1 Seafood (Honey Walnut Shrimp)
-- 2 Sides (Chow Mein, Fried Rice)
-- 1 Vegetable (Super Greens)
+## API
 
-## 🔌 API Endpoints
-
-### Menu
-- `GET /api/menu` - List all items
+**Menu:**
+- `GET /api/menu` - List items + current version
 - `POST /api/menu` - Create item
 - `PATCH /api/menu/:id` - Update item
 - `DELETE /api/menu/:id` - Delete item
 
-### Tickets
-- `GET /api/tickets` - List tickets
-- `POST /api/tickets` - Create ticket
+**Tickets:**
+- `GET /api/tickets` - List all
+- `POST /api/tickets` - Create (body: `menuItemId`, `batchSize`, `source`)
 - `POST /api/tickets/:id/start` - Start timer
-- `POST /api/tickets/:id/complete` - Complete ticket
+- `POST /api/tickets/:id/complete` - Mark done
 
-### Health
-- `GET /health` - Health check with DB status
+**Health:**
+- `GET /health` - Returns `{"ok":true,"database":"connected"}`
 
-### WebSocket
-- `ws://localhost:3333/socket.io`
-- Events: `snapshot`, `ticket_created`, `timer_started`, `ticket_completed`, `menu_updated`
+**WebSocket** (`ws://localhost:3333/socket.io`):
+- Listen: `snapshot`, `ticket_created`, `timer_started`, `ticket_completed`, `menu_updated`
+- Emit: `join` (to subscribe to station-specific updates)
 
-## 🛠️ Development
-
-### Project Structure
+## Project Structure
 
 ```
-PRG-batch-system/
-├── api/                   # AdonisJS backend
-│   ├── app/
-│   │   ├── controllers/  # HTTP controllers
-│   │   ├── models/       # Database models
-│   │   └── services/     # Business logic
-│   ├── database/
-│   │   ├── migrations/   # Database migrations
-│   │   └── seeders/      # Data seeders
-│   ├── start/            # Bootstrap files
-│   └── Dockerfile
-├── web/                   # React frontend
-│   ├── src/
-│   │   ├── components/   # React components
-│   │   ├── hooks/        # Custom hooks
-│   │   ├── api/          # API client
-│   │   └── types/        # TypeScript types
-│   └── Dockerfile
-├── docker-compose.yml     # Docker orchestration
-├── DEPLOYMENT.md          # Deployment docs
-└── README.md             # This file
+/api                 # AdonisJS backend
+  /app/controllers   # HTTP endpoints
+  /app/models        # Database models (Lucid ORM)
+  /database/migrations
+  /database/seeders
+  
+/web                 # React frontend
+  /src/components    # UI components
+  /src/hooks         # useSocket, useMenu, etc.
+  /src/api           # API client functions
 ```
 
-### Commands
+## Commands
 
 **API:**
 ```bash
 cd api
-npm run dev          # Development with HMR
-npm run build        # Build for production
-npm run start        # Run production build
-node ace migration:run    # Run migrations
-node ace db:seed          # Seed database
+npm run dev              # Dev server with hot reload
+npm run build            # Compile TypeScript → build/
+node ace migration:run   # Apply migrations
+node ace db:seed         # Insert test data
 ```
 
-**Web:**
+**Frontend:**
 ```bash
 cd web
-npm run dev          # Development server
-npm run build        # Production build
-npm run preview      # Preview production build
-npm run lint         # Run linter
+npm run dev      # Vite dev server
+npm run build    # Production bundle
+npm run lint     # ESLint check
 ```
 
 **Docker:**
 ```bash
-docker-compose up -d              # Start all services
-docker-compose down               # Stop all services
-docker-compose logs -f            # View logs
-docker-compose restart api        # Restart API
-docker-compose exec api sh        # Shell into API container
+docker-compose up -d        # Start all
+docker-compose logs -f api  # Watch API logs
+docker-compose restart api  # Restart API only
+docker-compose exec api sh  # Shell into container
 ```
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
-### API won't start
-- Check PostgreSQL is running
-- Verify `.env` file exists with correct credentials
-- Run migrations: `node ace migration:run`
+**API won't start:**
+1. Check Postgres running: `docker-compose ps`
+2. Check `.env` exists with DB credentials
+3. Run migrations: `node ace migration:run`
 
-### Frontend can't connect to API
-- Verify API is running on port 3333
-- Check `VITE_API_URL` environment variable
-- Check browser console for CORS errors
+**Frontend can't reach API:**
+1. Check API is up: `curl http://localhost:3333/health`
+2. Check `VITE_API_URL` in `.env` or build args
+3. Open browser console → Network tab → look for CORS errors
 
-### Database connection errors
-- Verify PostgreSQL credentials in `.env`
-- Check database exists: `psql -U prg -d prg_batch`
-- For Docker: `docker-compose logs postgres`
+**Database errors:**
+1. Verify credentials in `.env` match `docker-compose.yml`
+2. Connect manually: `docker-compose exec postgres psql -U prg -d prg_batch`
+3. Check logs: `docker-compose logs postgres`
 
-### WebSocket not connecting
-- Check Socket.io path: `/socket.io`
-- Verify API URL includes protocol (http://)
-- Check browser network tab for WebSocket connection
-
-## 📝 License
-
-Private project - All rights reserved
-
-## 👥 Contributing
-
-Internal project - Contact repository owner for contribution guidelines
-
-## 📞 Support
-
-- **Issues**: GitHub Issues
-- **Deployment**: See [DEPLOYMENT.md](./DEPLOYMENT.md)
-- **Live Site**: http://134.199.223.99:8080
+**WebSocket won't connect:**
+1. Confirm API URL includes `http://` (not `https://` if not using SSL)
+2. Check Socket.io path is `/socket.io`
+3. Browser DevTools → Network → WS filter → check connection status
 
 ---
 
-**Deployed**: February 21, 2026  
-**Status**: ✅ Production Ready  
-**Version**: 1.0.0
+**Deployed:** February 21, 2026  
+**Live:** http://134.199.223.99:8080  
+**Version:** 1.0.0
