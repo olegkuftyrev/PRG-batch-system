@@ -194,12 +194,44 @@ holdTime: Math.round(parseFloat(form.holdTime) * 60)
 - **100%**: Green (ready for quality check)
 - Text shows remaining time in MM:SS format overlaid on progress bar
 
+## Phase 5 Implementation: Collapsable My Calls by Hour
+
+### Changes Completed
+
+#### FOH & Drive-Thru Screens
+- ✅ Added `groupTicketsByHour()` function to group tickets by hour (HH:00 - HH:00 format)
+- ✅ Added `getCurrentHourLabel()` to determine current hour for default expansion
+- ✅ Replaced flat list with Collapsable sections for each hour
+- ✅ Each section shows hour range and ticket count (e.g., "10:00 - 11:00 (5)")
+- ✅ Current hour expanded by default, others collapsed
+- ✅ Applied to both ScreenFOH and ScreenDriveThru
+
+#### Implementation Details
+```tsx
+function groupTicketsByHour(tickets: SnapshotTicket[]): Record<string, SnapshotTicket[]> {
+  const groups: Record<string, SnapshotTicket[]> = {}
+  const now = new Date()
+  
+  tickets.forEach((ticket) => {
+    const ticketTime = ticket.startedAt ? new Date(ticket.startedAt) : now
+    const hour = ticketTime.getHours()
+    const hourLabel = `${hour.toString().padStart(2, '0')}:00 - ${(hour + 1).toString().padStart(2, '0')}:00`
+    
+    if (!groups[hourLabel]) groups[hourLabel] = []
+    groups[hourLabel].push(ticket)
+  })
+  
+  return groups
+}
+```
+
 ## Next Steps
 
-Phase 4 (FOH/Drive-Thru) is complete. Ready to proceed to **Phase 5** which includes:
+Phase 5 complete. Ready to proceed to **Phase 6** which includes:
+- Quality hold timer (10-min countdown after 100%)
+- Red pulsing border animation for quality alerts
 - BOH screen updates with collapsable completed items
-- Hourly collapsable sections for "My Calls"
-- 4-card-per-row grid layout optimization for iPad
+- Cancel confirmation dialog with shadcn Alert
 
 ## Technical Notes
 
@@ -224,6 +256,7 @@ Phase 4 (FOH/Drive-Thru) is complete. Ready to proceed to **Phase 5** which incl
 
 ## Known Issues
 - ⚠️ **Cancel button not working yet** - WebSocket event handler added but needs further debugging
+- ⚠️ **Picture upload not working** - UI implemented but file upload needs debugging
 
 ## Deployment Status
 - ✅ Changes committed and built locally

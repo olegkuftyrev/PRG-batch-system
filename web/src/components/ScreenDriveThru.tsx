@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { CallFoodItem } from '@/components/CallFoodItem'
+import { Collapsable } from '@/components/ui/collapsable'
 import { useMenu, groupMenuByDriveThruSections } from '@/hooks/useMenu'
 import { createTicket, cancelTicket, type Ticket } from '@/api/tickets'
 import { useRemainingSeconds } from '@/hooks/useRemainingSeconds'
@@ -40,6 +41,28 @@ function toSnapshotTicket(t: Ticket): SnapshotTicket {
     durationSnapshot: t.durationSnapshot,
     startedAt: t.startedAt,
   }
+}
+
+function groupTicketsByHour(tickets: SnapshotTicket[]): Record<string, SnapshotTicket[]> {
+  const groups: Record<string, SnapshotTicket[]> = {}
+  const now = new Date()
+  
+  tickets.forEach((ticket) => {
+    const ticketTime = ticket.startedAt ? new Date(ticket.startedAt) : now
+    const hour = ticketTime.getHours()
+    const hourLabel = `${hour.toString().padStart(2, '0')}:00 - ${(hour + 1).toString().padStart(2, '0')}:00`
+    
+    if (!groups[hourLabel]) groups[hourLabel] = []
+    groups[hourLabel].push(ticket)
+  })
+  
+  return groups
+}
+
+function getCurrentHourLabel(): string {
+  const now = new Date()
+  const hour = now.getHours()
+  return `${hour.toString().padStart(2, '0')}:00 - ${(hour + 1).toString().padStart(2, '0')}:00`
 }
 
 function MyCallRow({ ticket, offsetMs }: { ticket: SnapshotTicket; offsetMs: number }) {
@@ -179,12 +202,23 @@ export function ScreenDriveThru({ socketState }: Props) {
       <Section title="Section 3" items={section3} />
       {myCalls.length > 0 && (
         <section>
-          <h2 className="text-lg font-semibold mb-2">My calls</h2>
-          <ul className="text-sm space-y-2">
-            {myCalls.map((t) => (
-              <MyCallRow key={t.id} ticket={t} offsetMs={offsetMs} />
+          <h2 className="text-lg font-semibold mb-4">My calls</h2>
+          <div className="space-y-2">
+            {Object.entries(groupTicketsByHour(myCalls)).map(([hourLabel, tickets]) => (
+              <Collapsable
+                key={hourLabel}
+                title={hourLabel}
+                count={tickets.length}
+                defaultOpen={hourLabel === getCurrentHourLabel()}
+              >
+                <ul className="text-sm space-y-2">
+                  {tickets.map((t) => (
+                    <MyCallRow key={t.id} ticket={t} offsetMs={offsetMs} />
+                  ))}
+                </ul>
+              </Collapsable>
             ))}
-          </ul>
+          </div>
         </section>
       )}
     </div>
