@@ -152,6 +152,18 @@ export function useSocket(screen: ScreenId) {
       }))
     })
 
+    socket.on('ticket_cancelled', (data: unknown) => {
+      const t = toTicket(data)
+      const rooms = roomsRef.current
+      const match = rooms.includes(t.station) || (t.source && rooms.includes(t.source))
+      if (!match) return
+      setState((s) => ({
+        ...s,
+        tickets: s.tickets.filter((x) => x.id !== t.id),
+        completedTickets: s.completedTickets.filter((x) => x.id !== t.id),
+      }))
+    })
+
     return () => {
       socket.disconnect()
       socketRef.current = null
