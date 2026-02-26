@@ -14,6 +14,7 @@ export default defineConfig({
       '/api': { target: 'http://localhost:3333', changeOrigin: true },
       '/health': { target: 'http://localhost:3333', changeOrigin: true },
       '/socket.io': { target: 'http://localhost:3333', ws: true },
+      '/uploads': { target: 'http://localhost:3333', changeOrigin: true },
     },
   },
 })
