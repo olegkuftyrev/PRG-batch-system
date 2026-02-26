@@ -45,18 +45,9 @@ function getLastCompletedTime(completedTickets: SnapshotTicket[], item: MenuItem
       return bTime - aTime
     })
   
-  const result = completed.length > 0 && completed[0].startedAt 
+  return completed.length > 0 && completed[0].startedAt 
     ? new Date(completed[0].startedAt) 
     : null
-  
-  console.log(`getLastCompletedTime for ${item.code}:`, {
-    targetTitle,
-    completedCount: completedTickets.length,
-    matchedCount: completed.length,
-    result
-  })
-  
-  return result
 }
 
 function toSnapshotTicket(t: Ticket): SnapshotTicket {
@@ -157,13 +148,10 @@ export function ScreenFOH({ socketState }: Props) {
 
   const handleCancel = async (ticketId: number) => {
     setLastError(null)
-    console.log('Canceling ticket:', ticketId)
     try {
       await cancelTicket(ticketId)
       setOptimisticTickets((prev) => prev.filter((t) => t.id !== ticketId))
-      console.log('Cancel successful')
     } catch (e) {
-      console.error('Cancel failed:', e)
       setLastError(e instanceof Error ? e.message : 'Failed to cancel')
     }
   }

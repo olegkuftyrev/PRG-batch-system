@@ -117,6 +117,7 @@ function ItemCard({
   onStart,
   onComplete,
   playedSoundRef,
+  color,
 }: {
   code: string
   title: string
@@ -125,12 +126,20 @@ function ItemCard({
   onStart: (id: number) => void
   onComplete: (id: number) => void
   playedSoundRef: React.MutableRefObject<Set<number>>
+  color?: string | null
 }) {
+  const colorClass = 
+    color === 'blue' ? 'bg-blue-500 text-white' :
+    color === 'red' ? 'bg-red-500 text-white' :
+    color === 'green' ? 'bg-green-500 text-white' :
+    color === 'orange' ? 'bg-orange-500 text-white' :
+    'bg-green-500 text-white'
+
   return (
     <Card>
       <CardHeader className="pb-3">
         <div className="flex items-center gap-3">
-          <div className="bg-green-500 text-white font-bold text-sm px-3 py-1 rounded">
+          <div className={`font-bold text-sm px-3 py-1 rounded ${colorClass}`}>
             {code}
           </div>
           <h3 className="font-semibold text-lg uppercase tracking-wide">{title}</h3>
@@ -158,8 +167,15 @@ type Props = {
 }
 
 export function ScreenBOH({ screen, socketState }: Props) {
-  const { tickets, completedTickets, offsetMs } = socketState
+  const { tickets, completedTickets, offsetMs, menuVersion } = socketState
+  const { menu } = useMenu(menuVersion)
   const playedSoundRef = useRef<Set<number>>(new Set())
+  
+  const getItemColor = (code: string) => {
+    if (!menu) return null
+    const item = menu.items.find(i => i.code === code)
+    return item?.color ?? null
+  }
 
   const handleStart = async (id: number) => {
     try {
@@ -210,10 +226,12 @@ export function ScreenBOH({ screen, socketState }: Props) {
   const title = TITLE_BY_SCREEN[screen]
 
   return (
-    <div className="flex-1 overflow-auto p-4 flex flex-col gap-4">
-      {title && (
-        <h1 className="text-xl font-semibold">{title}</h1>
-      )}
+    <>
+      <HiddenNav screen={screen} />
+      <div className="flex-1 overflow-auto p-4 flex flex-col gap-4">
+        {title && (
+          <h1 className="text-xl font-semibold">{title}</h1>
+        )}
       <section>
         <h2 className="text-lg font-semibold mb-2">Waiting</h2>
         <div className="flex flex-col gap-3">
@@ -230,6 +248,7 @@ export function ScreenBOH({ screen, socketState }: Props) {
                 onStart={handleStart}
                 onComplete={handleComplete}
                 playedSoundRef={playedSoundRef}
+                color={getItemColor(group.code)}
               />
             ))
           )}
@@ -252,6 +271,7 @@ export function ScreenBOH({ screen, socketState }: Props) {
                 onStart={handleStart}
                 onComplete={handleComplete}
                 playedSoundRef={playedSoundRef}
+                color={getItemColor(group.code)}
               />
             ))
           )}
@@ -277,6 +297,7 @@ export function ScreenBOH({ screen, socketState }: Props) {
           </div>
         </Collapsable>
       </section>
-    </div>
+      </div>
+    </>
   )
 }

@@ -115,13 +115,6 @@ export function CallFoodItem({
   
   const qualityBadge = getQualityBadge()
 
-  // Debug: log lastCalledAt
-  React.useEffect(() => {
-    if (lastCalledAt && timeSinceLastCall) {
-      console.log(`${item.code}: Last called at`, lastCalledAt, timeSinceLastCall.formatted, 'badge:', qualityBadge)
-    }
-  }, [lastCalledAt, item.code, timeSinceLastCall, qualityBadge])
-
   let buttonText = 'Call'
   if (loading) buttonText = 'Calling…'
   else if (disabled && disabledReason) buttonText = disabledReason
