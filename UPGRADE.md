@@ -590,6 +590,12 @@ Expired (10+ min):
 - Quality badges on FOH/Drive-Thru cards (A quality <5 min, B quality 10-15 min, Call Now >15 min)
 - Animated pulse effect on "Call Now" badge
 - Last called timestamp display with relative time formatting
+- BOH tickets sorted by age (oldest first, newest last)
+
+**Technical Improvements:**
+- Replaced custom Collapsable with shadcn Collapsible component
+- Removed debug console.logs from production code
+- Fixed import paths and component references
 
 ---
 
