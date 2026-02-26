@@ -1,188 +1,198 @@
-# Investigation and Planning - Digital Ocean Deployment
+# Phase 3 Implementation: Menu Management Screen
 
-**Date**: February 21, 2026  
-**Task**: Fix deployment issues and prepare for production
-
----
-
-## Bug Summary
-
-The PRG Batch System worked perfectly on local machines but failed to deploy on Digital Ocean App Platform with the following error:
-
-```
-ERROR: failed to launch: determine start command: when there is no default process a command is required
-```
-
----
+## Summary
+Completed full refactoring of the Menu Management screen ([./web/src/components/ScreenMenu.tsx](./web/src/components/ScreenMenu.tsx)) to integrate all Phase 2 UI components and support new Stage 2 requirements.
 
 ## Root Cause Analysis
-
-### 1. **Digital Ocean App Platform Issues**
-- **Buildpack Detection Failed**: The monorepo structure (web/ and api/ folders) confused DO's automatic buildpack detection
-- **No Start Command**: The Dockerfile didn't specify a default ENTRYPOINT or CMD that App Platform could detect
-- **Source Directory Confusion**: Setting `/web` as the starting directory bypassed the issue but indicated configuration problems
-
-### 2. **Configuration Problems Identified**
-- **SSL Configuration**: `app.yaml` specified `DB_SSL: "true"` but database config didn't properly handle managed PostgreSQL SSL
-- **Missing Environment Variables**: `APP_KEY` and `DB_PASSWORD` weren't properly configured as secrets
-- **Migration Issues**: No automated database migration on deployment
-- **Incorrect Dockerfile Path**: `dockerfile_path: api/Dockerfile` was wrong when `source_dir: api` was set
-
-### 3. **Database Connectivity**
-- Digital Ocean managed database credentials were provided but not properly integrated
-- Database: `defaultdb` on `db-postgresql-sfo2-61933-do-user-25007663-0.j.db.ondigitalocean.com:25060`
-- SSL mode required but not configured correctly
-
----
+The menu management screen needed updates to support:
+1. **Station-based grouping** - Items should be organized by kitchen station
+2. **Batch-specific cook times** - Each batch size needs its own cook time (not shared)
+3. **Color assignment** - Support for Blue (LTO), Red (Slow), Green (Busy), Orange (Medium)
+4. **Image uploads** - Support for menu item pictures with drag-and-drop
+5. **Toggle switches** - Replace checkboxes with proper toggle components
+6. **Quality hold times** - Each item can specify its own hold time before quality degradation
 
 ## Affected Components
 
-1. **`.do/app.yaml`**: Deployment configuration file
-2. **`api/Dockerfile`**: Backend container build
-3. **`web/Dockerfile`**: Frontend container build
-4. **`api/config/database.ts`**: Database SSL configuration
-5. **`docker-compose.yml`**: Local/Droplet deployment orchestration
-6. **Environment variables**: Missing/misconfigured across deployments
+### Frontend
+- **[./web/src/components/ScreenMenu.tsx](./web/src/components/ScreenMenu.tsx)** - Complete refactoring
+  - Added `Collapsable` component integration for station grouping
+  - Implemented individual cook time inputs for each batch size
+  - Added color picker with predefined color options
+  - Implemented image upload with drag-and-drop support
+  - Added image preview and removal functionality
+  - Replaced checkbox with `ToggleSwitch` component
+  - Added `ColorBadge` display in item list
+  - Added `ImagePlaceholder` for items without images
 
----
+### Backend (Already Completed in Phase 1)
+- **[./api/database/migrations/1740354400000_add_color_image_holdtime_to_menu_items.ts](./api/database/migrations/1740354400000_add_color_image_holdtime_to_menu_items.ts)** - Schema migration
+- **[./api/app/models/menu_item.ts](./api/app/models/menu_item.ts)** - Model updated with new fields
+- **[./api/app/controllers/menu_items_controller.ts](./api/app/controllers/menu_items_controller.ts)** - Image upload endpoints
 
-## Proposed Solution
+### Types
+- **[./web/src/api/menu.ts](./web/src/api/menu.ts)** - Updated MenuItem and payload types
 
-### Decision: Switch from App Platform to Droplet
+## Implementation Details
 
-**Reasoning:**
-- App Platform's buildpack detection issues with monorepo structure
-- Simpler deployment with full Docker Compose control
-- More cost-effective for current scale
-- Direct server access for debugging and maintenance
+### 1. Station Grouping with Collapsable Sections
+```tsx
+{STATIONS.map((station) => {
+  const items = itemsByStation[station] || []
+  return (
+    <Collapsable
+      key={station}
+      title={`${station.charAt(0).toUpperCase() + station.slice(1)} Station`}
+      count={items.length}
+      defaultOpen={true}
+    >
+      {/* Items rendered here */}
+    </Collapsable>
+  )
+})}
+```
 
-### Implementation Plan
+### 2. Batch-Specific Cook Times
+Instead of a single cook time field, each batch size gets its own input:
+```tsx
+<div className="grid grid-cols-3 gap-2">
+  {batchSizes.map((size) => (
+    <div key={size} className="flex items-center gap-2">
+      <Label className="w-12 text-sm text-muted-foreground">{size}:</Label>
+      <Input
+        type="number"
+        value={form.cookTimesPerBatch[size] || '8'}
+        onChange={(e) => /* Update specific batch time */}
+      />
+    </div>
+  ))}
+</div>
+```
 
-1. **Provision DigitalOcean Droplet**
-   - Ubuntu 24.04 LTS
-   - Install Docker & Docker Compose
-   - Configure firewall rules
+### 3. Color Assignment
+Color dropdown with predefined options:
+```tsx
+const COLORS: { value: ColorType; label: string }[] = [
+  { value: null, label: 'None' },
+  { value: 'blue', label: 'Blue - LTO' },
+  { value: 'red', label: 'Red - Slow' },
+  { value: 'green', label: 'Green - Busy' },
+  { value: 'orange', label: 'Orange - Medium' },
+]
+```
 
-2. **Deploy Stack with Docker Compose**
-   - PostgreSQL 16 database
-   - AdonisJS API backend
-   - React/Vite frontend with nginx
+Color badge displayed in item list:
+```tsx
+{item.color && <ColorBadge color={item.color} />}
+```
 
-3. **Configure Environment**
-   - Generate secure `APP_KEY` and database password
-   - Set up proper database connection
-   - Configure API URL for frontend build
+### 4. Image Upload with Drag-and-Drop
+```tsx
+<div
+  className="border-2 border-dashed rounded-lg p-4 cursor-pointer"
+  onDrop={handleImageDrop}
+  onDragOver={(e) => e.preventDefault()}
+  onClick={() => fileInputRef.current?.click()}
+>
+  {imagePreview ? (
+    <img src={imagePreview} alt="Preview" className="max-h-40 mx-auto rounded" />
+  ) : (
+    <ImagePlaceholder className="h-32" />
+  )}
+</div>
+```
 
-4. **Database Setup**
-   - Run migrations automatically on API startup
-   - Seed menu data
-   - Verify data persistence
+Image handling:
+- Validates file type (JPEG, PNG, WebP)
+- Validates file size (max 5MB)
+- Shows preview before upload
+- Supports drag-and-drop
+- Uploads after item save
+- Automatic cleanup of old images on replacement
 
-5. **Verify Deployment**
-   - Health checks for all services
-   - WebSocket connectivity test
-   - Frontend API communication test
+### 5. Toggle Switch for Enabled Status
+Replaced checkbox with `ToggleSwitch` component:
+```tsx
+<ToggleSwitch
+  checked={item.enabled}
+  onCheckedChange={async (checked) => {
+    await updateMenuItem(item.id, { enabled: checked })
+    refetch()
+  }}
+/>
+```
 
----
+### 6. Hold Time Configuration
+Added hold time input (in minutes):
+```tsx
+<Input
+  type="number"
+  min={1}
+  step={1}
+  value={form.holdTime}
+  onChange={(e) => setForm((f) => ({ ...f, holdTime: e.target.value }))}
+/>
+```
 
-## Implementation Notes
-
-### Successful Deployment
-
-**Live Environment:**
-- **IP**: 134.199.223.99
-- **Frontend**: http://134.199.223.99:8080
-- **API**: http://134.199.223.99:3333
-- **Status**: ✅ All services running
-
-### Key Changes Made
-
-1. **Fixed API URL Build Issue**
-   - Added `VITE_API_URL` build argument to `web/Dockerfile`
-   - Configured `docker-compose.yml` to pass API URL during build
-   - Updated environment variable handling in frontend code
-
-2. **Database Configuration**
-   - Disabled SSL for local PostgreSQL in Docker (`DB_SSL: "false"`)
-   - Generated secure credentials: `APP_KEY` and `DB_PASSWORD`
-   - Configured proper database connection with health checks
-
-3. **Service Dependencies**
-   - API waits for PostgreSQL health check
-   - Web service depends on API
-   - Migrations run automatically on API startup
-
-4. **Data Seeding**
-   - Successfully seeded 16 menu items across 5 categories
-   - Verified data visibility in frontend
-
-### Documentation Created
-
-- **[DEPLOYMENT.md](../../DEPLOYMENT.md)**: Comprehensive production deployment guide
-- **[deploy-droplet.md](../../deploy-droplet.md)**: Step-by-step Droplet setup instructions
-- **[README.md](../../README.md)**: Updated project overview
-- **[web/README.md](../../web/README.md)**: Frontend-specific documentation
-- **[UPGRADE.md](../../UPGRADE.md)**: Stage 2 planning (iPad optimization focus)
-
----
-
-## Stage 2 Planning
-
-### User Requirements
-- Optimize all screens for iPad resolution: **834 x 1194 pixels**
-- Portrait orientation
-- Touch-optimized interface
-- No scrolling required
-
-### Affected Screens
-1. FOH (Front of House)
-2. Drive-Thru
-3. BOH - Stirfry Station
-4. BOH - Fryer Station
-5. BOH - Sides/Grill Station
-6. Menu Management
-
----
+Converted to seconds in payload:
+```tsx
+holdTime: Math.round(parseFloat(form.holdTime) * 60)
+```
 
 ## Test Results
 
-### Deployment Tests: ✅ PASSED
-- [x] PostgreSQL database healthy and accessible
-- [x] API starts successfully and runs migrations
-- [x] Frontend builds with correct API URL
-- [x] WebSocket connection works
-- [x] Menu data loads in frontend
-- [x] All HTTP endpoints responding
-- [x] Docker containers restart automatically
+### Build Status
+✅ TypeScript compilation successful
+✅ Docker build completed without errors
+✅ Web container deployed and running
 
-### Local Development Tests: ✅ PASSED
-- [x] API runs on localhost:3333
-- [x] Frontend runs on localhost:5173
-- [x] Hot reload works for both services
-- [x] Database migrations work locally
+### Runtime Verification
+✅ Frontend accessible at http://localhost:8080 (HTTP 200)
+✅ API responding at http://localhost:3333/api/menu (16 items)
+✅ All new components integrated without errors
+✅ Navigation properly hidden with slide-down menu button
 
----
+### Functionality Verified
+✅ Station grouping displays items organized by station
+✅ Collapsable sections work with default open state
+✅ Cook times can be set individually per batch size
+✅ Color dropdown shows all 4 color options + None
+✅ Color badges display correctly in item list
+✅ Image upload interface ready (drag-and-drop placeholder)
+✅ Toggle switches replace checkboxes for enabled status
+✅ Hold time field accepts numeric input in minutes
 
-## Edge Cases & Side Effects
+## Next Steps
 
-### Considered
-1. **Environment Variable Handling**: Different configs for local vs production
-2. **API URL Configuration**: Must be set at build time for frontend
-3. **Database Persistence**: Docker volumes ensure data survives container restarts
-4. **SSL Certificates**: Not implemented yet (HTTP only for now)
+Phase 3 (Menu Management) is complete. Ready to proceed to **Phase 4** which includes:
+- FOH/Drive-Thru screen cards with new layout
+- 3-position batch toggle on FOH cards
+- Progress bar integration in call buttons
+- Color badges under item codes on FOH screens
 
-### Future Considerations
-1. **HTTPS/SSL**: Need reverse proxy with Let's Encrypt for production security
-2. **Domain Name**: Currently using IP address
-3. **Backup Strategy**: Need automated database backups
-4. **Monitoring**: No alerting or uptime monitoring configured yet
-5. **Scalability**: Current Droplet is basic tier, may need upgrade for production load
+## Technical Notes
 
----
+### Form State Management
+- Form data uses string types for numeric inputs to allow empty fields during editing
+- Conversion to numbers happens in `formToPayload()` function
+- Batch sizes stored as comma-separated string in form, split into array for payload
 
-## Status
+### Image Upload Flow
+1. User selects/drops image file
+2. File validated (type, size)
+3. Preview shown immediately using `URL.createObjectURL()`
+4. Item saved first (create or update)
+5. Image uploaded separately to `/api/menu/:id/image`
+6. Old image automatically cleaned up on server
 
-**Investigation**: ✅ Complete  
-**Deployment**: ✅ Complete  
-**Documentation**: ✅ Complete  
-**Next Steps**: Begin Stage 2 UI optimization for iPad displays
+### Type Safety
+- All components properly typed with TypeScript
+- ColorType union type ensures only valid colors
+- FormData type separate from payload types for better UX
+- MenuItem type includes optional new fields (color, imageUrl, holdTime)
+
+## Deployment Status
+- ✅ Changes committed and built locally
+- ✅ Web container rebuilt and restarted
+- ⏳ Not yet pushed to git (awaiting user verification)
+- ⏳ Not yet deployed to production droplet
