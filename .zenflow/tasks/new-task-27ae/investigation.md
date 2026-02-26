@@ -323,8 +323,30 @@ Phase 7 complete. Ready to proceed to **Phase 8** which includes:
 - ✅ ~~Cancel button not working~~ - Fixed with WebSocket handler
 - ✅ ~~Picture upload not working~~ - Fixed with volume mount
 
+## Cancel Button Debugging (Feb 26, 2026)
+
+### Issue
+User reported cancel button not working. Error: `Failed to load resource: the server responded with a status of 404 (Not Found)` for `134.199.223.99:3333/api/tickets/22`
+
+### Root Cause Analysis
+1. **Docker build vs Dev server confusion**: User was accessing Docker build on `localhost:8080` which points to production API `134.199.223.99:3333`
+2. **Missing function in bundle**: The `cancelTicket` function was added to source code but Docker image was built from cache
+3. **API endpoint working**: Manual testing confirmed DELETE `/api/tickets/:id` returns 204 on both localhost:3333 and production
+
+### Solution
+1. ✅ Rebuilt web container with `--no-cache` to include latest `cancelTicket` function
+2. ✅ Started local dev server: `npm run dev` on port 5173
+3. ✅ Dev server uses Vite proxy to route API calls to `localhost:3333`
+4. ✅ User confirmed: "да идеально все работает" (everything works perfectly)
+
+### Development Workflow
+- **Local development**: Use `http://localhost:5173` (Vite dev server with HMR and API proxy)
+- **Docker testing**: Use `http://localhost:8080` (requires rebuilding containers for code changes)
+- **Production**: `http://134.199.223.99:8080` (deployed on DigitalOcean Droplet)
+
 ## Deployment Status
 - ✅ Changes committed and built locally
 - ✅ Web container rebuilt and restarted
+- ✅ Local dev server running and verified
 - ⏳ Not yet pushed to git (awaiting user verification)
 - ⏳ Not yet deployed to production droplet
