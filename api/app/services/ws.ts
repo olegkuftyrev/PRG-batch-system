@@ -1,5 +1,6 @@
 import { Server } from 'socket.io'
 import server from '@adonisjs/core/services/server'
+import logger from '@adonisjs/core/services/logger'
 
 /**
  * Socket.IO service. Boot after HTTP server is ready.
@@ -14,7 +15,7 @@ class WsService {
     this.#booted = true
     const nodeServer = server.getNodeServer()
     if (!nodeServer) {
-      console.warn('HTTP server not ready, skipping WebSocket initialization')
+      logger.warn('HTTP server not ready, skipping WebSocket initialization')
       return
     }
     this.io = new Server(nodeServer, {

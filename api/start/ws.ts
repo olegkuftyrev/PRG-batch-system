@@ -1,4 +1,5 @@
 import app from '@adonisjs/core/services/app'
+import logger from '@adonisjs/core/services/logger'
 import Ws from '#services/ws'
 import { rescheduleOnBoot } from '#services/timer'
 import Ticket from '#models/ticket'
@@ -28,7 +29,7 @@ function ticketToSnapshot(t: Ticket) {
 app.ready(async () => {
   Ws.boot()
   if (!Ws.io) {
-    console.warn('WebSocket server not initialized, skipping')
+    logger.warn('WebSocket server not initialized, skipping')
     return
   }
   const io = Ws.io

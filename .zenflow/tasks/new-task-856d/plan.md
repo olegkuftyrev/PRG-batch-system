@@ -144,13 +144,14 @@ Create a detailed implementation plan based on `{@artifacts_path}/spec.md`.
 
 **Verification**: Run `git status` to ensure build outputs are ignored
 
-### [ ] Step: Remove console statements from backend
+### [x] Step: Remove console statements from backend
+<!-- chat-id: 571b1fd0-c58e-4d14-a4ed-b5b175960b15 -->
 
-- [ ] Replace console statements in `/api/start/ws.ts` with AdonisJS logger
-- [ ] Replace console statements in `/api/app/services/ws.ts` with AdonisJS logger
-- [ ] Import: `import logger from '@adonisjs/core/services/logger'`
-- [ ] Use: `logger.info()`, `logger.error()`, `logger.warn()` as appropriate
-- [ ] Verify no other production console statements in `api/app/**` and `api/start/**`
+- [x] Replace console statements in `/api/start/ws.ts` with AdonisJS logger
+- [x] Replace console statements in `/api/app/services/ws.ts` with AdonisJS logger
+- [x] Import: `import logger from '@adonisjs/core/services/logger'`
+- [x] Use: `logger.info()`, `logger.error()`, `logger.warn()` as appropriate
+- [x] Verify no other production console statements in `api/app/**` and `api/start/**`
 
 **Verification**: Run `grep -rn "console\." api/app/ api/start/` - should return 0 results
 
