@@ -122,9 +122,9 @@ export function CallFoodItem({
   return (
     <Card className={cardClassName}>
       <CardHeader className="pb-2">
-        <div className="flex justify-between items-start gap-2">
+        <div className="flex justify-between items-center">
           <div 
-            className={`font-bold text-lg inline-block px-2 py-1 rounded ${
+            className={`font-bold text-lg px-2 py-1 rounded ${
               item.color === 'blue' ? 'bg-blue-500 text-white' :
               item.color === 'red' ? 'bg-red-500 text-white' :
               item.color === 'green' ? 'bg-green-500 text-white' :
@@ -140,7 +140,7 @@ export function CallFoodItem({
             </span>
           )}
         </div>
-        <h3 className="text-base font-semibold uppercase tracking-wide mt-1">
+        <h3 className="text-base font-semibold uppercase tracking-wide mt-2 text-center">
           {item.title}
         </h3>
       </CardHeader>
