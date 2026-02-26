@@ -163,6 +163,7 @@ export function CallFoodItem({
             <Badge 
               variant={qualityBadge.variant} 
               className={`text-xs font-semibold ${
+                qualityBadge.variant === 'destructive' ? 'animate-pulse' :
                 qualityBadge.variant === 'warning' ? 'bg-yellow-500 text-white border-yellow-500' :
                 qualityBadge.variant === 'success' ? 'bg-green-500 text-white border-green-500' :
                 ''
