@@ -53,7 +53,8 @@ If the feature is trivial and doesn't warrant full specification, update this wo
 
 Save to `{@artifacts_path}/plan.md`.
 
-### [ ] Step: Pre-deployment Verification
+### [x] Step: Pre-deployment Verification
+<!-- chat-id: 7a24f271-5920-4513-ae81-640153e7630b -->
 
 Connect to the DigitalOcean droplet and verify the environment is ready for update.
 
