@@ -248,11 +248,34 @@ const isHoldExpiring = holdTimeRemaining <= holdTimeSeconds / 2
 const isHoldExpired = holdTimeRemaining <= 0
 ```
 
+## Phase 7 Implementation: BOH Completed Items Collapsable
+
+### Changes Completed
+
+#### ScreenBOH Component
+- ✅ Wrapped "Completed" section in Collapsable component
+- ✅ Shows count of completed tickets (e.g., "Completed (12)")
+- ✅ Default state: collapsed (defaultOpen={false})
+- ✅ Displays up to 20 completed tickets when expanded
+- ✅ Maintains existing ticket format: "Batch X - Item Title _seq"
+
+#### Implementation
+```tsx
+<Collapsable
+  title="Completed"
+  count={completedTickets.length}
+  defaultOpen={false}
+>
+  {/* List of completed tickets */}
+</Collapsable>
+```
+
 ## Next Steps
 
-Phase 6 complete. Ready to proceed to **Phase 7** which includes:
-- BOH screen updates with collapsable completed items
-- Cancel confirmation dialog with shadcn Alert
+Phase 7 complete. Ready to proceed to **Phase 8** which includes:
+- Cancel confirmation dialog with shadcn Alert (replacing browser confirm())
+- Fix cancel button functionality
+- Fix picture upload functionality
 
 ## Technical Notes
 

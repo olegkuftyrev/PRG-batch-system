@@ -1,6 +1,7 @@
 import { useRef, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { Collapsable } from '@/components/ui/collapsable'
 import { startTicket, completeTicket } from '@/api/tickets'
 import type { SnapshotTicket, SocketState } from '@/hooks/useSocket'
 import { useRemainingSeconds } from '@/hooks/useRemainingSeconds'
@@ -258,18 +259,23 @@ export function ScreenBOH({ screen, socketState }: Props) {
       </section>
 
       <section className="mt-auto pt-4 border-t">
-        <h2 className="text-lg font-semibold mb-2">Completed</h2>
-        <div className="flex flex-col gap-1">
-          {completedTickets.length === 0 ? (
-            <p className="text-muted-foreground text-sm">No completed tickets</p>
-          ) : (
-            completedTickets.slice(0, 10).map((t) => (
-              <div key={t.id} className="text-sm text-muted-foreground py-1">
-                Batch {t.batchSizeSnapshot} - {t.itemTitleSnapshot} _{t.seq}
-              </div>
-            ))
-          )}
-        </div>
+        <Collapsable
+          title="Completed"
+          count={completedTickets.length}
+          defaultOpen={false}
+        >
+          <div className="flex flex-col gap-1 mt-2">
+            {completedTickets.length === 0 ? (
+              <p className="text-muted-foreground text-sm">No completed tickets</p>
+            ) : (
+              completedTickets.slice(0, 20).map((t) => (
+                <div key={t.id} className="text-sm text-muted-foreground py-1">
+                  Batch {t.batchSizeSnapshot} - {t.itemTitleSnapshot} _{t.seq}
+                </div>
+              ))
+            )}
+          </div>
+        </Collapsable>
       </section>
     </div>
   )
