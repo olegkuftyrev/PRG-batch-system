@@ -283,7 +283,17 @@ export function ScreenBOH({ screen, socketState }: Props) {
   const waiting = tickets.filter((t) => t.state === 'created')
   const inProgress = tickets.filter((t) => t.state === 'started')
   
-  const inProgressGroups = groupByItem(inProgress)
+  const isQualityCheckTicket = (t: SnapshotTicket) => {
+    const duration = t.durationSeconds ?? t.durationSnapshot
+    if (!t.startedAt || !duration) return false
+    return (Date.now() - offsetMs) >= t.startedAt + duration * 1000
+  }
+
+  const inProgressGroups = groupByItem(inProgress).sort((a, b) => {
+    const aQC = a.tickets.some(isQualityCheckTicket) ? 1 : 0
+    const bQC = b.tickets.some(isQualityCheckTicket) ? 1 : 0
+    return bQC - aQC
+  })
 
   const title = TITLE_BY_SCREEN[screen]
 
