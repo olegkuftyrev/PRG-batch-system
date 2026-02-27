@@ -255,7 +255,7 @@ Create a detailed implementation plan based on `{@artifacts_path}/spec.md`.
 - ✅ Build configuration clean (no `--ignore-ts-errors` flag exists)
 - 📝 Documented in audit-report.md section 7.1 (FIX-003)
 
-### [ ] Step: Fix frontend TypeScript errors
+### [x] Step: Fix frontend TypeScript errors
 <!-- chat-id: 052b93d9-769a-4088-a152-76825fe9a2ee -->
 
 - [ ] Run `cd web && tsc -b` to check for errors
