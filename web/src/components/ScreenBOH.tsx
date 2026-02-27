@@ -139,18 +139,20 @@ function BatchRow({
       "flex flex-col border-b border-border last:border-0",
       isQualityCheck && "bg-orange-50"
     )}>
-      <div className="flex items-center justify-between py-3 px-4">
-        <div className="flex items-center gap-3">
-          <span className="font-semibold text-sm">BATCH {ticket.batchSizeSnapshot}</span>
+      <div className="grid grid-cols-3 items-center py-3 px-4">
+        <span className="font-semibold text-sm">BATCH {ticket.batchSizeSnapshot}</span>
+        <div className="flex justify-center">
           {isQualityCheck ? (
-            <span className="text-orange-600 font-semibold text-xs">QUALITY CHECK</span>
+            <span className="text-orange-600 font-semibold text-sm">QUALITY CHECK</span>
           ) : (
-            <span className="text-muted-foreground text-xs tabular-nums">{formatTime(remaining ?? 0)}</span>
+            <span className="text-foreground font-bold text-base tabular-nums">{formatTime(remaining ?? 0)}</span>
           )}
         </div>
-        <Button size="sm" variant={isQualityCheck ? "default" : "outline"} onClick={() => onComplete(ticket.id)}>
-          Complete
-        </Button>
+        <div className="flex justify-end">
+          <Button size="sm" variant={isQualityCheck ? "default" : "outline"} onClick={() => onComplete(ticket.id)}>
+            Complete
+          </Button>
+        </div>
       </div>
       {totalSeconds > 0 && (
         <div className="px-4 pb-3">
