@@ -152,7 +152,7 @@ private async bumpVersion(trx: TransactionClientContract): Promise<number>
 2. ✅ Identify all frontend TypeScript errors - **COMPLETE**
 3. ⚠️ Fix CallFoodItem.tsx unused import - **PENDING**
 4. ⚠️ Fix CallFoodItem.tsx Badge variant types - **PENDING**
-5. ⚠️ (Optional) Fix backend `any` type for better type safety - **PENDING**
+5. ✅ Fix backend `any` type for better type safety - **COMPLETE**
 
 ---
 
@@ -1200,6 +1200,28 @@ All issues identified are code quality or documentation problems. **No architect
 
 **Files Modified:** None (validation only)  
 **Verification Method:** `npm run lint` in both api/ and web/
+
+---
+
+#### FIX-002: Backend Type Safety Improvement
+**Date Completed:** 2026-02-27  
+**Issue Addressed:** BUG-001 (Backend type safety)
+
+**Changes Made:**
+- Replaced `any` type with proper `TransactionClientContract` in `bumpVersion` method
+- Added missing type import: `import type { TransactionClientContract } from '@adonisjs/lucid/types/database'`
+- Improved type safety while maintaining zero build errors
+
+**Impact:**
+- ✅ Improved type safety in menu_items_controller.ts
+- ✅ No behavior changes
+- ✅ Build still passes (confirmed with `npm run build`)
+
+**Files Modified:** 
+- [./api/app/controllers/menu_items_controller.ts:2](./api/app/controllers/menu_items_controller.ts:2) - Added type import
+- [./api/app/controllers/menu_items_controller.ts:182](./api/app/controllers/menu_items_controller.ts:182) - Fixed parameter type
+
+**Verification Method:** `cd api && npm run build` - ✅ Passes
 
 ---
 

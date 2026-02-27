@@ -1,4 +1,5 @@
 import type { HttpContext } from '@adonisjs/core/http'
+import type { TransactionClientContract } from '@adonisjs/lucid/types/database'
 import MenuItem from '#models/menu_item'
 import MenuVersion from '#models/menu_version'
 import Ws from '#services/ws'
@@ -178,7 +179,7 @@ export default class MenuItemsController {
     return response.noContent()
   }
 
-  private async bumpVersion(trx: any): Promise<number> {
+  private async bumpVersion(trx: TransactionClientContract): Promise<number> {
     const row = await MenuVersion.query().useTransaction(trx).first()
     if (row) {
       row.version += 1
