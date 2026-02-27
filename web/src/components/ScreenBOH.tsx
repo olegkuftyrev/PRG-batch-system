@@ -131,31 +131,17 @@ function BatchRow({
     return `${mins} MIN ${secs} SEC`
   }
 
-  const getResponseTime = () => {
-    if (!ticket.createdAt || !ticket.startedAt) return null
-    const responseMs = ticket.startedAt - ticket.createdAt
-    const responseSec = Math.floor(responseMs / 1000)
-    return responseSec > 0 ? responseSec : 0
-  }
-
-  const responseSec = getResponseTime()
-
   return (
     <div className={cn(
       "flex items-center justify-between py-3 px-4 border-b border-border last:border-0",
       isQualityCheck && "bg-orange-50"
     )}>
-      <div className="flex flex-col gap-1">
-        <div className="flex items-center gap-3">
-          <span className="font-semibold text-sm">BATCH {ticket.batchSizeSnapshot}</span>
-          {isQualityCheck ? (
-            <span className="text-orange-600 font-semibold text-xs">QUALITY CHECK</span>
-          ) : (
-            <span className="text-muted-foreground text-xs tabular-nums">{formatTime(remaining ?? 0)}</span>
-          )}
-        </div>
-        {responseSec !== null && (
-          <span className="text-xs text-muted-foreground">Response: {formatTime(responseSec)}</span>
+      <div className="flex items-center gap-3">
+        <span className="font-semibold text-sm">BATCH {ticket.batchSizeSnapshot}</span>
+        {isQualityCheck ? (
+          <span className="text-orange-600 font-semibold text-xs">QUALITY CHECK</span>
+        ) : (
+          <span className="text-muted-foreground text-xs tabular-nums">{formatTime(remaining ?? 0)}</span>
         )}
       </div>
       <Button size="sm" variant={isQualityCheck ? "default" : "outline"} onClick={() => onComplete(ticket.id)}>
@@ -182,14 +168,29 @@ function ItemCard({
   playedSoundRef: React.MutableRefObject<Set<number>>
   color?: string | null
 }) {
+  const firstTicket = tickets[0]
+  const responseTime = (() => {
+    if (!firstTicket?.createdAt || !firstTicket?.startedAt) return null
+    const ms = firstTicket.startedAt - firstTicket.createdAt
+    const sec = Math.max(0, Math.floor(ms / 1000))
+    const mins = Math.floor(sec / 60)
+    const secs = sec % 60
+    return `${mins} MIN ${secs} SEC`
+  })()
+
   return (
     <Card>
       <CardHeader className="pb-3">
-        <div className="flex items-center gap-3">
-          <div className={`font-bold text-sm px-3 py-1 rounded ${colorClass(color)}`}>
-            {code}
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className={`font-bold text-sm px-3 py-1 rounded shrink-0 ${colorClass(color)}`}>
+              {code}
+            </div>
+            <h3 className="font-semibold text-lg uppercase tracking-wide truncate">{title}</h3>
           </div>
-          <h3 className="font-semibold text-lg uppercase tracking-wide">{title}</h3>
+          {responseTime && (
+            <span className="text-sm text-muted-foreground shrink-0">Response: {responseTime}</span>
+          )}
         </div>
       </CardHeader>
       <CardContent className="p-0">
