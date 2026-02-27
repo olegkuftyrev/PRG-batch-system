@@ -6,16 +6,18 @@ export interface ProgressBarProps {
   showText?: boolean
   text?: string
   className?: string
+  invert?: boolean
 }
 
-export function ProgressBar({ value, max = 100, showText = false, text, className }: ProgressBarProps) {
+export function ProgressBar({ value, max = 100, showText = false, text, className, invert = false }: ProgressBarProps) {
   const percentage = Math.min(Math.max((value / max) * 100, 0), 100)
 
   const getColor = () => {
-    if (percentage < 33) return 'bg-red-500'
-    if (percentage < 67) return 'bg-orange-500'
-    if (percentage < 100) return 'bg-yellow-500'
-    return 'bg-green-500'
+    const p = invert ? 100 - percentage : percentage
+    if (p < 33) return 'bg-green-500'
+    if (p < 67) return 'bg-yellow-500'
+    if (p < 100) return 'bg-orange-500'
+    return 'bg-red-500'
   }
 
   return (

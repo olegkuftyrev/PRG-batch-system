@@ -155,8 +155,9 @@ function BatchRow({
       {totalSeconds > 0 && (
         <div className="px-4 pb-3">
           <ProgressBar
-            value={isQualityCheck ? 0 : (remaining ?? 0)}
+            value={isQualityCheck ? totalSeconds : totalSeconds - (remaining ?? 0)}
             max={totalSeconds}
+            invert
             className="h-2.5"
           />
         </div>
