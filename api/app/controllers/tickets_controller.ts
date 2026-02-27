@@ -110,6 +110,41 @@ export default class TicketsController {
     response.json(ticket.serialize())
   }
 
+  /** POST /api/tickets/:id/reset — restart timer from beginning */
+  async reset({ params, response }: HttpContext) {
+    const ticket = await Ticket.findOrFail(params.id)
+    if (ticket.state !== 'started') {
+      return response.badRequest({ error: 'Ticket is not started' })
+    }
+    ticket.startedAt = DateTime.now()
+    ticket.durationSeconds = ticket.durationSnapshot
+    await ticket.save()
+    const startedAtMs = ticket.startedAt.toMillis()
+    const durationMs = (ticket.durationSeconds ?? ticket.durationSnapshot) * 1000
+    const timerPayload = { ticketId: ticket.id, startedAt: startedAtMs, durationSeconds: ticket.durationSeconds }
+    Ws.toStation(ticket.station, 'timer_started', timerPayload)
+    Ws.toStation(ticket.source, 'timer_started', timerPayload)
+    schedule(ticket.id, startedAtMs, durationMs)
+    response.json(ticket.serialize())
+  }
+
+  /** POST /api/tickets/:id/extend — add 10 seconds to timer */
+  async extend({ params, response }: HttpContext) {
+    const ticket = await Ticket.findOrFail(params.id)
+    if (ticket.state !== 'started') {
+      return response.badRequest({ error: 'Ticket is not started' })
+    }
+    ticket.durationSeconds = (ticket.durationSeconds ?? ticket.durationSnapshot) + 10
+    await ticket.save()
+    const startedAtMs = ticket.startedAt!.toMillis()
+    const durationMs = ticket.durationSeconds * 1000
+    const timerPayload = { ticketId: ticket.id, startedAt: startedAtMs, durationSeconds: ticket.durationSeconds }
+    Ws.toStation(ticket.station, 'timer_started', timerPayload)
+    Ws.toStation(ticket.source, 'timer_started', timerPayload)
+    schedule(ticket.id, startedAtMs, durationMs)
+    response.json(ticket.serialize())
+  }
+
   /** DELETE /api/tickets/:id — cancel/delete ticket */
   async destroy({ params, response }: HttpContext) {
     const ticket = await Ticket.findOrFail(params.id)

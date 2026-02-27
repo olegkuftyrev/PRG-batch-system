@@ -26,5 +26,7 @@ router.group(() => {
   router.post('/', [TicketsController, 'store'])
   router.post('/:id/start', [TicketsController, 'start'])
   router.post('/:id/complete', [TicketsController, 'complete'])
+  router.post('/:id/reset', [TicketsController, 'reset'])
+  router.post('/:id/extend', [TicketsController, 'extend'])
   router.delete('/:id', [TicketsController, 'destroy'])
 }).prefix('/api/tickets').use([])

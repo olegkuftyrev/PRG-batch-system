@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Collapsable } from '@/components/ui/collapsible'
 import { ProgressBar } from '@/components/ui/progress-bar'
-import { startTicket, completeTicket } from '@/api/tickets'
+import { startTicket, completeTicket, resetTicket, extendTicket } from '@/api/tickets'
 import type { SnapshotTicket, SocketState } from '@/hooks/useSocket'
 import { useRemainingSeconds } from '@/hooks/useRemainingSeconds'
 import { useMenu } from '@/hooks/useMenu'
@@ -109,11 +109,15 @@ function BatchRow({
   ticket,
   offsetMs,
   onComplete,
+  onReset,
+  onExtend,
   playedSoundRef,
 }: {
   ticket: SnapshotTicket
   offsetMs: number
   onComplete: (id: number) => void
+  onReset: (id: number) => void
+  onExtend: (id: number) => void
   playedSoundRef: React.MutableRefObject<Set<number>>
 }) {
   const remaining = useRemainingSeconds(ticket.startedAt, ticket.durationSeconds ?? ticket.durationSnapshot, offsetMs)
@@ -147,14 +151,10 @@ function BatchRow({
             <span className="text-foreground font-bold text-base tabular-nums">{formatTime(remaining ?? 0)}</span>
           )}
         </div>
-        <div className="flex justify-end">
-          <Button size="sm" variant={isQualityCheck ? "default" : "outline"} onClick={() => onComplete(ticket.id)}>
-            Complete
-          </Button>
-        </div>
+        <div />
       </div>
       {totalSeconds > 0 && (
-        <div className="px-4 pb-3">
+        <div className="px-4">
           <ProgressBar
             value={isQualityCheck ? totalSeconds : totalSeconds - (remaining ?? 0)}
             max={totalSeconds}
@@ -164,6 +164,11 @@ function BatchRow({
           />
         </div>
       )}
+      <div className="flex gap-2 px-4 py-3">
+        <Button size="sm" variant="outline" className="flex-1" onClick={() => onReset(ticket.id)}>Reset</Button>
+        <Button size="sm" variant={isQualityCheck ? "default" : "outline"} className="flex-1" onClick={() => onComplete(ticket.id)}>Complete</Button>
+        <Button size="sm" variant="outline" className="flex-1" onClick={() => onExtend(ticket.id)}>+10s</Button>
+      </div>
     </div>
   )
 }
@@ -174,6 +179,8 @@ function ItemCard({
   tickets,
   offsetMs,
   onComplete,
+  onReset,
+  onExtend,
   playedSoundRef,
   color,
 }: {
@@ -182,6 +189,8 @@ function ItemCard({
   tickets: SnapshotTicket[]
   offsetMs: number
   onComplete: (id: number) => void
+  onReset: (id: number) => void
+  onExtend: (id: number) => void
   playedSoundRef: React.MutableRefObject<Set<number>>
   color?: string | null
 }) {
@@ -217,6 +226,8 @@ function ItemCard({
             ticket={ticket}
             offsetMs={offsetMs}
             onComplete={onComplete}
+            onReset={onReset}
+            onExtend={onExtend}
             playedSoundRef={playedSoundRef}
           />
         ))}
@@ -254,6 +265,22 @@ export function ScreenBOH({ screen, socketState }: Props) {
       await completeTicket(id)
     } catch (e) {
       alert(e instanceof Error ? e.message : 'Failed to complete')
+    }
+  }
+
+  const handleReset = async (id: number) => {
+    try {
+      await resetTicket(id)
+    } catch (e) {
+      alert(e instanceof Error ? e.message : 'Failed to reset')
+    }
+  }
+
+  const handleExtend = async (id: number) => {
+    try {
+      await extendTicket(id)
+    } catch (e) {
+      alert(e instanceof Error ? e.message : 'Failed to extend')
     }
   }
 
@@ -317,6 +344,8 @@ export function ScreenBOH({ screen, socketState }: Props) {
                   tickets={group.tickets}
                   offsetMs={offsetMs}
                   onComplete={handleComplete}
+                  onReset={handleReset}
+                  onExtend={handleExtend}
                   playedSoundRef={playedSoundRef}
                   color={getItemColor(group.code)}
                 />

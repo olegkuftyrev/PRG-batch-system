@@ -74,6 +74,26 @@ export async function completeTicket(id: number): Promise<Ticket> {
   return normalizeTicket(data)
 }
 
+export async function resetTicket(id: number): Promise<Ticket> {
+  const r = await fetch(`${API}/api/tickets/${id}/reset`, { method: 'POST' })
+  if (!r.ok) {
+    const err = await r.json().catch(() => ({}))
+    throw new Error(err.error || 'Failed to reset')
+  }
+  const data = (await r.json()) as Record<string, unknown>
+  return normalizeTicket(data)
+}
+
+export async function extendTicket(id: number): Promise<Ticket> {
+  const r = await fetch(`${API}/api/tickets/${id}/extend`, { method: 'POST' })
+  if (!r.ok) {
+    const err = await r.json().catch(() => ({}))
+    throw new Error(err.error || 'Failed to extend')
+  }
+  const data = (await r.json()) as Record<string, unknown>
+  return normalizeTicket(data)
+}
+
 export async function cancelTicket(id: number): Promise<void> {
   const r = await fetch(`${API}/api/tickets/${id}`, { method: 'DELETE' })
   if (!r.ok) {
