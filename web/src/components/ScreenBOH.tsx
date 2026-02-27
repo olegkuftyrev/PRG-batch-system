@@ -136,8 +136,7 @@ function BatchRow({
 
   return (
     <div className={cn(
-      "flex flex-col border-b border-border last:border-0",
-      isQualityCheck && "bg-orange-50"
+      "flex flex-col border-b border-border last:border-0"
     )}>
       <div className="grid grid-cols-3 items-center py-3 px-4">
         <span className="font-semibold text-sm">BATCH {ticket.batchSizeSnapshot}</span>
