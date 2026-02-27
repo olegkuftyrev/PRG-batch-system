@@ -211,7 +211,7 @@ function ItemCard({
           )}
         </div>
       </CardHeader>
-      <CardContent className="p-0">
+      <CardContent className="p-0 overflow-hidden">
         {tickets.map((ticket) => (
           <BatchRow
             key={ticket.id}
