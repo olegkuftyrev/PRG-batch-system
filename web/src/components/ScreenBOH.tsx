@@ -85,7 +85,7 @@ function WaitingCard({
             <span className="font-medium truncate">{title}</span>
           </div>
           {code && (
-            <span className={`font-bold text-xs px-2 py-0.5 rounded shrink-0 ${colorClass(color)}`}>{code}</span>
+            <span className={`font-bold text-sm px-3 py-1 rounded shrink-0 ${colorClass(color)}`}>{code}</span>
           )}
         </div>
         <div className="flex items-center justify-between gap-2">
