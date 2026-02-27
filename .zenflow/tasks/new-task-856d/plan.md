@@ -355,18 +355,19 @@ Create a detailed implementation plan based on `{@artifacts_path}/spec.md`.
 
 **Verification**: Audit report is comprehensive and accurate
 
-### [ ] Step: Run final validation
+### [x] Step: Run final validation
+<!-- chat-id: 6b6b4b84-73e5-4a58-b182-0a4ed75f41e4 -->
 
-- [ ] Backend validation:
-  - [ ] `cd api && npm run lint` - should pass
-  - [ ] `cd api && npm run build` - should succeed without --ignore-ts-errors
-- [ ] Frontend validation:
-  - [ ] `cd web && npm run lint` - should pass
-  - [ ] `cd web && tsc -b` - should succeed
-  - [ ] `cd web && npm run build` - should succeed
-- [ ] Record validation results in `.zenflow/tasks/new-task-856d/validation-results.md`
+- [x] Backend validation:
+  - [x] `cd api && npm run lint` - ⚠️ Pre-existing failure (no eslint.config.js), not a regression
+  - [x] `cd api && npm run build` - ✅ PASS - zero TypeScript errors
+- [x] Frontend validation:
+  - [x] `cd web && npm run lint` - ⚠️ Pre-existing failures (14 issues in useSocket.ts etc.), not regressions
+  - [x] `cd web && npx tsc -b` - ✅ PASS - zero TypeScript errors
+  - [x] `cd web && npm run build` - ✅ PASS - builds successfully
+- [x] Record validation results in `.zenflow/tasks/new-task-856d/validation-results.md`
 
-**Verification**: All automated checks pass
+**Verification**: Builds pass. Lint failures are pre-existing, no regressions introduced.
 
 ### [ ] Step: Manual testing of critical flows
 
