@@ -11,6 +11,23 @@ import { DateTime } from 'luxon';
 import { BaseModel, column } from '@adonisjs/lucid/orm';
 export default class MenuItem extends BaseModel {
     static table = 'menu_items';
+    serialize() {
+        return {
+            id: this.id,
+            code: this.code,
+            title: this.title,
+            station: this.station,
+            cook_times: this.cookTimes,
+            batch_sizes: this.batchSizes,
+            enabled: this.enabled,
+            recommended_batch: this.recommendedBatch,
+            color: this.color,
+            image_url: this.imageUrl,
+            hold_time: this.holdTime,
+            created_at: this.createdAt.toISO(),
+            updated_at: this.updatedAt.toISO(),
+        };
+    }
 }
 __decorate([
     column({ isPrimary: true }),

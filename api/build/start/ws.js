@@ -1,4 +1,5 @@
 import app from '@adonisjs/core/services/app';
+import logger from '@adonisjs/core/services/logger';
 import Ws from '#services/ws';
 import { rescheduleOnBoot } from '#services/timer';
 import Ticket from '#models/ticket';
@@ -13,6 +14,7 @@ function ticketToSnapshot(t) {
         seq: t.stationSeq,
         state: t.state,
         source: t.source,
+        createdAt: t.createdAt?.toMillis(),
         startedAt: t.startedAt?.toMillis(),
         durationSeconds: t.durationSeconds,
         menuVersionAtCall: t.menuVersionAtCall,
@@ -23,6 +25,10 @@ function ticketToSnapshot(t) {
 }
 app.ready(async () => {
     Ws.boot();
+    if (!Ws.io) {
+        logger.warn('WebSocket server not initialized, skipping');
+        return;
+    }
     const io = Ws.io;
     async function buildSnapshot(rooms) {
         const versionRow = await MenuVersion.query().first();

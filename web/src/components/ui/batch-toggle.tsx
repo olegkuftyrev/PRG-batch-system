@@ -10,7 +10,7 @@ export interface BatchToggleProps {
 }
 
 export function BatchToggle({ options, value, onChange, disabled, className, recommended }: BatchToggleProps) {
-  if (options.length !== 3) {
+  if (import.meta.env.DEV && options.length !== 3) {
     console.warn('BatchToggle expects exactly 3 options')
   }
 

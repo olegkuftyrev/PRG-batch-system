@@ -29,7 +29,6 @@ services:
       dockerfile: Dockerfile
     container_name: prg-api
     restart: unless-stopped
-    command: ["node", "build/bin/server.js"]
     depends_on:
       postgres:
         condition: service_healthy

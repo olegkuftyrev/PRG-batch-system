@@ -1,7 +1,7 @@
 import { useRef, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
-import { Collapsable } from '@/components/ui/collapsable'
+import { Collapsable } from '@/components/ui/collapsible'
 import { startTicket, completeTicket } from '@/api/tickets'
 import type { SnapshotTicket, SocketState } from '@/hooks/useSocket'
 import { useRemainingSeconds } from '@/hooks/useRemainingSeconds'
@@ -209,7 +209,6 @@ export function ScreenBOH({ screen, socketState }: Props) {
     try {
       await startTicket(id)
     } catch (e) {
-      console.error(e)
       alert(e instanceof Error ? e.message : 'Failed to start')
     }
   }
@@ -218,7 +217,6 @@ export function ScreenBOH({ screen, socketState }: Props) {
     try {
       await completeTicket(id)
     } catch (e) {
-      console.error(e)
       alert(e instanceof Error ? e.message : 'Failed to complete')
     }
   }

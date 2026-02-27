@@ -1,4 +1,5 @@
 import type { HttpContext } from '@adonisjs/core/http'
+import type { TransactionClientContract } from '@adonisjs/lucid/types/database'
 import MenuItem from '#models/menu_item'
 import MenuVersion from '#models/menu_version'
 import Ws from '#services/ws'
@@ -13,6 +14,11 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 
 export default class MenuItemsController {
+  /**
+   * Default hold time in seconds for menu items (time food can safely stay warm)
+   */
+  static readonly DEFAULT_HOLD_TIME_SECONDS = 600
+
   /** GET /api/menu — list items + menu_version */
   async index({ response }: HttpContext) {
     const items = await MenuItem.query().orderBy('code', 'asc')
@@ -40,7 +46,7 @@ export default class MenuItemsController {
           recommendedBatch: (payload.recommendedBatch as Record<string, string>) ?? {},
           color: payload.color ?? null,
           imageUrl: payload.imageUrl ?? null,
-          holdTime: payload.holdTime ?? 600,
+          holdTime: payload.holdTime ?? MenuItemsController.DEFAULT_HOLD_TIME_SECONDS,
         },
         { client: trx }
       )
@@ -173,7 +179,7 @@ export default class MenuItemsController {
     return response.noContent()
   }
 
-  private async bumpVersion(trx: any): Promise<number> {
+  private async bumpVersion(trx: TransactionClientContract): Promise<number> {
     const row = await MenuVersion.query().useTransaction(trx).first()
     if (row) {
       row.version += 1

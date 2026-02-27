@@ -69,19 +69,25 @@ Production: Set via Docker build arg
 - `POST /api/menu`
 - `PATCH /api/menu/:id`
 - `DELETE /api/menu/:id`
+- `POST /api/menu/:id/image` - Upload image (multipart `image` field; jpg/jpeg/png/webp, max 5MB)
+- `DELETE /api/menu/:id/image` - Delete image
 - `POST /api/tickets`
 - `POST /api/tickets/:id/start`
 - `POST /api/tickets/:id/complete`
+- `DELETE /api/tickets/:id` - Cancel ticket
 
 **WebSocket (receive):**
 - `snapshot` - Full state on connect
 - `ticket_created`
 - `timer_started`
 - `ticket_completed`
+- `ticket_cancelled` - Ticket was cancelled; payload: serialized ticket object
 - `menu_updated`
+- `pong` - Server time sync response; payload: `{ serverNowMs: number }`
 
 **WebSocket (emit):**
 - `join` - Subscribe to station updates
+- `ping` - Request server time sync (no payload); server responds with `pong`
 
 ## Screens
 

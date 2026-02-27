@@ -8,5 +8,14 @@ node_modules/
 api/node_modules/
 web/node_modules/
 
-# Test logs (can be large)
+# Build outputs
+build/
+dist/
+.cache/
+
+# Uploads
+public/uploads/
+
+# Logs
+*.log
 test-logs.txt

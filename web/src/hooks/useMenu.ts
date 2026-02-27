@@ -1,16 +1,25 @@
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import { fetchMenu, type MenuItem, type MenuResponse } from '@/api/menu'
 
 export function useMenu(menuVersion?: number) {
   const [data, setData] = useState<MenuResponse | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const fetchSeqRef = useRef(0)
 
   const refetch = useCallback(() => {
+    const seq = ++fetchSeqRef.current
     return fetchMenu()
-      .then(setData)
-      .catch((e) => setError(e instanceof Error ? e.message : 'Failed to load menu'))
-      .finally(() => setLoading(false))
+      .then((result) => {
+        if (seq === fetchSeqRef.current) setData(result)
+      })
+      .catch((e) => {
+        if (seq === fetchSeqRef.current)
+          setError(e instanceof Error ? e.message : 'Failed to load menu')
+      })
+      .finally(() => {
+        if (seq === fetchSeqRef.current) setLoading(false)
+      })
   }, [])
 
   useEffect(() => {

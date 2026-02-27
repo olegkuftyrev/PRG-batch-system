@@ -7,6 +7,10 @@ import app from '@adonisjs/core/services/app';
 import { cuid } from '@adonisjs/core/helpers';
 import fs from 'node:fs/promises';
 export default class MenuItemsController {
+    /**
+     * Default hold time in seconds for menu items (time food can safely stay warm)
+     */
+    static DEFAULT_HOLD_TIME_SECONDS = 600;
     /** GET /api/menu — list items + menu_version */
     async index({ response }) {
         const items = await MenuItem.query().orderBy('code', 'asc');
@@ -32,7 +36,7 @@ export default class MenuItemsController {
                 recommendedBatch: payload.recommendedBatch ?? {},
                 color: payload.color ?? null,
                 imageUrl: payload.imageUrl ?? null,
-                holdTime: payload.holdTime ?? 600,
+                holdTime: payload.holdTime ?? MenuItemsController.DEFAULT_HOLD_TIME_SECONDS,
             }, { client: trx });
             const version = await this.bumpVersion(trx);
             await trx.commit();
