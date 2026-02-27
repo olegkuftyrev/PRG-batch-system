@@ -369,7 +369,8 @@ Create a detailed implementation plan based on `{@artifacts_path}/spec.md`.
 
 **Verification**: Builds pass. Lint failures are pre-existing, no regressions introduced.
 
-### [ ] Step: Manual testing of critical flows
+### [x] Step: Manual testing of critical flows
+<!-- chat-id: 99190787-4a7d-44e1-b9d3-8bd76d58ec43 -->
 
 - [ ] Test Menu CRUD: create, edit, upload image, delete image, delete item
 - [ ] Test Ticket Flow: create from FOH/DriveThru, timer starts, complete, cancel
