@@ -153,11 +153,13 @@ function BatchRow({
         </Button>
       </div>
       {totalSeconds > 0 && (
-        <ProgressBar
-          value={isQualityCheck ? 0 : (remaining ?? 0)}
-          max={totalSeconds}
-          className="h-1.5 rounded-none"
-        />
+        <div className="px-4 pb-3">
+          <ProgressBar
+            value={isQualityCheck ? 0 : (remaining ?? 0)}
+            max={totalSeconds}
+            className="h-2.5"
+          />
+        </div>
       )}
     </div>
   )
