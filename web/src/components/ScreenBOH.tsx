@@ -1,4 +1,5 @@
 import { useRef, useEffect } from 'react'
+import { Lock } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Collapsable } from '@/components/ui/collapsible'
@@ -167,7 +168,15 @@ function BatchRow({
       <div className="flex gap-2 px-4 py-3">
         <Button variant="outline" className="flex-1 h-10" onClick={() => onReset(ticket.id)}>Reset</Button>
         <Button variant={isQualityCheck ? "default" : "outline"} className="flex-1 h-10" onClick={() => onComplete(ticket.id)}>Complete</Button>
-        <Button variant="outline" className="flex-1 h-10" onClick={() => onExtend(ticket.id)}>+10s</Button>
+        <Button
+          variant="outline"
+          className="flex-1 h-10 gap-1"
+          disabled={!isQualityCheck}
+          onClick={() => onExtend(ticket.id)}
+        >
+          {!isQualityCheck && <Lock size={13} />}
+          +10s
+        </Button>
       </div>
     </div>
   )
