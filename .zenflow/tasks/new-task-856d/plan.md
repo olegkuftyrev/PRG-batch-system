@@ -330,14 +330,15 @@ Create a detailed implementation plan based on `{@artifacts_path}/spec.md`.
 
 **Verification**: All implemented endpoints are documented in README.md
 
-### [ ] Step: Document undocumented WebSocket events
+### [x] Step: Document undocumented WebSocket events
+<!-- chat-id: f3ff1828-5d34-4267-8b2c-5de90e369795 -->
 
-- [ ] Add to README.md WebSocket section:
+- [x] Add to README.md WebSocket section:
   - `ticket_cancelled` - Ticket cancelled event
   - `ping` (emit) - Request server time sync
   - `pong` (receive) - Server time response
-- [ ] Document event payloads and usage examples
-- [ ] Ensure consistency with existing documentation
+- [x] Document event payloads and usage examples
+- [x] Ensure consistency with existing documentation
 
 **Verification**: All implemented WebSocket events are documented
 

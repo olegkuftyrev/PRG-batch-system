@@ -81,10 +81,13 @@ Production: Set via Docker build arg
 - `ticket_created`
 - `timer_started`
 - `ticket_completed`
+- `ticket_cancelled` - Ticket was cancelled; payload: serialized ticket object
 - `menu_updated`
+- `pong` - Server time sync response; payload: `{ serverNowMs: number }`
 
 **WebSocket (emit):**
 - `join` - Subscribe to station updates
+- `ping` - Request server time sync (no payload); server responds with `pong`
 
 ## Screens
 
