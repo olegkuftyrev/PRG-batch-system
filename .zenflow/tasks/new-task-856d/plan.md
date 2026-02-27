@@ -265,12 +265,13 @@ Create a detailed implementation plan based on `{@artifacts_path}/spec.md`.
 
 **Verification**: Run `cd web && tsc -b` - should succeed with zero errors
 
-### [ ] Step: Update build configuration
+### [x] Step: Update build configuration
+<!-- chat-id: 3ad2aeac-ef87-4192-ae5c-cd4fd99b601e -->
 
-- [ ] Remove `--ignore-ts-errors` flag from package.json build script (if present)
-- [ ] Update `api/package.json` build command to ensure TypeScript validation
-- [ ] Verify builds succeed: `npm run build` in both api/ and web/
-- [ ] Update audit report with TypeScript fix results
+- [x] Remove `--ignore-ts-errors` flag from package.json build script (if present)
+- [x] Update `api/package.json` build command to ensure TypeScript validation
+- [x] Verify builds succeed: `npm run build` in both api/ and web/
+- [x] Update audit report with TypeScript fix results
 
 **Verification**: Both builds succeed without ignoring TypeScript errors
 
