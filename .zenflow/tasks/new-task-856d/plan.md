@@ -256,6 +256,7 @@ Create a detailed implementation plan based on `{@artifacts_path}/spec.md`.
 - 📝 Documented in audit-report.md section 7.1 (FIX-003)
 
 ### [ ] Step: Fix frontend TypeScript errors
+<!-- chat-id: 052b93d9-769a-4088-a152-76825fe9a2ee -->
 
 - [ ] Run `cd web && tsc -b` to check for errors
 - [ ] Fix any type errors in components, hooks, API clients

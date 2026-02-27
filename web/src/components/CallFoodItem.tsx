@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import * as React from 'react'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -108,8 +107,8 @@ export function CallFoodItem({
     const mins = timeSinceLastCall.diffMins
     
     if (mins > 15) return { text: 'Call Now', variant: 'destructive' as const }
-    if (mins >= 10) return { text: 'B quality', variant: 'warning' as const }
-    if (mins < 5) return { text: 'A quality', variant: 'success' as const }
+    if (mins >= 10) return { text: 'B quality', variant: 'secondary' as const }
+    if (mins < 5) return { text: 'A quality', variant: 'default' as const }
     return null
   }
   
@@ -157,8 +156,8 @@ export function CallFoodItem({
               variant={qualityBadge.variant} 
               className={`text-xs font-semibold ${
                 qualityBadge.variant === 'destructive' ? 'animate-pulse' :
-                qualityBadge.variant === 'warning' ? 'bg-yellow-500 text-white border-yellow-500' :
-                qualityBadge.variant === 'success' ? 'bg-green-500 text-white border-green-500' :
+                qualityBadge.variant === 'secondary' ? 'bg-yellow-500 text-white border-yellow-500' :
+                qualityBadge.variant === 'default' ? 'bg-green-500 text-white border-green-500' :
                 ''
               }`}
             >
