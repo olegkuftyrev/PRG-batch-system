@@ -57,20 +57,20 @@ export default class Ticket extends BaseModel {
   serialize() {
     return {
       id: this.id,
-      menu_item_id: this.menuItemId,
+      menuItemId: this.menuItemId,
       station: this.station,
-      station_seq: this.stationSeq,
-      station_day: this.stationDay.toISO(),
+      stationSeq: this.stationSeq,
+      stationDay: this.stationDay.toISO(),
       state: this.state,
       source: this.source,
-      created_at: this.createdAt?.toISO(),
-      started_at: this.startedAt?.toISO(),
-      duration_seconds: this.durationSeconds,
-      menu_version_at_call: this.menuVersionAtCall,
-      item_title_snapshot: this.itemTitleSnapshot,
-      batch_size_snapshot: this.batchSizeSnapshot,
-      duration_snapshot: this.durationSnapshot,
-      updated_at: this.updatedAt.toISO(),
+      createdAt: this.createdAt?.toISO(),
+      startedAt: this.startedAt?.toISO(),
+      durationSeconds: this.durationSeconds,
+      menuVersionAtCall: this.menuVersionAtCall,
+      itemTitleSnapshot: this.itemTitleSnapshot,
+      batchSizeSnapshot: this.batchSizeSnapshot,
+      durationSnapshot: this.durationSnapshot,
+      updatedAt: this.updatedAt.toISO(),
     }
   }
 }
