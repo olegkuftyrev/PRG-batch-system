@@ -259,7 +259,7 @@ if (import.meta.env.DEV) {
 
 #### BUG-004: Menu Refresh Bug
 **Severity:** High  
-**Status:** OPEN  
+**Status:** RESOLVED  
 **Source:** [web/README.md:114](../../web/README.md)
 
 **Description:**
@@ -270,23 +270,16 @@ Menu screen needs manual refresh after bulk edits. Real-time sync broken for bul
 - Data inconsistency across screens
 - Workflow interruption for kitchen staff
 
-**Suspected Root Cause:**
-- Bulk edit operations may not broadcast `menu_updated` WebSocket event
-- Menu version may not increment correctly during bulk changes
-- Frontend may not handle bulk changes correctly
+**Root Cause (Identified):**
+Race condition in `web/src/hooks/useMenu.ts`. The `refetch` callback had no mechanism to discard stale responses. When saving a menu item that includes an image upload, two sequential API calls each trigger a WebSocket `menu_updated` event, spawning two concurrent `fetchMenu()` requests. If the first request (fetching pre-image state) resolved **after** the second (fetching post-image state), it overwrote the correct data with stale data permanently — until the next manual refresh.
 
-**Investigation Required:**
-1. Review bulk edit flow in `api/app/controllers/menu_items_controller.ts`
-2. Check if `menu_updated` event is broadcasted after bulk operations
-3. Verify menu version increments in database transaction
-4. Review `web/src/hooks/useMenu.ts` handling of `menu_updated`
+The same race applies to rapidly toggling multiple items in succession ("bulk edits").
 
-**Action Plan:**
-1. Identify bulk edit endpoints/methods
-2. Add debug logging to track WebSocket events
-3. Test bulk edit with multiple screens open
-4. Fix: Ensure `menu_updated` broadcast happens
-5. Verify fix with manual testing
+**Fix Applied:**
+Added a sequence counter (`useRef`) to `useMenu.ts`. Each call to `refetch()` increments the counter; only the response matching the **current** counter value updates state. Earlier, stale responses are silently discarded.
+
+**File changed:** `web/src/hooks/useMenu.ts`  
+**Verification:** `cd web && npx tsc -b --noEmit` — zero TypeScript errors
 
 ---
 

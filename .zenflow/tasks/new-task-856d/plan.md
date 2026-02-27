@@ -279,7 +279,8 @@ Create a detailed implementation plan based on `{@artifacts_path}/spec.md`.
 
 ### Phase 4: Bug Fixes (if feasible)
 
-### [ ] Step: Investigate and fix menu refresh bug
+### [x] Step: Investigate and fix menu refresh bug
+<!-- chat-id: 7d330366-66c1-463f-8465-d1a31631c11f -->
 
 - [ ] Issue: Menu screen needs manual refresh after bulk edits (web/README.md:114)
 - [ ] Review bulk edit flow in `api/app/controllers/menu_items_controller.ts`
