@@ -89,6 +89,7 @@ function WaitingCard({
           )}
         </div>
         <div className="flex items-center justify-between gap-2">
+          <Button size="sm" onClick={() => onStart(ticket.id)}>Start</Button>
           <span className={cn(
             "text-sm font-medium",
             waitingMins === null || waitingMins < 4 ? "text-foreground" :
@@ -97,7 +98,6 @@ function WaitingCard({
           )}>
             {waitingMins !== null ? `Waiting ${waitingMins} min` : 'Waiting'}
           </span>
-          <Button size="sm" onClick={() => onStart(ticket.id)}>Start</Button>
         </div>
       </CardContent>
     </Card>
