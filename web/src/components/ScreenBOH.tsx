@@ -165,9 +165,9 @@ function BatchRow({
         </div>
       )}
       <div className="flex gap-2 px-4 py-3">
-        <Button size="sm" variant="outline" className="flex-1" onClick={() => onReset(ticket.id)}>Reset</Button>
-        <Button size="sm" variant={isQualityCheck ? "default" : "outline"} className="flex-1" onClick={() => onComplete(ticket.id)}>Complete</Button>
-        <Button size="sm" variant="outline" className="flex-1" onClick={() => onExtend(ticket.id)}>+10s</Button>
+        <Button variant="outline" className="flex-1 h-10" onClick={() => onReset(ticket.id)}>Reset</Button>
+        <Button variant={isQualityCheck ? "default" : "outline"} className="flex-1 h-10" onClick={() => onComplete(ticket.id)}>Complete</Button>
+        <Button variant="outline" className="flex-1 h-10" onClick={() => onExtend(ticket.id)}>+10s</Button>
       </div>
     </div>
   )
