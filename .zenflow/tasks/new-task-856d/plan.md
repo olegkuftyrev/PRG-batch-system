@@ -206,6 +206,7 @@ Create a detailed implementation plan based on `{@artifacts_path}/spec.md`.
 ### Phase 3: TypeScript Errors
 
 ### [ ] Step: Identify all TypeScript build errors
+<!-- chat-id: 285e1d2f-de56-4a73-a3c1-4aaaea522d97 -->
 
 - [ ] Modify build command to remove `--ignore-ts-errors` flag temporarily
 - [ ] Run `cd api && npm run build` and capture all errors

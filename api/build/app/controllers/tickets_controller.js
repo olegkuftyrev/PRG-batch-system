@@ -6,6 +6,10 @@ import { schedule } from '#services/timer';
 import { createTicketValidator } from '#validators/ticket';
 import { DateTime } from 'luxon';
 export default class TicketsController {
+    /**
+     * Default cook time in seconds when no batch-specific time is configured
+     */
+    static DEFAULT_COOK_TIME_SECONDS = 420;
     /** POST /api/tickets — create ticket */
     async store({ request, response }) {
         const payload = await request.validateUsing(createTicketValidator);
@@ -14,7 +18,7 @@ export default class TicketsController {
             return response.badRequest({ error: 'Menu item is disabled' });
         }
         const cookTimes = menuItem.cookTimes;
-        const durationSeconds = cookTimes[payload.batchSize] ?? 420;
+        const durationSeconds = cookTimes[payload.batchSize] ?? TicketsController.DEFAULT_COOK_TIME_SECONDS;
         const versionRow = await MenuVersion.query().first();
         const menuVersion = versionRow?.version ?? 1;
         const today = DateTime.now().toISODate();
@@ -96,5 +100,19 @@ export default class TicketsController {
         Ws.toStation(ticket.station, 'ticket_completed', ticket.serialize());
         Ws.toStation(ticket.source, 'ticket_completed', ticket.serialize());
         response.json(ticket.serialize());
+    }
+    /** DELETE /api/tickets/:id — cancel/delete ticket */
+    async destroy({ params, response }) {
+        const ticket = await Ticket.findOrFail(params.id);
+        if (ticket.state === 'completed') {
+            return response.badRequest({ error: 'Cannot cancel completed ticket' });
+        }
+        const station = ticket.station;
+        const source = ticket.source;
+        const serialized = ticket.serialize();
+        await ticket.delete();
+        Ws.toStation(station, 'ticket_cancelled', serialized);
+        Ws.toStation(source, 'ticket_cancelled', serialized);
+        response.noContent();
     }
 }
