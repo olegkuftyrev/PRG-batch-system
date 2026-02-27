@@ -2,6 +2,7 @@ import { useRef, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Collapsable } from '@/components/ui/collapsible'
+import { ProgressBar } from '@/components/ui/progress-bar'
 import { startTicket, completeTicket } from '@/api/tickets'
 import type { SnapshotTicket, SocketState } from '@/hooks/useSocket'
 import { useRemainingSeconds } from '@/hooks/useRemainingSeconds'
@@ -131,22 +132,33 @@ function BatchRow({
     return `${mins} MIN ${secs} SEC`
   }
 
+  const totalSeconds = ticket.durationSeconds ?? ticket.durationSnapshot ?? 0
+
   return (
     <div className={cn(
-      "flex items-center justify-between py-3 px-4 border-b border-border last:border-0",
+      "flex flex-col border-b border-border last:border-0",
       isQualityCheck && "bg-orange-50"
     )}>
-      <div className="flex items-center gap-3">
-        <span className="font-semibold text-sm">BATCH {ticket.batchSizeSnapshot}</span>
-        {isQualityCheck ? (
-          <span className="text-orange-600 font-semibold text-xs">QUALITY CHECK</span>
-        ) : (
-          <span className="text-muted-foreground text-xs tabular-nums">{formatTime(remaining ?? 0)}</span>
-        )}
+      <div className="flex items-center justify-between py-3 px-4">
+        <div className="flex items-center gap-3">
+          <span className="font-semibold text-sm">BATCH {ticket.batchSizeSnapshot}</span>
+          {isQualityCheck ? (
+            <span className="text-orange-600 font-semibold text-xs">QUALITY CHECK</span>
+          ) : (
+            <span className="text-muted-foreground text-xs tabular-nums">{formatTime(remaining ?? 0)}</span>
+          )}
+        </div>
+        <Button size="sm" variant={isQualityCheck ? "default" : "outline"} onClick={() => onComplete(ticket.id)}>
+          Complete
+        </Button>
       </div>
-      <Button size="sm" variant={isQualityCheck ? "default" : "outline"} onClick={() => onComplete(ticket.id)}>
-        Complete
-      </Button>
+      {totalSeconds > 0 && (
+        <ProgressBar
+          value={isQualityCheck ? 0 : (remaining ?? 0)}
+          max={totalSeconds}
+          className="h-1.5 rounded-none"
+        />
+      )}
     </div>
   )
 }
