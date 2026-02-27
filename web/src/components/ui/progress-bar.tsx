@@ -7,12 +7,14 @@ export interface ProgressBarProps {
   text?: string
   className?: string
   invert?: boolean
+  complete?: boolean
 }
 
-export function ProgressBar({ value, max = 100, showText = false, text, className, invert = false }: ProgressBarProps) {
+export function ProgressBar({ value, max = 100, showText = false, text, className, invert = false, complete = false }: ProgressBarProps) {
   const percentage = Math.min(Math.max((value / max) * 100, 0), 100)
 
   const getColor = () => {
+    if (complete) return 'bg-blue-500 animate-pulse'
     const p = invert ? 100 - percentage : percentage
     if (p < 33) return 'bg-green-500'
     if (p < 67) return 'bg-yellow-500'

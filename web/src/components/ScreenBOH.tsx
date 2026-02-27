@@ -158,6 +158,7 @@ function BatchRow({
             value={isQualityCheck ? totalSeconds : totalSeconds - (remaining ?? 0)}
             max={totalSeconds}
             invert
+            complete={isQualityCheck}
             className="h-2.5"
           />
         </div>
