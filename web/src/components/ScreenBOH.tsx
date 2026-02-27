@@ -1,5 +1,5 @@
 import { useRef, useEffect } from 'react'
-import { Lock, Clock, RotateCcw, CheckCircle } from 'lucide-react'
+import { Lock, Clock, RotateCcw, CheckCircle, ArrowLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Collapsable } from '@/components/ui/collapsible'
@@ -91,7 +91,7 @@ function WaitingCard({
           )}
         </div>
         <div className="flex items-center justify-between gap-2">
-          <Button size="sm" onClick={() => onStart(ticket.id)}>Start</Button>
+          <Button size="sm" className="gap-1" onClick={() => onStart(ticket.id)}><ArrowLeft size={13} />Start</Button>
           <span className={cn(
             "text-sm font-medium",
             waitingMins === null || waitingMins < 4 ? "text-foreground" :
