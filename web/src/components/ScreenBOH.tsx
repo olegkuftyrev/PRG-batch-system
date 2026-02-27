@@ -46,16 +46,67 @@ function parseItemSnapshot(snapshot: string): { code: string; title: string } {
   return { title: snapshot, code: '' }
 }
 
+function colorClass(color?: string | null) {
+  if (color === 'blue') return 'bg-blue-500 text-white'
+  if (color === 'red') return 'bg-red-500 text-white'
+  if (color === 'orange') return 'bg-orange-500 text-white'
+  return 'bg-green-500 text-white'
+}
+
+function WaitingCard({
+  ticket,
+  code,
+  title,
+  color,
+  offsetMs,
+  onStart,
+}: {
+  ticket: SnapshotTicket
+  code: string
+  title: string
+  color?: string | null
+  offsetMs: number
+  onStart: (id: number) => void
+}) {
+  const getWaitingMins = () => {
+    if (!ticket.createdAt) return null
+    const elapsedMs = (Date.now() - offsetMs) - ticket.createdAt
+    return Math.max(0, Math.floor(elapsedMs / 60000))
+  }
+
+  const waitingMins = getWaitingMins()
+
+  return (
+    <Card>
+      <CardContent className="px-4 py-3 flex flex-col gap-1">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 min-w-0">
+            <span className="font-semibold text-sm shrink-0">Batch {ticket.batchSizeSnapshot}</span>
+            <span className="font-medium truncate">{title}</span>
+          </div>
+          {code && (
+            <span className={`font-bold text-xs px-2 py-0.5 rounded shrink-0 ${colorClass(color)}`}>{code}</span>
+          )}
+        </div>
+        <div className="flex items-center justify-between gap-2">
+          <span className="text-sm text-muted-foreground">
+            {waitingMins !== null ? `Waiting ${waitingMins} min` : 'Waiting'}
+          </span>
+          <Button size="sm" onClick={() => onStart(ticket.id)}>Start</Button>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
 function BatchRow({
   ticket,
   offsetMs,
-  onStart,
   onComplete,
   playedSoundRef,
 }: {
   ticket: SnapshotTicket
   offsetMs: number
-  onStart: (id: number) => void
   onComplete: (id: number) => void
   playedSoundRef: React.MutableRefObject<Set<number>>
 }) {
@@ -75,14 +126,6 @@ function BatchRow({
     return `${mins} MIN ${secs} SEC`
   }
 
-  const getWaitingTime = () => {
-    if (!ticket.createdAt) return null
-    const now = Date.now() - offsetMs
-    const elapsedMs = now - ticket.createdAt
-    const elapsedSec = Math.floor(elapsedMs / 1000)
-    return elapsedSec > 0 ? elapsedSec : 0
-  }
-
   const getResponseTime = () => {
     if (!ticket.createdAt || !ticket.startedAt) return null
     const responseMs = ticket.startedAt - ticket.createdAt
@@ -90,51 +133,31 @@ function BatchRow({
     return responseSec > 0 ? responseSec : 0
   }
 
-  if (ticket.state === 'created') {
-    const waitingSec = getWaitingTime()
-    return (
-      <div className="flex items-center justify-between py-3 px-4 border-b border-border last:border-0">
-        <div className="flex flex-col gap-1">
+  const responseSec = getResponseTime()
+
+  return (
+    <div className={cn(
+      "flex items-center justify-between py-3 px-4 border-b border-border last:border-0",
+      isQualityCheck && "bg-orange-50"
+    )}>
+      <div className="flex flex-col gap-1">
+        <div className="flex items-center gap-3">
           <span className="font-semibold text-sm">BATCH {ticket.batchSizeSnapshot}</span>
-          {waitingSec !== null && (
-            <span className="text-xs text-amber-600">Waiting: {formatTime(waitingSec)}</span>
+          {isQualityCheck ? (
+            <span className="text-orange-600 font-semibold text-xs">QUALITY CHECK</span>
+          ) : (
+            <span className="text-muted-foreground text-xs tabular-nums">{formatTime(remaining ?? 0)}</span>
           )}
         </div>
-        <Button size="sm" onClick={() => onStart(ticket.id)}>
-          Start
-        </Button>
+        {responseSec !== null && (
+          <span className="text-xs text-muted-foreground">Response: {formatTime(responseSec)}</span>
+        )}
       </div>
-    )
-  }
-
-  if (ticket.state === 'started') {
-    const responseSec = getResponseTime()
-    return (
-      <div className={cn(
-        "flex items-center justify-between py-3 px-4 border-b border-border last:border-0",
-        isQualityCheck && "bg-orange-50"
-      )}>
-        <div className="flex flex-col gap-1">
-          <div className="flex items-center gap-3">
-            <span className="font-semibold text-sm">BATCH {ticket.batchSizeSnapshot}</span>
-            {isQualityCheck ? (
-              <span className="text-orange-600 font-semibold text-xs">QUALITY CHECK</span>
-            ) : (
-              <span className="text-muted-foreground text-xs tabular-nums">{formatTime(remaining ?? 0)}</span>
-            )}
-          </div>
-          {responseSec !== null && (
-            <span className="text-xs text-muted-foreground">Response: {formatTime(responseSec)}</span>
-          )}
-        </div>
-        <Button size="sm" variant={isQualityCheck ? "default" : "outline"} onClick={() => onComplete(ticket.id)}>
-          Complete
-        </Button>
-      </div>
-    )
-  }
-
-  return null
+      <Button size="sm" variant={isQualityCheck ? "default" : "outline"} onClick={() => onComplete(ticket.id)}>
+        Complete
+      </Button>
+    </div>
+  )
 }
 
 function ItemCard({
@@ -142,7 +165,6 @@ function ItemCard({
   title,
   tickets,
   offsetMs,
-  onStart,
   onComplete,
   playedSoundRef,
   color,
@@ -151,23 +173,15 @@ function ItemCard({
   title: string
   tickets: SnapshotTicket[]
   offsetMs: number
-  onStart: (id: number) => void
   onComplete: (id: number) => void
   playedSoundRef: React.MutableRefObject<Set<number>>
   color?: string | null
 }) {
-  const colorClass = 
-    color === 'blue' ? 'bg-blue-500 text-white' :
-    color === 'red' ? 'bg-red-500 text-white' :
-    color === 'green' ? 'bg-green-500 text-white' :
-    color === 'orange' ? 'bg-orange-500 text-white' :
-    'bg-green-500 text-white'
-
   return (
     <Card>
       <CardHeader className="pb-3">
         <div className="flex items-center gap-3">
-          <div className={`font-bold text-sm px-3 py-1 rounded ${colorClass}`}>
+          <div className={`font-bold text-sm px-3 py-1 rounded ${colorClass(color)}`}>
             {code}
           </div>
           <h3 className="font-semibold text-lg uppercase tracking-wide">{title}</h3>
@@ -179,7 +193,6 @@ function ItemCard({
             key={ticket.id}
             ticket={ticket}
             offsetMs={offsetMs}
-            onStart={onStart}
             onComplete={onComplete}
             playedSoundRef={playedSoundRef}
           />
@@ -246,7 +259,6 @@ export function ScreenBOH({ screen, socketState }: Props) {
   const waiting = tickets.filter((t) => t.state === 'created')
   const inProgress = tickets.filter((t) => t.state === 'started')
   
-  const waitingGroups = groupByItem(waiting)
   const inProgressGroups = groupByItem(inProgress)
 
   const title = TITLE_BY_SCREEN[screen]
@@ -271,7 +283,6 @@ export function ScreenBOH({ screen, socketState }: Props) {
                   title={group.title}
                   tickets={group.tickets}
                   offsetMs={offsetMs}
-                  onStart={handleStart}
                   onComplete={handleComplete}
                   playedSoundRef={playedSoundRef}
                   color={getItemColor(group.code)}
@@ -284,22 +295,23 @@ export function ScreenBOH({ screen, socketState }: Props) {
         <section className="flex-1 flex flex-col overflow-hidden">
           <h2 className="text-lg font-semibold px-4 py-3 border-b border-border shrink-0">Waiting</h2>
           <div className="flex-1 overflow-auto p-4 flex flex-col gap-3">
-            {waitingGroups.length === 0 ? (
+            {waiting.length === 0 ? (
               <p className="text-muted-foreground text-sm">No tickets waiting</p>
             ) : (
-              waitingGroups.map((group) => (
-                <ItemCard
-                  key={`${group.code}-${group.title}`}
-                  code={group.code}
-                  title={group.title}
-                  tickets={group.tickets}
-                  offsetMs={offsetMs}
-                  onStart={handleStart}
-                  onComplete={handleComplete}
-                  playedSoundRef={playedSoundRef}
-                  color={getItemColor(group.code)}
-                />
-              ))
+              waiting.map((ticket) => {
+                const { code, title } = parseItemSnapshot(ticket.itemTitleSnapshot ?? '')
+                return (
+                  <WaitingCard
+                    key={ticket.id}
+                    ticket={ticket}
+                    code={code}
+                    title={title}
+                    color={getItemColor(code)}
+                    offsetMs={offsetMs}
+                    onStart={handleStart}
+                  />
+                )
+              })
             )}
           </div>
         </section>
