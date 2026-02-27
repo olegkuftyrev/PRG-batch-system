@@ -285,38 +285,42 @@ Added a sequence counter (`useRef`) to `useMenu.ts`. Each call to `refetch()` in
 
 #### BUG-005: WebSocket Reconnect Flicker
 **Severity:** High  
-**Status:** OPEN  
-**Source:** [web/README.md:113](../../web/README.md)
+**Status:** FIXED (2026-02-27)  
+**Source:** [web/README.md:113](../../web/README.md)  
+**Fixed in:** `web/src/hooks/useSocket.ts`
 
 **Description:**
 Brief UI flicker when WebSocket reconnects after network interruption.
 
-**Impact:**
-- Poor user experience
-- Visual disruption during reconnection
-- Potential data display inconsistencies
+**Root Cause (Confirmed):**
+The `useEffect` in `useSocket.ts` (lines 181–194) had `[screen, state.connected]` as dependencies.
+Every time `state.connected` flipped `true` — including reconnects — the effect executed:
+```
+tickets: [],
+completedTickets: [],
+```
+This blanked the ticket arrays before the `join` event was emitted and before a new `snapshot` arrived, causing an empty-screen flash.
 
-**Suspected Root Cause:**
-- `snapshot` event causes full component re-render
-- State updates during reconnection not optimized
-- No visual reconnection indicator
+**Fix Applied:**
+Added `prevScreenRef` to distinguish screen changes from reconnects.
+- **Screen change:** clear `tickets`/`completedTickets` (expected blank slate for new room)
+- **Reconnect (same screen):** preserve existing `tickets`/`completedTickets` until `snapshot` replaces them
 
-**Investigation Required:**
-1. Review `/web/src/hooks/useSocket.ts` reconnection logic
-2. Check state updates on `snapshot` event
-3. Identify cause of flicker (full re-render vs state reset)
+```typescript
+const screenChanged = prevScreenRef.current !== screen
+prevScreenRef.current = screen
 
-**Potential Fixes:**
-- Preserve local state during reconnection
-- Implement optimistic UI updates
-- Add reconnection indicator instead of immediate re-render
-- Use React.memo or useMemo to prevent unnecessary re-renders
+setState((s) => ({
+  ...s,
+  isInitializing: true,
+  snapshot: null,
+  ...(screenChanged ? { tickets: [], completedTickets: [] } : {}),
+}))
+```
 
-**Action Plan:**
-1. Review useSocket.ts snapshot handling
-2. Test reconnection behavior with Network tab throttling
-3. If fix is straightforward: implement state preservation
-4. If complex: document and defer to future work
+**Verification:**
+- `cd web && npx tsc --noEmit` — zero errors after fix
+- Reconnect now preserves existing UI until new snapshot arrives
 
 ---
 
@@ -1301,7 +1305,7 @@ The backend API codebase is TypeScript-clean and fully compliant with strict mod
 - [ ] Undocumented API endpoints (ISSUE-012)
 - [ ] Undocumented WebSocket events (ISSUE-013)
 - [ ] Menu refresh bug (BUG-004) - if feasible
-- [ ] Socket reconnect flicker (BUG-005) - if feasible
+- [x] Socket reconnect flicker (BUG-005) - **FIXED**: `prevScreenRef` prevents ticket clear on reconnect
 
 **Low Priority (May Defer):**
 - [ ] Database race condition (BUG-002) - requires deployment changes

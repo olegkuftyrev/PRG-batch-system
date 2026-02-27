@@ -291,7 +291,8 @@ Create a detailed implementation plan based on `{@artifacts_path}/spec.md`.
 
 **Verification**: Menu updates propagate to all screens without manual refresh
 
-### [ ] Step: Investigate socket reconnect flicker
+### [x] Step: Investigate socket reconnect flicker
+<!-- chat-id: efa22a3f-98fe-48f0-af7b-43e4d0ef9ae6 -->
 
 - [ ] Issue: Brief UI flicker when WebSocket reconnects (web/README.md:113)
 - [ ] Review `/web/src/hooks/useSocket.ts` reconnection logic

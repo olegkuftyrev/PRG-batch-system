@@ -74,6 +74,7 @@ function toTicket(t: unknown): SnapshotTicket {
 export function useSocket(screen: ScreenId) {
   const roomsRef = useRef(ROOMS_BY_SCREEN[screen])
   roomsRef.current = ROOMS_BY_SCREEN[screen]
+  const prevScreenRef = useRef(screen)
   const [state, setState] = useState<SocketState>({
     connected: false,
     offsetMs: 0,
@@ -181,15 +182,17 @@ export function useSocket(screen: ScreenId) {
   useEffect(() => {
     const socket = socketRef.current
     if (!socket?.connected) return
-    
+
+    const screenChanged = prevScreenRef.current !== screen
+    prevScreenRef.current = screen
+
     setState((s) => ({
       ...s,
       isInitializing: true,
       snapshot: null,
-      tickets: [],
-      completedTickets: [],
+      ...(screenChanged ? { tickets: [], completedTickets: [] } : {}),
     }))
-    
+
     socket.emit('join', roomsRef.current)
   }, [screen, state.connected])
 
