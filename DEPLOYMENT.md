@@ -155,6 +155,23 @@ Events: snapshot, ticket_created, timer_started, ticket_completed, menu_updated
 - API starts before migrations finish
 - Server recovers automatically
 
+## Resolved Issues
+
+**[2026-02-27] App crash: `Cannot read properties of undefined (reading 'length')`**
+
+- **Symptom**: Frontend crashed on load with a TypeError in the minified bundle. All screens were broken.
+- **Root cause**: `MenuItem.serialize()` and `Ticket.serialize()` in the API models returned snake_case keys (`batch_sizes`, `cook_times`, `recommended_batch`, etc.) but the frontend TypeScript types expect camelCase (`batchSizes`, `cookTimes`, `recommendedBatch`). This meant `item.batchSizes` was `undefined`, causing `.length` to throw.
+- **Why it only broke in production**: The local dev server was running old compiled code from a worktree that predated the `serialize()` override. The production Docker build compiled the latest source which included the snake_case serializer.
+- **Fix**: Updated `api/app/models/menu_item.ts` and `api/app/models/ticket.ts` to return camelCase keys from `serialize()`, matching the frontend contract.
+- **Commit**: `2c304e4`
+
+**[2026-02-27] docker-compose `ContainerConfig` error when recreating containers**
+
+- **Symptom**: `docker-compose up` fails with `KeyError: 'ContainerConfig'` when trying to recreate a container that previously exited.
+- **Root cause**: The droplet runs docker-compose v1.29.2 (legacy Python-based), which is incompatible with newer Docker Engine versions. Stale exited containers in a broken state confuse the old compose.
+- **Fix**: Manually remove the stale container with `docker rm <container_name>`, then run `docker-compose up -d` again.
+- **Long-term fix**: Upgrade to Docker Compose v2 plugin: `apt install docker-compose-plugin -y`. Then use `docker compose` (no hyphen) instead of `docker-compose`.
+
 ## Monitoring
 
 **Check health:**
