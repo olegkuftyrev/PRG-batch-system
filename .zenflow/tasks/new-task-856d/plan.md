@@ -302,7 +302,8 @@ Create a detailed implementation plan based on `{@artifacts_path}/spec.md`.
 
 **Verification**: If fixed, WebSocket reconnection should not cause UI flicker
 
-### [ ] Step: Investigate database race condition
+### [x] Step: Investigate database race condition
+<!-- chat-id: 1d909257-8a9f-4e56-8174-57ce531e3c8a -->
 
 - [ ] Issue: "relation tickets does not exist" error on startup (DEPLOYMENT.md:153-157)
 - [ ] Review API startup sequence in `api/bin/server.ts`

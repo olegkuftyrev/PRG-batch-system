@@ -159,42 +159,37 @@ private async bumpVersion(trx: TransactionClientContract): Promise<number>
 ---
 
 #### BUG-002: Database Race Condition on Startup
-**Severity:** Critical  
-**Status:** OPEN (marked as "harmless")  
+**Severity:** High  
+**Status:** FIXED (Phase 4)  
 **Source:** [DEPLOYMENT.md:153-157](../../DEPLOYMENT.md)
 
 **Description:**
-"relation tickets does not exist" error on API startup. Server recovers automatically but indicates initialization timing issue.
+"relation tickets does not exist" error on API startup. Server recovers automatically but indicates initialization timing issue caused by migrations not running before server start.
 
 **Impact:**
-- Unreliable startup behavior
-- Error logs on every deployment
-- Potential failures in high-load scenarios
+- Unreliable startup behavior on fresh deployments
+- Error logs on every first deployment
 - Poor deployment experience
+- DEPLOYMENT.md:23 incorrectly stated "Runs migrations on startup"
 
-**Root Cause:**
-- API starts before database migrations complete
-- WebSocket server queries database during initialization
-- Race condition in startup sequence
+**Root Cause (Confirmed):**
+- `docker-compose.yml` used `command: ["node", "build/bin/server.js"]` which **overrode** the Dockerfile `CMD ["./scripts/start.sh"]`, bypassing the startup script entirely
+- `start.sh` itself had a broken help message and did not run migrations
+- Migrations required manual execution: `docker-compose exec api node build/scripts/run-migrations.js`
+- On fresh deployment, `rescheduleOnBoot()` in `api/start/ws.ts` queries `tickets` table before it exists
 
 **Location:**
-- File: `/api/bin/server.ts` (startup sequence)
-- File: `/api/start/ws.ts` (WebSocket initialization)
+- File: `/docker-compose.yml:32` (command override — removed)
+- File: `/api/scripts/start.sh` (missing migration step — fixed)
 
-**Potential Fix:**
-- Add database readiness check before WebSocket init
-- Delay WebSocket server until migrations complete
-- Add retry logic with exponential backoff
+**Fix Applied:**
+1. Fixed `api/scripts/start.sh` to run migrations before starting server
+2. Removed `command:` override from `docker-compose.yml` so Dockerfile CMD (`start.sh`) is used
+3. Now startup sequence: postgres healthy → migrations run → server starts → `rescheduleOnBoot()` succeeds
 
-**Risk Assessment:**
-May require deployment process changes. If database connection timing cannot be controlled within application code, this may be deferred.
-
-**Action Plan:**
-1. Review startup sequence in bin/server.ts
-2. Check WebSocket initialization in start/ws.ts
-3. Determine if fix is in-scope (no deployment changes)
-4. If feasible: add database ping check before WebSocket
-5. If not feasible: document for future work
+**Files Changed:**
+- `api/scripts/start.sh` — added `node build/scripts/run-migrations.js` before server start
+- `docker-compose.yml` — removed `command: ["node", "build/bin/server.js"]` override
 
 ---
 
@@ -1308,7 +1303,7 @@ The backend API codebase is TypeScript-clean and fully compliant with strict mod
 - [x] Socket reconnect flicker (BUG-005) - **FIXED**: `prevScreenRef` prevents ticket clear on reconnect
 
 **Low Priority (May Defer):**
-- [ ] Database race condition (BUG-002) - requires deployment changes
+- [x] Database race condition (BUG-002) - **FIXED**: `start.sh` now runs migrations before server start; removed docker-compose command override
 - [ ] Dark mode cleanup (ISSUE-014) - defer to future
 - [ ] Offline support (ISSUE-015) - defer to future
 - [ ] System updates (ISSUE-016) - defer to infrastructure work
