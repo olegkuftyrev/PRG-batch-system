@@ -69,9 +69,12 @@ Production: Set via Docker build arg
 - `POST /api/menu`
 - `PATCH /api/menu/:id`
 - `DELETE /api/menu/:id`
+- `POST /api/menu/:id/image` - Upload image (multipart `image` field; jpg/jpeg/png/webp, max 5MB)
+- `DELETE /api/menu/:id/image` - Delete image
 - `POST /api/tickets`
 - `POST /api/tickets/:id/start`
 - `POST /api/tickets/:id/complete`
+- `DELETE /api/tickets/:id` - Cancel ticket
 
 **WebSocket (receive):**
 - `snapshot` - Full state on connect

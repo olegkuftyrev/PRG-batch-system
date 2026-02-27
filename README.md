@@ -161,12 +161,15 @@ Edit menu items:
 - `POST /api/menu` - Create item
 - `PATCH /api/menu/:id` - Update item
 - `DELETE /api/menu/:id` - Delete item
+- `POST /api/menu/:id/image` - Upload menu item image (multipart `image` field; jpg/jpeg/png/webp, max 5MB); returns `{"imageUrl":"/uploads/<file>"}`
+- `DELETE /api/menu/:id/image` - Delete menu item image; returns `{"imageUrl":null}`
 
 **Tickets:**
 - `GET /api/tickets` - List all
 - `POST /api/tickets` - Create (body: `menuItemId`, `batchSize`, `source`)
 - `POST /api/tickets/:id/start` - Start timer
 - `POST /api/tickets/:id/complete` - Mark done
+- `DELETE /api/tickets/:id` - Cancel ticket (broadcasts `ticket_cancelled` to station and source screens)
 
 **Health:**
 - `GET /health` - Returns `{"ok":true,"database":"connected"}`

@@ -318,7 +318,8 @@ Create a detailed implementation plan based on `{@artifacts_path}/spec.md`.
 
 ### Phase 5: Documentation & Validation
 
-### [ ] Step: Document undocumented API endpoints
+### [x] Step: Document undocumented API endpoints
+<!-- chat-id: 6880defe-7fba-4879-ba56-eee3b210b1b8 -->
 
 - [ ] Add to README.md API section:
   - `POST /api/menu/:id/image` - Upload menu item image
