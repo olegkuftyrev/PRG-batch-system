@@ -252,57 +252,60 @@ export function ScreenBOH({ screen, socketState }: Props) {
   const title = TITLE_BY_SCREEN[screen]
 
   return (
-    <div className="flex-1 overflow-auto p-4 flex flex-col gap-4">
+    <div className="flex-1 flex flex-col overflow-hidden">
       {title && (
-        <h1 className="text-xl font-semibold">{title}</h1>
+        <h1 className="text-xl font-semibold px-4 pt-4">{title}</h1>
       )}
-      <section>
-        <h2 className="text-lg font-semibold mb-2">Waiting</h2>
-        <div className="flex flex-col gap-3">
-          {waitingGroups.length === 0 ? (
-            <p className="text-muted-foreground text-sm">No tickets waiting</p>
-          ) : (
-            waitingGroups.map((group) => (
-              <ItemCard
-                key={`${group.code}-${group.title}`}
-                code={group.code}
-                title={group.title}
-                tickets={group.tickets}
-                offsetMs={offsetMs}
-                onStart={handleStart}
-                onComplete={handleComplete}
-                playedSoundRef={playedSoundRef}
-                color={getItemColor(group.code)}
-              />
-            ))
-          )}
-        </div>
-      </section>
 
-      <section>
-        <h2 className="text-lg font-semibold mb-2">In progress</h2>
-        <div className="flex flex-col gap-3">
-          {inProgressGroups.length === 0 ? (
-            <p className="text-muted-foreground text-sm">No timers running</p>
-          ) : (
-            inProgressGroups.map((group) => (
-              <ItemCard
-                key={`${group.code}-${group.title}`}
-                code={group.code}
-                title={group.title}
-                tickets={group.tickets}
-                offsetMs={offsetMs}
-                onStart={handleStart}
-                onComplete={handleComplete}
-                playedSoundRef={playedSoundRef}
-                color={getItemColor(group.code)}
-              />
-            ))
-          )}
-        </div>
-      </section>
+      <div className="flex flex-1 overflow-hidden">
+        <section className="flex-1 flex flex-col overflow-hidden border-r border-border">
+          <h2 className="text-lg font-semibold px-4 py-3 border-b border-border shrink-0">In progress</h2>
+          <div className="flex-1 overflow-auto p-4 flex flex-col gap-3">
+            {inProgressGroups.length === 0 ? (
+              <p className="text-muted-foreground text-sm">No timers running</p>
+            ) : (
+              inProgressGroups.map((group) => (
+                <ItemCard
+                  key={`${group.code}-${group.title}`}
+                  code={group.code}
+                  title={group.title}
+                  tickets={group.tickets}
+                  offsetMs={offsetMs}
+                  onStart={handleStart}
+                  onComplete={handleComplete}
+                  playedSoundRef={playedSoundRef}
+                  color={getItemColor(group.code)}
+                />
+              ))
+            )}
+          </div>
+        </section>
 
-      <section className="mt-auto pt-4 border-t">
+        <section className="flex-1 flex flex-col overflow-hidden">
+          <h2 className="text-lg font-semibold px-4 py-3 border-b border-border shrink-0">Waiting</h2>
+          <div className="flex-1 overflow-auto p-4 flex flex-col gap-3">
+            {waitingGroups.length === 0 ? (
+              <p className="text-muted-foreground text-sm">No tickets waiting</p>
+            ) : (
+              waitingGroups.map((group) => (
+                <ItemCard
+                  key={`${group.code}-${group.title}`}
+                  code={group.code}
+                  title={group.title}
+                  tickets={group.tickets}
+                  offsetMs={offsetMs}
+                  onStart={handleStart}
+                  onComplete={handleComplete}
+                  playedSoundRef={playedSoundRef}
+                  color={getItemColor(group.code)}
+                />
+              ))
+            )}
+          </div>
+        </section>
+      </div>
+
+      <section className="border-t border-border shrink-0 px-4 py-3">
         <Collapsable
           title="Completed"
           count={completedTickets.length}
