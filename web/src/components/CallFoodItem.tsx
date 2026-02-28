@@ -331,25 +331,25 @@ export function CallFoodItem({
       />
 
       <Dialog open={showInfo} onOpenChange={setShowInfo}>
-        <DialogContent className="max-w-sm p-0 overflow-hidden rounded-2xl">
+        <DialogContent className="max-w-sm p-0 overflow-hidden rounded-2xl bg-white text-gray-900">
           <DialogHeader className="px-6 pt-6 pb-0">
-            <DialogTitle className="text-xl font-bold">{item.title}</DialogTitle>
+            <DialogTitle className="text-base font-bold text-gray-900">{item.title}</DialogTitle>
           </DialogHeader>
-          <div className="overflow-y-auto max-h-[80vh]">
+          <div className="overflow-y-auto max-h-[80vh] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
             {imageUrl && (
               <img src={imageUrl} alt={item.title} className="w-full object-cover" />
             )}
-            <div className="px-6 pb-6 space-y-5 pt-4">
+            <div className="px-6 pb-6 space-y-4 pt-4">
               {item.ingredients && item.ingredients.length > 0 && (
-                <p className="text-center text-sm text-muted-foreground leading-relaxed">
+                <p className="text-center text-xs text-gray-500 leading-relaxed">
                   {item.ingredients.slice(0, -1).join(', ')}{item.ingredients.length > 1 ? ' and ' : ''}{item.ingredients[item.ingredients.length - 1]}.
                 </p>
               )}
 
               {item.allergens && item.allergens.length > 0 && (
                 <div>
-                  <p className="font-bold text-sm mb-1">Allergens</p>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="font-bold text-xs text-gray-900 mb-0.5">Allergens</p>
+                  <p className="text-xs text-gray-500">
                     Contains {item.allergens.slice(0, -1).join(', ')}{item.allergens.length > 1 ? ' and ' : ''}{item.allergens[item.allergens.length - 1]}.
                   </p>
                 </div>
@@ -357,36 +357,36 @@ export function CallFoodItem({
 
               {item.nutrition && (
                 <div>
-                  <p className="font-bold text-sm mb-2">Nutritional Information</p>
-                  <div className="divide-y divide-border">
+                  <p className="font-bold text-xs text-gray-900 mb-1">Nutritional Information</p>
+                  <div className="divide-y divide-gray-100">
                     {item.nutrition.serving_size_oz != null && (
-                      <div className="flex justify-between py-2 text-sm">
-                        <span className="text-muted-foreground">Serving Size</span>
-                        <span className="font-medium">{item.nutrition.serving_size_oz}<span className="text-base font-bold">OZ</span></span>
+                      <div className="flex justify-between py-1.5 text-xs">
+                        <span className="text-gray-500">Serving Size</span>
+                        <span className="font-medium text-gray-900">{item.nutrition.serving_size_oz}<span className="font-bold">OZ</span></span>
                       </div>
                     )}
                     {item.nutrition.protein_g != null && (
-                      <div className="flex justify-between py-2 text-sm">
-                        <span className="text-muted-foreground">Protein</span>
-                        <span className="font-medium">{item.nutrition.protein_g}<span className="text-base font-bold">g</span></span>
+                      <div className="flex justify-between py-1.5 text-xs">
+                        <span className="text-gray-500">Protein</span>
+                        <span className="font-medium text-gray-900">{item.nutrition.protein_g}<span className="font-bold">g</span></span>
                       </div>
                     )}
                     {item.nutrition.saturated_fat_g != null && (
-                      <div className="flex justify-between py-2 text-sm">
-                        <span className="text-muted-foreground">Saturated Fat</span>
-                        <span className="font-medium">{item.nutrition.saturated_fat_g}<span className="text-base font-bold">g</span></span>
+                      <div className="flex justify-between py-1.5 text-xs">
+                        <span className="text-gray-500">Saturated Fat</span>
+                        <span className="font-medium text-gray-900">{item.nutrition.saturated_fat_g}<span className="font-bold">g</span></span>
                       </div>
                     )}
                     {item.nutrition.carbohydrate_g != null && (
-                      <div className="flex justify-between py-2 text-sm">
-                        <span className="text-muted-foreground">Carbohydrate</span>
-                        <span className="font-medium">{item.nutrition.carbohydrate_g}<span className="text-base font-bold">g</span></span>
+                      <div className="flex justify-between py-1.5 text-xs">
+                        <span className="text-gray-500">Carbohydrate</span>
+                        <span className="font-medium text-gray-900">{item.nutrition.carbohydrate_g}<span className="font-bold">g</span></span>
                       </div>
                     )}
                     {item.nutrition.calories_kcal != null && (
-                      <div className="flex justify-between py-2 text-sm">
-                        <span className="text-muted-foreground">Calories</span>
-                        <span className="font-medium">{item.nutrition.calories_kcal}<span className="text-base font-bold">cal</span></span>
+                      <div className="flex justify-between py-1.5 text-xs">
+                        <span className="text-gray-500">Calories</span>
+                        <span className="font-medium text-gray-900">{item.nutrition.calories_kcal}<span className="font-bold">cal</span></span>
                       </div>
                     )}
                   </div>
