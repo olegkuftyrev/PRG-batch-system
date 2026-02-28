@@ -279,7 +279,13 @@ export function ScreenMenu({ menuVersion }: Props) {
                 {items.map((item) => (
                   <div
                     key={item.id}
-                    className="flex items-center gap-4 p-3 border rounded-lg hover:bg-accent/50"
+                    className={`flex items-center gap-4 p-3 border rounded-lg ${
+                      item.color === 'blue' ? 'bg-blue-100 border-blue-300' :
+                      item.color === 'red' ? 'bg-red-100 border-red-300' :
+                      item.color === 'green' ? 'bg-green-100 border-green-300' :
+                      item.color === 'orange' ? 'bg-orange-100 border-orange-300' :
+                      'hover:bg-accent/50'
+                    }`}
                   >
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
