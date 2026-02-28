@@ -79,13 +79,10 @@ function WaitingCard({
   const waitingMins = getWaitingMins()
 
   return (
-    <Card className={ticket.priority ? 'border-2 border-red-500 bg-red-50' : ''}>
+    <Card>
       <CardContent className="px-4 py-3 flex flex-col gap-1">
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2 min-w-0">
-            {ticket.priority && (
-              <span className="font-black text-red-600 text-sm shrink-0 animate-pulse">!!!</span>
-            )}
             <span className="font-semibold text-sm shrink-0">Batch {ticket.batchSizeSnapshot}</span>
             <span className="font-medium truncate">{title}</span>
           </div>
@@ -95,14 +92,20 @@ function WaitingCard({
         </div>
         <div className="flex items-center justify-between gap-2">
           <Button size="sm" className="gap-1" onClick={() => onStart(ticket.id)}><ArrowLeft size={13} />Start</Button>
-          <span className={cn(
-            "text-sm font-medium",
-            waitingMins === null || waitingMins < 4 ? "text-foreground" :
-            waitingMins < 5 ? "text-orange-500" :
-            "text-red-500"
-          )}>
-            {waitingMins !== null ? `Waiting ${waitingMins} min` : 'Waiting'}
-          </span>
+          {ticket.priority ? (
+            <span className="animate-pulse bg-red-600 text-white text-xs font-bold px-2 py-1 rounded">
+              Waiting
+            </span>
+          ) : (
+            <span className={cn(
+              "text-sm font-medium",
+              waitingMins === null || waitingMins < 4 ? "text-foreground" :
+              waitingMins < 5 ? "text-orange-500" :
+              "text-red-500"
+            )}>
+              {waitingMins !== null ? `Waiting ${waitingMins} min` : 'Waiting'}
+            </span>
+          )}
         </div>
       </CardContent>
     </Card>
