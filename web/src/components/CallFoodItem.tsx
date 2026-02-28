@@ -19,24 +19,28 @@ type Props = {
   item: MenuItem
   onCall: (menuItemId: number, batchSize: string) => Promise<void>
   onCancel?: (ticketId: number) => Promise<void>
+  onPriority?: (ticketId: number) => Promise<void>
   disabled?: boolean
   disabledReason?: string
   activeTicketId?: number
   remainingSeconds?: number | null
   totalSeconds?: number
   lastCalledAt?: Date | null
+  isPriority?: boolean
 }
 
 export function CallFoodItem({ 
   item, 
   onCall, 
   onCancel,
+  onPriority,
   disabled = false, 
   disabledReason,
   activeTicketId,
   remainingSeconds,
   totalSeconds,
-  lastCalledAt
+  lastCalledAt,
+  isPriority = false,
 }: Props) {
   const recommendedBatch = getRecommendedBatch(
     item.recommendedBatch ?? {},
@@ -68,6 +72,11 @@ export function CallFoodItem({
     } finally {
       setCanceling(false)
     }
+  }
+
+  const handlePriority = async () => {
+    if (!activeTicketId || !onPriority) return
+    await onPriority(activeTicketId)
   }
 
   const isCooking = remainingSeconds !== null && remainingSeconds !== undefined && remainingSeconds > 0
@@ -250,6 +259,20 @@ export function CallFoodItem({
             >
               {buttonText}
             </Button>
+            {activeTicketId && onPriority && (
+              <Button
+                variant="outline"
+                size="icon"
+                className={`h-12 w-12 shrink-0 font-bold text-base border-2 ${
+                  isPriority
+                    ? 'bg-red-600 border-red-600 text-white hover:bg-red-700'
+                    : 'bg-orange-500 border-orange-500 text-white hover:bg-orange-600'
+                }`}
+                onClick={handlePriority}
+              >
+                !!!
+              </Button>
+            )}
             {activeTicketId && onCancel && (
               <Button
                 variant="outline"

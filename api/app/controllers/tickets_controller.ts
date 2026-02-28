@@ -145,6 +145,17 @@ export default class TicketsController {
     response.json(ticket.serialize())
   }
 
+  /** POST /api/tickets/:id/priority — toggle priority flag */
+  async markPriority({ params, response }: HttpContext) {
+    const ticket = await Ticket.findOrFail(params.id)
+    ticket.priority = !ticket.priority
+    await ticket.save()
+    const serialized = ticket.serialize()
+    Ws.toStation(ticket.station, 'ticket_priority_updated', serialized)
+    Ws.toStation(ticket.source, 'ticket_priority_updated', serialized)
+    response.json(serialized)
+  }
+
   /** DELETE /api/tickets/:id — cancel/delete ticket */
   async destroy({ params, response }: HttpContext) {
     const ticket = await Ticket.findOrFail(params.id)

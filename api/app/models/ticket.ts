@@ -48,6 +48,9 @@ export default class Ticket extends BaseModel {
   @column()
   declare durationSnapshot: number
 
+  @column()
+  declare priority: boolean
+
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime
 
@@ -70,6 +73,7 @@ export default class Ticket extends BaseModel {
       itemTitleSnapshot: this.itemTitleSnapshot,
       batchSizeSnapshot: this.batchSizeSnapshot,
       durationSnapshot: this.durationSnapshot,
+      priority: this.priority ?? false,
       updatedAt: this.updatedAt.toISO(),
     }
   }

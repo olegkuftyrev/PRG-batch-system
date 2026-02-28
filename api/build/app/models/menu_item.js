@@ -17,15 +17,15 @@ export default class MenuItem extends BaseModel {
             code: this.code,
             title: this.title,
             station: this.station,
-            cook_times: this.cookTimes,
-            batch_sizes: this.batchSizes,
+            cookTimes: this.cookTimes,
+            batchSizes: this.batchSizes,
             enabled: this.enabled,
-            recommended_batch: this.recommendedBatch,
+            recommendedBatch: this.recommendedBatch,
             color: this.color,
-            image_url: this.imageUrl,
-            hold_time: this.holdTime,
-            created_at: this.createdAt.toISO(),
-            updated_at: this.updatedAt.toISO(),
+            imageUrl: this.imageUrl,
+            holdTime: this.holdTime,
+            createdAt: this.createdAt.toISO(),
+            updatedAt: this.updatedAt.toISO(),
         };
     }
 }

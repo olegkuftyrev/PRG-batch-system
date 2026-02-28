@@ -79,10 +79,13 @@ function WaitingCard({
   const waitingMins = getWaitingMins()
 
   return (
-    <Card>
+    <Card className={ticket.priority ? 'border-2 border-red-500 bg-red-50' : ''}>
       <CardContent className="px-4 py-3 flex flex-col gap-1">
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2 min-w-0">
+            {ticket.priority && (
+              <span className="font-black text-red-600 text-sm shrink-0 animate-pulse">!!!</span>
+            )}
             <span className="font-semibold text-sm shrink-0">Batch {ticket.batchSizeSnapshot}</span>
             <span className="font-medium truncate">{title}</span>
           </div>
@@ -315,7 +318,9 @@ export function ScreenBOH({ screen, socketState }: Props) {
     return Array.from(groups.values())
   }
 
-  const waiting = tickets.filter((t) => t.state === 'created')
+  const waiting = tickets
+    .filter((t) => t.state === 'created')
+    .sort((a, b) => (b.priority ? 1 : 0) - (a.priority ? 1 : 0))
   const inProgress = tickets.filter((t) => t.state === 'started')
   
   const isQualityCheckTicket = (t: SnapshotTicket) => {

@@ -25,6 +25,7 @@ export type SnapshotTicket = {
   itemTitleSnapshot?: string
   batchSizeSnapshot?: string
   durationSnapshot?: number
+  priority?: boolean
 }
 
 export type Snapshot = {
@@ -68,6 +69,7 @@ function toTicket(t: unknown): SnapshotTicket {
     itemTitleSnapshot: (o.itemTitleSnapshot ?? o.item_title_snapshot) as string | undefined,
     batchSizeSnapshot: (o.batchSizeSnapshot ?? o.batch_size_snapshot) as string | undefined,
     durationSnapshot: (o.durationSnapshot ?? o.duration_snapshot) as number | undefined,
+    priority: (o.priority as boolean | undefined) ?? false,
   }
 }
 
@@ -158,6 +160,14 @@ export function useSocket(screen: ScreenId) {
         ...s,
         tickets: s.tickets.filter((x) => x.id !== t.id),
         completedTickets: [{ ...t, state: 'completed' }, ...s.completedTickets].slice(0, 50),
+      }))
+    })
+
+    socket.on('ticket_priority_updated', (data: unknown) => {
+      const t = toTicket(data)
+      setState((s) => ({
+        ...s,
+        tickets: s.tickets.map((x) => x.id === t.id ? { ...x, priority: t.priority } : x),
       }))
     })
 

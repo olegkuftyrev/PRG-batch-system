@@ -3,7 +3,7 @@ import { Badge } from '@/components/ui/badge'
 import { CallFoodItem } from '@/components/CallFoodItem'
 import { Collapsable } from '@/components/ui/collapsible'
 import { useMenu, groupMenuByDriveThruSections } from '@/hooks/useMenu'
-import { createTicket, cancelTicket, type Ticket } from '@/api/tickets'
+import { createTicket, cancelTicket, markTicketPriority, type Ticket } from '@/api/tickets'
 import { useRemainingSeconds } from '@/hooks/useRemainingSeconds'
 import type { SocketState, SnapshotTicket } from '@/hooks/useSocket'
 import type { MenuItem } from '@/api/menu'
@@ -156,6 +156,16 @@ export function ScreenDriveThru({ socketState }: Props) {
     }
   }
 
+  const handlePriority = async (ticketId: number) => {
+    setLastError(null)
+    try {
+      const updated = await markTicketPriority(ticketId)
+      setOptimisticTickets((prev) => prev.map((t) => t.id === ticketId ? { ...t, priority: updated.priority } : t))
+    } catch (e) {
+      setLastError(e instanceof Error ? e.message : 'Failed to mark priority')
+    }
+  }
+
   if (loading) return <div className="p-6 text-muted-foreground">Loading menu…</div>
   if (error) return <div className="p-6 text-destructive">{error}</div>
   if (!menu) return null
@@ -190,12 +200,14 @@ export function ScreenDriveThru({ socketState }: Props) {
         item={item}
         onCall={handleCall}
         onCancel={handleCancel}
+        onPriority={handlePriority}
         disabled={disabled}
         disabledReason={disabledReason}
         activeTicketId={activeTicket?.id}
         remainingSeconds={remaining}
         totalSeconds={activeTicket?.durationSeconds ?? activeTicket?.durationSnapshot}
         lastCalledAt={lastCompletedTime}
+        isPriority={activeTicket?.priority ?? false}
       />
     )
   }

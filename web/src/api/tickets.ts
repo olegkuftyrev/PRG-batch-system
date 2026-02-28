@@ -18,6 +18,7 @@ export type Ticket = {
   startedAt?: number
   durationSeconds?: number
   durationSnapshot?: number
+  priority?: boolean
 }
 
 /** Normalize API/socket payload (snake_case or camelCase) to Ticket shape. */
@@ -37,6 +38,7 @@ function normalizeTicket(raw: Record<string, unknown>): Ticket {
     startedAt: startedMs,
     durationSeconds: (raw.durationSeconds ?? raw.duration_seconds) as number | undefined,
     durationSnapshot: (raw.durationSnapshot ?? raw.duration_snapshot) as number | undefined,
+    priority: (raw.priority as boolean | undefined) ?? false,
   }
 }
 
@@ -89,6 +91,16 @@ export async function extendTicket(id: number): Promise<Ticket> {
   if (!r.ok) {
     const err = await r.json().catch(() => ({}))
     throw new Error(err.error || 'Failed to extend')
+  }
+  const data = (await r.json()) as Record<string, unknown>
+  return normalizeTicket(data)
+}
+
+export async function markTicketPriority(id: number): Promise<Ticket> {
+  const r = await fetch(`${API}/api/tickets/${id}/priority`, { method: 'POST' })
+  if (!r.ok) {
+    const err = await r.json().catch(() => ({}))
+    throw new Error(err.error || 'Failed to mark priority')
   }
   const data = (await r.json()) as Record<string, unknown>
   return normalizeTicket(data)
