@@ -44,8 +44,13 @@ export function groupMenuByFohSections(items: MenuItem[]) {
   const byCode = Object.fromEntries(enabled.map((i) => [i.code, i]))
   const section1 = FOH_SECTION_1_CODES.map((c) => byCode[c]).filter(Boolean)
   const section3 = FOH_SECTION_3_CODES.map((c) => byCode[c]).filter(Boolean)
+  const FOH_SECTION_2_ORDER = ['CB1', 'CB5', 'C1', 'B1', 'B5', 'CB3']
   const knownCodes = new Set([...FOH_SECTION_1_CODES, ...FOH_SECTION_3_CODES])
-  const section2 = enabled.filter((i) => !knownCodes.has(i.code))
+  const unordered = enabled.filter((i) => !knownCodes.has(i.code))
+  const byCode2 = Object.fromEntries(unordered.map((i) => [i.code, i]))
+  const ordered = FOH_SECTION_2_ORDER.map((c) => byCode2[c]).filter(Boolean)
+  const remaining = unordered.filter((i) => !FOH_SECTION_2_ORDER.includes(i.code))
+  const section2 = [...ordered, ...remaining]
   return { section1, section2, section3 }
 }
 
