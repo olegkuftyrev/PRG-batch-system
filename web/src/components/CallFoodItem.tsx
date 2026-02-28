@@ -155,11 +155,11 @@ export function CallFoodItem({
 
   return (
     <Card className={cardClassName}>
-      <CardHeader className="pb-2">
+      <CardHeader className="pt-3 pb-1">
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-3">
             <div className="flex flex-col items-center">
-              <span className="font-bold text-lg leading-tight">{item.code}</span>
+              <span className="font-bold text-base leading-tight">{item.code}</span>
               <div className={`h-1 w-full rounded-full ${
                 item.color === 'blue' ? 'bg-blue-500' :
                 item.color === 'red' ? 'bg-red-500' :
@@ -196,23 +196,23 @@ export function CallFoodItem({
             </span>
           )}
         </div>
-        <h3 className="text-base font-semibold uppercase tracking-wide mt-2 text-center">
+        <h3 className="text-sm font-semibold uppercase tracking-wide mt-1 text-center">
           {item.title}
         </h3>
       </CardHeader>
       
-      <CardContent className="flex-1 pb-3 pt-0 space-y-3">
+      <CardContent className="flex-1 pb-2 pt-0 space-y-2">
         {imageUrl ? (
           <img 
             src={imageUrl} 
             alt={item.title} 
-            className="w-full aspect-[2/1] object-contain rounded"
+            className="w-full aspect-[3/1] object-contain rounded"
           />
         ) : (
-          <ImagePlaceholder className="aspect-[2/1]" />
+          <ImagePlaceholder className="aspect-[3/1]" />
         )}
         
-        <div className="min-h-[80px] flex items-center justify-center">
+        <div className="min-h-[56px] flex items-center justify-center">
           {activeTicketId ? (
             <div className="flex flex-col items-center text-sm gap-1">
               <span className="text-muted-foreground">Recommended: <span className="font-semibold text-foreground">{recommendedBatch}</span></span>
@@ -251,7 +251,7 @@ export function CallFoodItem({
         </div>
       </CardContent>
       
-      <CardFooter className="pt-0 pb-4 px-4 flex flex-col gap-2">
+      <CardFooter className="pt-0 pb-3 px-3 flex flex-col gap-2">
         {(isCooking || isQualityCheck) ? (
           <div className="flex gap-2 w-full items-center">
             {activeTicketId && onPriority && (
