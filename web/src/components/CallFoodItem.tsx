@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { X, Siren } from 'lucide-react'
+import { CircleX, Siren } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -251,11 +251,11 @@ export function CallFoodItem({
               <Button
                 variant="outline"
                 size="icon"
-                className="h-12 w-12 shrink-0 bg-black border-black hover:bg-black/90"
+                className="h-12 w-12 shrink-0"
                 onClick={handleCancelClick}
                 disabled={canceling}
               >
-                <X className="h-4 w-4 text-red-500" />
+                <CircleX className="h-5 w-5" />
               </Button>
             )}
           </div>
@@ -282,11 +282,11 @@ export function CallFoodItem({
               <Button
                 variant="outline"
                 size="icon"
-                className="h-12 w-12 shrink-0 bg-black border-black hover:bg-black/90"
+                className="h-12 w-12 shrink-0"
                 onClick={handleCancelClick}
                 disabled={canceling}
               >
-                <X className="h-4 w-4 text-red-500" />
+                <CircleX className="h-5 w-5" />
               </Button>
             )}
           </div>
