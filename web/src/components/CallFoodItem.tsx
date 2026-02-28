@@ -129,9 +129,7 @@ export function CallFoodItem({
   else if (disabled && disabledReason) buttonText = disabledReason
   else if (isHoldExpired) buttonText = '⚠️ EXPIRED - DISCARD'
   else if (isQualityCheck) {
-    const mins = Math.floor(holdTimeRemaining / 60)
-    const secs = holdTimeRemaining % 60
-    buttonText = `Quality Hold ${mins}:${String(secs).padStart(2, '0')}`
+    buttonText = 'Almost done'
   }
   else if (isCooking) {
     const mins = Math.floor(remainingSeconds / 60)
@@ -231,6 +229,20 @@ export function CallFoodItem({
       <CardFooter className="pt-0 pb-4 px-4 flex flex-col gap-2">
         {(isCooking || isQualityCheck) ? (
           <div className="flex gap-2 w-full items-center">
+            {activeTicketId && onPriority && (
+              <Button
+                variant="outline"
+                size="icon"
+                className={`h-12 w-12 shrink-0 font-bold text-base border-2 ${
+                  isPriority
+                    ? 'bg-red-600 border-red-600 text-white hover:bg-red-700'
+                    : 'bg-orange-500 border-orange-500 text-white hover:bg-orange-600'
+                }`}
+                onClick={handlePriority}
+              >
+                !!!
+              </Button>
+            )}
             <ProgressBar
               value={isCooking ? progress : 100}
               max={100}
@@ -253,13 +265,6 @@ export function CallFoodItem({
           </div>
         ) : (
           <div className="flex gap-2 w-full items-center">
-            <Button
-              className="flex-1 h-12 text-base font-semibold"
-              onClick={handleCall}
-              disabled={loading || disabled}
-            >
-              {buttonText}
-            </Button>
             {activeTicketId && onPriority && (
               <Button
                 variant="outline"
@@ -274,6 +279,13 @@ export function CallFoodItem({
                 !!!
               </Button>
             )}
+            <Button
+              className="flex-1 h-12 text-base font-semibold"
+              onClick={handleCall}
+              disabled={loading || disabled}
+            >
+              {buttonText}
+            </Button>
             {activeTicketId && onCancel && (
               <Button
                 variant="outline"
