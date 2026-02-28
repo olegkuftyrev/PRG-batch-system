@@ -48,7 +48,7 @@ export function CallFoodItem({
   remainingSeconds,
   totalSeconds,
   lastCalledAt,
-  isPriority = false,
+  isPriority: _isPriority = false,
 }: Props) {
   const recommendedBatch = getRecommendedBatch(
     item.recommendedBatch ?? {},
