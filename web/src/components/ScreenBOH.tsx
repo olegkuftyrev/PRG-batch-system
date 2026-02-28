@@ -320,7 +320,11 @@ export function ScreenBOH({ screen, socketState }: Props) {
 
   const waiting = tickets
     .filter((t) => t.state === 'created')
-    .sort((a, b) => (b.priority ? 1 : 0) - (a.priority ? 1 : 0))
+    .sort((a, b) => {
+      const priorityDiff = (b.priority ? 1 : 0) - (a.priority ? 1 : 0)
+      if (priorityDiff !== 0) return priorityDiff
+      return (a.createdAt ?? 0) - (b.createdAt ?? 0)
+    })
   const inProgress = tickets.filter((t) => t.state === 'started')
   
   const isQualityCheckTicket = (t: SnapshotTicket) => {
