@@ -158,17 +158,16 @@ export function CallFoodItem({
       <CardHeader className="pb-2">
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-1">
-            <div 
-              className={`font-bold text-lg px-2 py-1 rounded ${
-                item.color === 'blue' ? 'bg-blue-500 text-white' :
-                item.color === 'red' ? 'bg-red-500 text-white' :
-                item.color === 'green' ? 'bg-green-500 text-white' :
-                item.color === 'orange' ? 'bg-orange-500 text-white' :
-                item.color === 'yellow' ? 'bg-yellow-400 text-black' :
-                ''
-              }`}
-            >
-              {item.code}
+            <div className="flex flex-col items-center">
+              <span className="font-bold text-lg leading-tight">{item.code}</span>
+              <div className={`h-1 w-full rounded-full ${
+                item.color === 'blue' ? 'bg-blue-500' :
+                item.color === 'red' ? 'bg-red-500' :
+                item.color === 'green' ? 'bg-green-500' :
+                item.color === 'orange' ? 'bg-orange-500' :
+                item.color === 'yellow' ? 'bg-yellow-400' :
+                'bg-transparent'
+              }`} />
             </div>
             {(item.ingredients || item.allergens || item.nutrition) && (
               <button
