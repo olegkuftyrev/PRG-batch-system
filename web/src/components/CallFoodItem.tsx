@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { X } from 'lucide-react'
+import { X, Siren } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -233,14 +233,10 @@ export function CallFoodItem({
               <Button
                 variant="outline"
                 size="icon"
-                className={`h-12 w-12 shrink-0 font-bold text-base border-2 ${
-                  isPriority
-                    ? 'bg-red-600 border-red-600 text-white hover:bg-red-700'
-                    : 'bg-orange-500 border-orange-500 text-white hover:bg-orange-600'
-                }`}
+                className="h-12 w-12 shrink-0"
                 onClick={handlePriority}
               >
-                !!!
+                <Siren className="h-5 w-5" />
               </Button>
             )}
             <ProgressBar
@@ -269,14 +265,10 @@ export function CallFoodItem({
               <Button
                 variant="outline"
                 size="icon"
-                className={`h-12 w-12 shrink-0 font-bold text-base border-2 ${
-                  isPriority
-                    ? 'bg-red-600 border-red-600 text-white hover:bg-red-700'
-                    : 'bg-orange-500 border-orange-500 text-white hover:bg-orange-600'
-                }`}
+                className="h-12 w-12 shrink-0"
                 onClick={handlePriority}
               >
-                !!!
+                <Siren className="h-5 w-5" />
               </Button>
             )}
             <Button
