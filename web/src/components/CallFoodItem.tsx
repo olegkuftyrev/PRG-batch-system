@@ -197,8 +197,8 @@ export function CallFoodItem({
         )}
         
         {activeTicketId ? (
-          <div className="flex items-center justify-center gap-3 text-sm">
-            <span className="text-muted-foreground">Rec: <span className="font-semibold text-foreground">{recommendedBatch}</span></span>
+          <div className="flex flex-col items-center text-sm gap-1">
+            <span className="text-muted-foreground">Recommended: <span className="font-semibold text-foreground">{recommendedBatch}</span></span>
             <span className="text-muted-foreground">Called: <span className="font-semibold text-foreground">{calledBatchSize ?? '—'}</span></span>
           </div>
         ) : item.batchSizes.length === 3 ? (
