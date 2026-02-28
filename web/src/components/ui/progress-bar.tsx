@@ -14,7 +14,7 @@ export function ProgressBar({ value, max = 100, showText = false, text, classNam
   const percentage = Math.min(Math.max((value / max) * 100, 0), 100)
 
   const getColor = () => {
-    if (complete) return 'bg-blue-500 animate-pulse'
+    if (complete) return 'bg-muted-foreground/20'
     const p = invert ? 100 - percentage : percentage
     if (p < 33) return 'bg-green-500'
     if (p < 67) return 'bg-yellow-500'
