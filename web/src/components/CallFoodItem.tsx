@@ -23,6 +23,7 @@ type Props = {
   disabled?: boolean
   disabledReason?: string
   activeTicketId?: number
+  calledBatchSize?: string
   remainingSeconds?: number | null
   totalSeconds?: number
   lastCalledAt?: Date | null
@@ -37,6 +38,7 @@ export function CallFoodItem({
   disabled = false, 
   disabledReason,
   activeTicketId,
+  calledBatchSize,
   remainingSeconds,
   totalSeconds,
   lastCalledAt,
@@ -194,7 +196,12 @@ export function CallFoodItem({
           <ImagePlaceholder className="aspect-[6/4]" />
         )}
         
-        {item.batchSizes.length === 3 ? (
+        {activeTicketId ? (
+          <div className="flex items-center justify-center gap-3 text-sm">
+            <span className="text-muted-foreground">Rec: <span className="font-semibold text-foreground">{recommendedBatch}</span></span>
+            <span className="text-muted-foreground">Called: <span className="font-semibold text-foreground">{calledBatchSize ?? '—'}</span></span>
+          </div>
+        ) : item.batchSizes.length === 3 ? (
           <BatchToggle
             options={item.batchSizes}
             value={batchSize}

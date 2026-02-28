@@ -204,6 +204,7 @@ export function ScreenFOH({ socketState }: Props) {
         disabled={disabled}
         disabledReason={disabledReason}
         activeTicketId={activeTicket?.id}
+        calledBatchSize={activeTicket?.batchSizeSnapshot}
         remainingSeconds={remaining}
         totalSeconds={activeTicket?.durationSeconds ?? activeTicket?.durationSnapshot}
         lastCalledAt={lastCompletedTime}
