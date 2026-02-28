@@ -33,7 +33,7 @@ export function ProgressBar({ value, max = 100, showText = false, text, classNam
       />
       {showText && (
         <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-sm font-medium text-foreground mix-blend-difference">
+          <span className="text-base font-bold text-black">
             {text || `${Math.round(percentage)}%`}
           </span>
         </div>
