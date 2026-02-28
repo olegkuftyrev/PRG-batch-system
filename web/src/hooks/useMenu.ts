@@ -54,20 +54,18 @@ export function groupMenuByFohSections(items: MenuItem[]) {
   return { section1, section2, section3 }
 }
 
-/** Drive-thru: 12 fixed items in 3 sections per README */
-export const DRIVE_THRU_ALL_CODES = [
-  'M1', 'R2', 'V1', 'C3', 'C2', 'C1', 'C4', 'B1', 'F4', 'B5', 'CB3', 'R1',
-]
-
+/** Drive-thru: sections with explicit row groupings */
 export function groupMenuByDriveThruSections(items: MenuItem[]) {
   const enabled = items.filter((i) => i.enabled)
   const byCode = Object.fromEntries(enabled.map((i) => [i.code, i]))
-  const s1Codes = ['M1', 'R2', 'V1', 'C3', 'C2']
-  const s2Codes = ['C1', 'C4', 'B1', 'F4', 'B5', 'CB3']
-  const s3Codes = ['R1']
   return {
-    section1: s1Codes.map((c) => byCode[c]).filter(Boolean),
-    section2: s2Codes.map((c) => byCode[c]).filter(Boolean),
-    section3: s3Codes.map((c) => byCode[c]).filter(Boolean),
+    section1: {
+      row1: ['M1', 'R1'].map((c) => byCode[c]).filter(Boolean),
+      row2: ['V1', 'C3', 'B5'].map((c) => byCode[c]).filter(Boolean),
+    },
+    section2: {
+      row1: ['F4', 'B1', 'C4'].map((c) => byCode[c]).filter(Boolean),
+      row2: ['CB3', 'C2', 'CB1'].map((c) => byCode[c]).filter(Boolean),
+    },
   }
 }

@@ -170,7 +170,7 @@ export function ScreenDriveThru({ socketState }: Props) {
   if (error) return <div className="p-6 text-destructive">{error}</div>
   if (!menu) return null
 
-  const { section1, section2, section3 } = groupMenuByDriveThruSections(menu.items)
+  const { section1, section2 } = groupMenuByDriveThruSections(menu.items)
 
   function CallFoodItemWithTimer({ item }: { item: MenuItem }) {
     const activeTicket = getActiveTicketForItem(myCalls, item)
@@ -213,14 +213,22 @@ export function ScreenDriveThru({ socketState }: Props) {
     )
   }
 
-  function Section({ title, items }: { title: string; items: MenuItem[] }) {
-    if (items.length === 0) return null
+  function DriveThruSection({ title, rows }: { title: string; rows: { items: MenuItem[]; cols: number }[] }) {
+    if (rows.every((r) => r.items.length === 0)) return null
     return (
       <section>
         <h2 className="text-lg font-semibold mb-2">{title}</h2>
-        <div className="grid grid-cols-4 gap-4">
-          {items.map((item) => (
-            <CallFoodItemWithTimer key={item.id} item={item} />
+        <div className="space-y-4">
+          {rows.map((row, i) => (
+            <div
+              key={i}
+              className="grid gap-4"
+              style={{ gridTemplateColumns: `repeat(${row.cols}, minmax(0, 1fr))` }}
+            >
+              {row.items.map((item) => (
+                <CallFoodItemWithTimer key={item.id} item={item} />
+              ))}
+            </div>
           ))}
         </div>
       </section>
@@ -234,9 +242,14 @@ export function ScreenDriveThru({ socketState }: Props) {
           {lastError}
         </div>
       )}
-      <Section title="Section 1" items={section1} />
-      <Section title="Section 2" items={section2} />
-      <Section title="Section 3" items={section3} />
+      <DriveThruSection title="Section 1" rows={[
+        { items: section1.row1, cols: 2 },
+        { items: section1.row2, cols: 3 },
+      ]} />
+      <DriveThruSection title="Section 2" rows={[
+        { items: section2.row1, cols: 3 },
+        { items: section2.row2, cols: 3 },
+      ]} />
       {myCalls.length > 0 && (
         <section>
           <h2 className="text-lg font-semibold mb-4">My calls</h2>
