@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -218,37 +219,49 @@ export function CallFoodItem({
       </CardContent>
       
       <CardFooter className="pt-0 pb-4 px-4 flex flex-col gap-2">
-        <div className="relative w-full">
-          <Button
-            className="w-full h-12 text-base font-semibold relative overflow-hidden"
-            onClick={handleCall}
-            disabled={loading || disabled}
-          >
-            {isCooking && (
-              <div className="absolute inset-0">
-                <ProgressBar 
-                  value={progress} 
-                  max={100}
-                  showText={false}
-                />
-              </div>
+        {(isCooking || isQualityCheck) ? (
+          <div className="flex gap-2 w-full items-center">
+            <ProgressBar
+              value={isCooking ? progress : 100}
+              max={100}
+              showText={true}
+              text={buttonText}
+              className="flex-1 h-12"
+              complete={isQualityCheck}
+            />
+            {activeTicketId && onCancel && (
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-12 w-12 shrink-0"
+                onClick={handleCancelClick}
+                disabled={canceling}
+              >
+                <X className="h-4 w-4" />
+              </Button>
             )}
-            <span className="relative z-10 mix-blend-difference">
+          </div>
+        ) : (
+          <>
+            <Button
+              className="w-full h-12 text-base font-semibold"
+              onClick={handleCall}
+              disabled={loading || disabled}
+            >
               {buttonText}
-            </span>
-          </Button>
-        </div>
-        
-        {activeTicketId && onCancel && (
-          <Button
-            variant="outline"
-            size="sm"
-            className="w-full"
-            onClick={handleCancelClick}
-            disabled={canceling}
-          >
-            {canceling ? 'Canceling…' : 'Cancel'}
-          </Button>
+            </Button>
+            {activeTicketId && onCancel && (
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-12 w-12 self-center"
+                onClick={handleCancelClick}
+                disabled={canceling}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            )}
+          </>
         )}
       </CardFooter>
 
