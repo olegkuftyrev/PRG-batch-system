@@ -1,5 +1,13 @@
 const API = import.meta.env.VITE_API_URL || ''
 
+export type NutritionInfo = {
+  serving_size_oz?: number
+  calories_kcal?: number
+  protein_g?: number
+  carbohydrate_g?: number
+  saturated_fat_g?: number
+}
+
 export type MenuItem = {
   id: number
   code: string
@@ -9,9 +17,12 @@ export type MenuItem = {
   cookTimes: Record<string, number>
   enabled: boolean
   recommendedBatch: Record<string, string>
-  color?: 'blue' | 'red' | 'green' | 'orange' | null
+  color?: 'blue' | 'red' | 'green' | 'orange' | 'yellow' | null
   imageUrl?: string | null
   holdTime?: number
+  ingredients?: string[] | null
+  allergens?: string[] | null
+  nutrition?: NutritionInfo | null
 }
 
 export type MenuResponse = {
@@ -27,9 +38,12 @@ export type CreateMenuItemPayload = {
   cookTimes: Record<string, number>
   enabled?: boolean
   recommendedBatch?: Record<string, string>
-  color?: 'blue' | 'red' | 'green' | 'orange' | null
+  color?: 'blue' | 'red' | 'green' | 'orange' | 'yellow' | null
   imageUrl?: string | null
   holdTime?: number
+  ingredients?: string[] | null
+  allergens?: string[] | null
+  nutrition?: NutritionInfo | null
 }
 
 export type UpdateMenuItemPayload = Partial<CreateMenuItemPayload>

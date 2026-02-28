@@ -46,6 +46,30 @@ export default class MenuItem extends BaseModel {
   @column()
   declare holdTime: number
 
+  @column({
+    prepare: (v: string[]) => JSON.stringify(v),
+    consume: (v: string) => (typeof v === 'string' ? JSON.parse(v) : v) as string[],
+  })
+  declare ingredients: string[] | null
+
+  @column({
+    prepare: (v: string[]) => JSON.stringify(v),
+    consume: (v: string) => (typeof v === 'string' ? JSON.parse(v) : v) as string[],
+  })
+  declare allergens: string[] | null
+
+  @column({
+    prepare: (v: Record<string, number>) => JSON.stringify(v),
+    consume: (v: string) => (typeof v === 'string' ? JSON.parse(v) : v) as Record<string, number>,
+  })
+  declare nutrition: {
+    serving_size_oz?: number
+    calories_kcal?: number
+    protein_g?: number
+    carbohydrate_g?: number
+    saturated_fat_g?: number
+  } | null
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 
@@ -65,6 +89,9 @@ export default class MenuItem extends BaseModel {
       color: this.color,
       imageUrl: this.imageUrl,
       holdTime: this.holdTime,
+      ingredients: this.ingredients ?? null,
+      allergens: this.allergens ?? null,
+      nutrition: this.nutrition ?? null,
       createdAt: this.createdAt.toISO(),
       updatedAt: this.updatedAt.toISO(),
     }

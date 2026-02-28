@@ -47,6 +47,9 @@ export default class MenuItemsController {
           color: payload.color ?? null,
           imageUrl: payload.imageUrl ?? null,
           holdTime: payload.holdTime ?? MenuItemsController.DEFAULT_HOLD_TIME_SECONDS,
+          ingredients: payload.ingredients ?? null,
+          allergens: payload.allergens ?? null,
+          nutrition: (payload.nutrition as Record<string, number>) ?? null,
         },
         { client: trx }
       )
@@ -79,6 +82,9 @@ export default class MenuItemsController {
       if (payload.color !== undefined) updateData.color = payload.color
       if (payload.imageUrl !== undefined) updateData.imageUrl = payload.imageUrl
       if (payload.holdTime !== undefined) updateData.holdTime = payload.holdTime
+      if (payload.ingredients !== undefined) updateData.ingredients = payload.ingredients
+      if (payload.allergens !== undefined) updateData.allergens = payload.allergens
+      if (payload.nutrition !== undefined) updateData.nutrition = payload.nutrition as any
 
       item.merge(updateData)
       await item.useTransaction(trx).save()
