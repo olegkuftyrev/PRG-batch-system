@@ -196,41 +196,43 @@ export function CallFoodItem({
           <ImagePlaceholder className="aspect-[6/4]" />
         )}
         
-        {activeTicketId ? (
-          <div className="flex flex-col items-center text-sm gap-1">
-            <span className="text-muted-foreground">Recommended: <span className="font-semibold text-foreground">{recommendedBatch}</span></span>
-            <span className="text-muted-foreground">Called: <span className="font-semibold text-foreground">{calledBatchSize ?? '—'}</span></span>
-          </div>
-        ) : item.batchSizes.length === 3 ? (
-          <BatchToggle
-            options={item.batchSizes}
-            value={batchSize}
-            onChange={setBatchSize}
-            disabled={disabled}
-            recommended={recommendedBatch}
-          />
-        ) : (
-          <div className="flex gap-1 justify-center">
-            {item.batchSizes.map((size) => (
-              <button
-                key={size}
-                onClick={() => !disabled && setBatchSize(size)}
-                disabled={disabled}
-                className={`
-                  px-4 py-2 min-w-[44px] rounded-md font-medium transition-all
-                  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2
-                  disabled:cursor-not-allowed disabled:opacity-50
-                  ${batchSize === size
-                    ? 'bg-primary text-primary-foreground shadow-sm'
-                    : 'bg-muted text-muted-foreground hover:bg-muted/80'
-                  }
-                `}
-              >
-                {size}
-              </button>
-            ))}
-          </div>
-        )}
+        <div className="min-h-[80px] flex items-center justify-center">
+          {activeTicketId ? (
+            <div className="flex flex-col items-center text-sm gap-1">
+              <span className="text-muted-foreground">Recommended: <span className="font-semibold text-foreground">{recommendedBatch}</span></span>
+              <span className="text-muted-foreground">Called: <span className="font-semibold text-foreground">{calledBatchSize ?? '—'}</span></span>
+            </div>
+          ) : item.batchSizes.length === 3 ? (
+            <BatchToggle
+              options={item.batchSizes}
+              value={batchSize}
+              onChange={setBatchSize}
+              disabled={disabled}
+              recommended={recommendedBatch}
+            />
+          ) : (
+            <div className="flex gap-1 justify-center">
+              {item.batchSizes.map((size) => (
+                <button
+                  key={size}
+                  onClick={() => !disabled && setBatchSize(size)}
+                  disabled={disabled}
+                  className={`
+                    px-4 py-2 min-w-[44px] rounded-md font-medium transition-all
+                    focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2
+                    disabled:cursor-not-allowed disabled:opacity-50
+                    ${batchSize === size
+                      ? 'bg-primary text-primary-foreground shadow-sm'
+                      : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                    }
+                  `}
+                >
+                  {size}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
       </CardContent>
       
       <CardFooter className="pt-0 pb-4 px-4 flex flex-col gap-2">
