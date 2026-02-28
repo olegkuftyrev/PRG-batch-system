@@ -38,7 +38,7 @@ export default class MenuItem extends BaseModel {
   declare recommendedBatch: Record<string, string>
 
   @column()
-  declare color: 'blue' | 'red' | 'green' | 'orange' | null
+  declare color: 'blue' | 'red' | 'green' | 'orange' | 'yellow' | null
 
   @column()
   declare imageUrl: string | null

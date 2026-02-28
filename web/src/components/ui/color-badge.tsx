@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils'
 
-export type ColorType = 'blue' | 'red' | 'green' | 'orange' | null
+export type ColorType = 'blue' | 'red' | 'green' | 'orange' | 'yellow' | null
 
 export interface ColorBadgeProps {
   color: ColorType
@@ -32,6 +32,12 @@ const COLOR_CONFIG = {
     text: 'text-orange-700',
     border: 'border-orange-300',
     label: 'Medium',
+  },
+  yellow: {
+    bg: 'bg-yellow-100',
+    text: 'text-yellow-700',
+    border: 'border-yellow-300',
+    label: 'Caution',
   },
 }
 

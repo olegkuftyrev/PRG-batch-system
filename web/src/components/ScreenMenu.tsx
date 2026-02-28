@@ -39,6 +39,7 @@ const COLORS: { value: ColorType; label: string }[] = [
   { value: 'red', label: 'Red - Slow' },
   { value: 'green', label: 'Green - Busy' },
   { value: 'orange', label: 'Orange - Medium' },
+  { value: 'yellow', label: 'Yellow - Caution' },
 ]
 
 type FormData = {
@@ -284,6 +285,7 @@ export function ScreenMenu({ menuVersion }: Props) {
                       item.color === 'red' ? 'bg-red-100 border-red-300' :
                       item.color === 'green' ? 'bg-green-100 border-green-300' :
                       item.color === 'orange' ? 'bg-orange-100 border-orange-300' :
+                      item.color === 'yellow' ? 'bg-yellow-100 border-yellow-300' :
                       'hover:bg-accent/50'
                     }`}
                   >

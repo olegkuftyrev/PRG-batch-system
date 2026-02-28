@@ -156,6 +156,7 @@ export function CallFoodItem({
               item.color === 'red' ? 'bg-red-500 text-white' :
               item.color === 'green' ? 'bg-green-500 text-white' :
               item.color === 'orange' ? 'bg-orange-500 text-white' :
+              item.color === 'yellow' ? 'bg-yellow-400 text-black' :
               ''
             }`}
           >
