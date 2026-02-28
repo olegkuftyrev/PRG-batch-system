@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { CallFoodItem } from '@/components/CallFoodItem'
+import { CallFoodItemWide } from '@/components/CallFoodItemWide'
 import { Collapsable } from '@/components/ui/collapsible'
 import { useMenu, groupMenuByDriveThruSections } from '@/hooks/useMenu'
 import { createTicket, cancelTicket, markTicketPriority, type Ticket } from '@/api/tickets'
@@ -213,6 +214,38 @@ export function ScreenDriveThru({ socketState }: Props) {
     )
   }
 
+  function CallFoodItemWideWithTimer({ item }: { item: MenuItem }) {
+    const activeTicket = getActiveTicketForItem(myCalls, item)
+    const lastCompletedTime = getLastCompletedTime(completedTickets, item)
+    const remaining = useRemainingSeconds(
+      activeTicket?.startedAt,
+      activeTicket?.durationSeconds ?? activeTicket?.durationSnapshot,
+      offsetMs
+    )
+    const activeForItem = hasActiveCallForItem(myCalls, item)
+    const disabled = isInitializing || !hasReceivedSnapshot || activeForItem
+    let disabledReason: string | undefined
+    if (isInitializing) disabledReason = 'Loading…'
+    else if (!hasReceivedSnapshot) disabledReason = 'Connecting…'
+    else if (activeForItem && activeTicket?.state === 'created') disabledReason = 'Waiting to start'
+    return (
+      <CallFoodItemWide
+        item={item}
+        onCall={handleCall}
+        onCancel={handleCancel}
+        onPriority={handlePriority}
+        disabled={disabled}
+        disabledReason={disabledReason}
+        activeTicketId={activeTicket?.id}
+        calledBatchSize={activeTicket?.batchSizeSnapshot}
+        remainingSeconds={remaining}
+        totalSeconds={activeTicket?.durationSeconds ?? activeTicket?.durationSnapshot}
+        lastCalledAt={lastCompletedTime}
+        isPriority={activeTicket?.priority ?? false}
+      />
+    )
+  }
+
   function DriveThruSection({ title, rows }: { title: string; rows: { items: MenuItem[]; cols: number }[] }) {
     if (rows.every((r) => r.items.length === 0)) return null
     return (
@@ -226,7 +259,9 @@ export function ScreenDriveThru({ socketState }: Props) {
               style={{ gridTemplateColumns: `repeat(${row.cols}, minmax(0, 1fr))` }}
             >
               {row.items.map((item) => (
-                <CallFoodItemWithTimer key={item.id} item={item} />
+                row.cols === 2
+                  ? <CallFoodItemWideWithTimer key={item.id} item={item} />
+                  : <CallFoodItemWithTimer key={item.id} item={item} />
               ))}
             </div>
           ))}
