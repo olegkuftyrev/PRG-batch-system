@@ -8,7 +8,7 @@ WORKDIR /app
 
 # Install dependencies first (better layer cache)
 COPY package.json package-lock.json* ./
-RUN npm ci
+RUN npm install
 
 # Copy app (config, app/, start/, etc.)
 COPY . .
