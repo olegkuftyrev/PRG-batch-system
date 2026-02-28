@@ -36,8 +36,8 @@ export function useMenu(menuVersion?: number) {
 }
 
 /** FOH sections per README: Section 1, 2, 3 (steam table) */
-const FOH_SECTION_1_CODES = ['F4', 'R1', 'V1', 'M1', 'R2', 'B3', 'C2']
-const FOH_SECTION_2_CODES = ['B1', 'CB3', 'B5', 'C1', 'CB1', 'CB5']
+const FOH_SECTION_1_CODES = ['C2', 'C3', 'B3', 'F4']
+const FOH_SECTION_2_CODES = ['M1', 'V1', 'R1', 'R2']
 
 export function groupMenuByFohSections(items: MenuItem[]) {
   const enabled = items.filter((i) => i.enabled)
