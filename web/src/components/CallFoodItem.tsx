@@ -157,7 +157,7 @@ export function CallFoodItem({
     <Card className={cardClassName}>
       <CardHeader className="pb-2">
         <div className="flex justify-between items-center">
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-3">
             <div className="flex flex-col items-center">
               <span className="font-bold text-lg leading-tight">{item.code}</span>
               <div className={`h-1 w-full rounded-full ${
