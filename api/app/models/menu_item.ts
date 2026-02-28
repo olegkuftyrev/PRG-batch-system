@@ -47,20 +47,20 @@ export default class MenuItem extends BaseModel {
   declare holdTime: number
 
   @column({
-    prepare: (v: string[]) => JSON.stringify(v),
-    consume: (v: string) => (typeof v === 'string' ? JSON.parse(v) : v) as string[],
+    prepare: (v: string[] | null) => v != null ? JSON.stringify(v) : null,
+    consume: (v: string | null) => (v != null && typeof v === 'string' ? JSON.parse(v) : v) as string[] | null,
   })
   declare ingredients: string[] | null
 
   @column({
-    prepare: (v: string[]) => JSON.stringify(v),
-    consume: (v: string) => (typeof v === 'string' ? JSON.parse(v) : v) as string[],
+    prepare: (v: string[] | null) => v != null ? JSON.stringify(v) : null,
+    consume: (v: string | null) => (v != null && typeof v === 'string' ? JSON.parse(v) : v) as string[] | null,
   })
   declare allergens: string[] | null
 
   @column({
-    prepare: (v: Record<string, number>) => JSON.stringify(v),
-    consume: (v: string) => (typeof v === 'string' ? JSON.parse(v) : v) as Record<string, number>,
+    prepare: (v: Record<string, unknown> | null) => v != null ? JSON.stringify(v) : null,
+    consume: (v: string | null) => (v != null && typeof v === 'string' ? JSON.parse(v) : v) as Record<string, unknown> | null,
   })
   declare nutrition: {
     serving_size_oz?: number
