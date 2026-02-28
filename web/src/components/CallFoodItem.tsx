@@ -242,9 +242,9 @@ export function CallFoodItem({
             )}
           </div>
         ) : (
-          <>
+          <div className="flex gap-2 w-full items-center">
             <Button
-              className="w-full h-12 text-base font-semibold"
+              className="flex-1 h-12 text-base font-semibold"
               onClick={handleCall}
               disabled={loading || disabled}
             >
@@ -254,14 +254,14 @@ export function CallFoodItem({
               <Button
                 variant="outline"
                 size="icon"
-                className="h-12 w-12 self-center"
+                className="h-12 w-12 shrink-0"
                 onClick={handleCancelClick}
                 disabled={canceling}
               >
                 <X className="h-4 w-4" />
               </Button>
             )}
-          </>
+          </div>
         )}
       </CardFooter>
 
