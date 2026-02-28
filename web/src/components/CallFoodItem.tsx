@@ -206,10 +206,10 @@ export function CallFoodItem({
           <img 
             src={imageUrl} 
             alt={item.title} 
-            className="w-full h-28 object-cover rounded"
+            className="w-full aspect-[2/1] object-contain rounded"
           />
         ) : (
-          <ImagePlaceholder className="h-28" />
+          <ImagePlaceholder className="aspect-[2/1]" />
         )}
         
         <div className="min-h-[80px] flex items-center justify-center">
