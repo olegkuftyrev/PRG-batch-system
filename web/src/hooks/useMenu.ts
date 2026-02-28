@@ -37,15 +37,15 @@ export function useMenu(menuVersion?: number) {
 
 /** FOH sections per README: Section 1, 2, 3 (steam table) */
 const FOH_SECTION_1_CODES = ['C2', 'C3', 'B3', 'F4', 'M1', 'V1', 'R1', 'R2']
-const FOH_SECTION_2_CODES: string[] = []
+const FOH_SECTION_3_CODES = ['E1', 'E2', 'E3', 'C4']
 
 export function groupMenuByFohSections(items: MenuItem[]) {
   const enabled = items.filter((i) => i.enabled)
   const byCode = Object.fromEntries(enabled.map((i) => [i.code, i]))
   const section1 = FOH_SECTION_1_CODES.map((c) => byCode[c]).filter(Boolean)
-  const section2 = FOH_SECTION_2_CODES.map((c) => byCode[c]).filter(Boolean)
-  const section1And2Codes = new Set([...FOH_SECTION_1_CODES, ...FOH_SECTION_2_CODES])
-  const section3 = enabled.filter((i) => !section1And2Codes.has(i.code))
+  const section3 = FOH_SECTION_3_CODES.map((c) => byCode[c]).filter(Boolean)
+  const knownCodes = new Set([...FOH_SECTION_1_CODES, ...FOH_SECTION_3_CODES])
+  const section2 = enabled.filter((i) => !knownCodes.has(i.code))
   return { section1, section2, section3 }
 }
 
