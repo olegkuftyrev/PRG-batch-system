@@ -17,7 +17,7 @@ COPY . .
 RUN npm run build -- --ignore-ts-errors
 
 # Ensure uploads are in the build output directory
-RUN cp -r public/uploads build/public/uploads
+RUN mkdir -p build/public && cp -r public/uploads build/public/uploads
 
 # Copy and prepare startup script
 COPY scripts/start.sh ./scripts/
