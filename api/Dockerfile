@@ -16,6 +16,9 @@ COPY . .
 # Build for production (output in build/)
 RUN npm run build -- --ignore-ts-errors
 
+# Ensure uploads are in the build output directory
+RUN cp -r public/uploads build/public/uploads
+
 # Copy and prepare startup script
 COPY scripts/start.sh ./scripts/
 RUN chmod +x ./scripts/start.sh
