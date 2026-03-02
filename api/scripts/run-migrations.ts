@@ -67,6 +67,22 @@ async function run() {
           updated_at TIMESTAMPTZ
         )
       `},
+      { name: '1740354400000_add_color_image_holdtime_to_menu_items', sql: `
+        ALTER TABLE menu_items
+          ADD COLUMN IF NOT EXISTS color VARCHAR(20),
+          ADD COLUMN IF NOT EXISTS image_url VARCHAR(500),
+          ADD COLUMN IF NOT EXISTS hold_time INTEGER NOT NULL DEFAULT 600
+      `},
+      { name: '1740700000000_add_priority_to_tickets', sql: `
+        ALTER TABLE tickets
+          ADD COLUMN IF NOT EXISTS priority BOOLEAN NOT NULL DEFAULT false
+      `},
+      { name: '1740800000000_add_ingredients_allergens_nutrition_to_menu_items', sql: `
+        ALTER TABLE menu_items
+          ADD COLUMN IF NOT EXISTS ingredients TEXT,
+          ADD COLUMN IF NOT EXISTS allergens TEXT,
+          ADD COLUMN IF NOT EXISTS nutrition TEXT
+      `},
     ]
     const batch = (await client.query('SELECT COALESCE(MAX(batch), 0) + 1 as next FROM adonis_schema')).rows[0].next
     for (const m of migrations) {
